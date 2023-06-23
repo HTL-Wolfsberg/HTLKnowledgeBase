@@ -7,4 +7,14 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'AngularWebApp';
+
+  OnBtnUploadClicked(event: any){
+    console.log(event)
+
+    const file = event.target.files[0]
+
+    const formData = new FormData();
+    formData.append("thumbnail", file);
+  }
+
 }
