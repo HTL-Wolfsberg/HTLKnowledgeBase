@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+  
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -31,10 +34,10 @@ namespace API.Controllers
         }
 
 
-        [HttpPost("upload")]
-        public Task<IActionResult> UploadFile([FromForm] IFormFile file)
+        [HttpPost(Name = "PostUpload")]
+        public async Task<IActionResult> Upload([FromForm] IFormFile file)
         {
-            _logger.LogDebug(file.Name);
+            _logger.LogDebug(file.FileName);
 
             var data = new byte[file.Length];
             
