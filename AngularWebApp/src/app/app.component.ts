@@ -12,7 +12,9 @@ export class AppComponent implements OnInit {
 
   }
   ngOnInit(): void {
-   this.documentService.getShit().subscribe();
+   this.documentService.Get().subscribe( documents =>{
+    console.log(documents)
+   });
   }
 
   OnBtnUploadClicked(event: Event) {
@@ -31,8 +33,6 @@ export class AppComponent implements OnInit {
       return;
 
     const file = target.files[0];
-
-    console.log(file);
 
     const formData = new FormData();
     formData.append('file', file, file.name);

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using System.ComponentModel.DataAnnotations;
 
-namespace API
+namespace API.Document
 {
     public class DocumentContext : DbContext
     {

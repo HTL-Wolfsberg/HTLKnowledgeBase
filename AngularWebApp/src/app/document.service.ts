@@ -1,25 +1,24 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
+import { Document } from './document.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DocumentService {
 
-  url = this.apiService.getApiAddress() + "";
+  private url = this.apiService.getApiAddress() + "Document/";
 
   constructor(private http: HttpClient,
     private apiService: ApiService) { }
 
   postDocument(formData: FormData): Observable<null> {
-    return this.http.post<null>( this.url + "WeatherForecast", formData);
-
+    return this.http.post<null>( this.url + "", formData);
   }
 
-  getShit(): Observable<null> {
-    return this.http.get<null>( this.url + "WeatherForecast");
-
+  Get(): Observable<Document[]> {
+    return this.http.get<Document[]>( this.url + "");
   }
 }

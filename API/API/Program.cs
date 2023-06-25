@@ -1,3 +1,4 @@
+using API.Document;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
@@ -6,8 +7,6 @@ namespace API
 {
     public class Program
     {
-        const string AllowSpecifiyOrigins = "AllowSpecifiyOrigins";
-
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -16,22 +15,8 @@ namespace API
             builder.Logging.AddConsole();
 
             var postgresConnectionString = builder.Configuration.GetValue<string>("ConnectionStrings:postgres");
-            Trace.WriteLine(postgresConnectionString);
             ConfigureServices(builder.Services, postgresConnectionString);
 
-            //    builder.Services.AddCors((options) =>
-            //    {
-            //        options.AddDefaultPolicy(policy =>
-            //        {
-            //            policy.AllowAnyMethod()
-            //.AllowAnyHeader()
-            //.SetIsOriginAllowed(origin => true) // allow any origin
-            //.AllowCredentials();
-            //            //policy.WithOrigins("https://localhost:4200").AllowAnyMethod().AllowAnyHeader();
-            //        });
-            //    });
-
-            // Add services to the container.
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
