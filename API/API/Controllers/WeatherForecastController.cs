@@ -6,41 +6,41 @@ namespace API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-  
+
     public class WeatherForecastController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
+        DocumentContext _documentContext;
 
         private readonly ILogger<WeatherForecastController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger,
+            DocumentContext documentContext)
         {
             _logger = logger;
+            _documentContext = documentContext;
+
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        public Document[] Get()
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+
+            Document[] documents = _documentContext.Documents.ToArray();
+
+            return documents;
         }
 
 
         [HttpPost(Name = "PostUpload")]
         public async Task<IActionResult> Upload([FromForm] IFormFile file)
         {
-            _logger.LogDebug(file.FileName);
+            Document document = new Document();
+            document.Guid = Guid.NewGuid();
+            document.Path = file.FileName;
 
-            var data = new byte[file.Length];
-            
+            _documentContext.Add(document);
+            _documentContext.SaveChanges();
+
             //using (var bstream = file.OpenReadStream())
             //{
             //    while (bstream.CanRead)
