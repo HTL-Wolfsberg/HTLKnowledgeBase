@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DocumentService } from './document.service';
 
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -12,8 +13,15 @@ export class AppComponent implements OnInit {
 
   }
   ngOnInit(): void {
-   this.documentService.Get().subscribe( documents =>{
-    console.log(documents)
+   this.documentService.Get("4d23854b-4854-463f-9ac3-f7dd20933ed8").subscribe( document =>{
+    console.log(document)
+
+    let blob = new Blob([document], {type: "application/png"});
+
+    //var downloadURL = window.URL.createObjectURL(data);
+
+    const url= window.URL.createObjectURL(blob);
+    window.open(url);
    });
   }
 

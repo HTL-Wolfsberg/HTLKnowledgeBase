@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace API.Document
 {
@@ -19,11 +20,20 @@ namespace API.Document
         }
 
         [HttpGet("{guid}")]
-        public Document[] Get(string guid)
+        public byte[] Get(Guid guid)
         {
-            Document[] documents = _documentContext.Documents.ToArray();
+            Document document = _documentContext.Documents.First(document => document.Guid == guid);
 
-            return documents;
+            string myDocumentsWindowsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string documentPath = Path.Combine(myDocumentsWindowsPath, "HTLKnowledgeBase", "Documents", document.Path);
+
+            byte[] fileBytes = System.IO.File.ReadAllBytes(documentPath);
+
+            _logger.LogDebug(fileBytes.Length.ToString());
+
+            //return File(fileBytes, ".png", document.Path);
+
+            return fileBytes;
         }
 
         [HttpGet]
@@ -69,4 +79,5 @@ namespace API.Document
             }
         }
     }
+
 }

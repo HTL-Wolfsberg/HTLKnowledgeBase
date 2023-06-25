@@ -15,10 +15,10 @@ export class DocumentService {
     private apiService: ApiService) { }
 
   postDocument(formData: FormData): Observable<null> {
-    return this.http.post<null>( this.url + "", formData);
+    return this.http.post<null>(this.url + "", formData);
   }
 
-  Get(): Observable<Document[]> {
-    return this.http.get<Document[]>( this.url + "");
+  Get(guid: string): Observable<Blob> {
+    return this.http.get<Blob>(this.url + guid);
   }
 }
