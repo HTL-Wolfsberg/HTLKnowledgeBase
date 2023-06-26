@@ -43,7 +43,7 @@ namespace API.Document
         }
 
         [HttpGet]
-        public Document[] GetAll()
+        public Document[] Get()
         {
             Document[] documents = _documentContext.Documents.ToArray();
 

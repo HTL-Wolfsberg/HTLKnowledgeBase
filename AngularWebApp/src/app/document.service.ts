@@ -19,6 +19,10 @@ export class DocumentService {
   }
 
   Get(guid: string): Observable<HttpResponse<Blob>> {
-    return this.http.get(this.url + guid, {observe: 'response', responseType:'blob', reportProgress: true,});
+    return this.http.get(this.url + guid, {observe: 'response', responseType:'blob', reportProgress: true});
+  }
+
+  GetOnlyMetaData(): Observable<Document[]> {
+    return this.http.get<Document[]>(this.url);
   }
 }

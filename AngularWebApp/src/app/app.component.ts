@@ -17,16 +17,20 @@ export class AppComponent implements OnInit
   }
   ngOnInit(): void
   {
-    this.documentService.Get("31975216-1a5e-4f67-adc1-5011b39d057d").subscribe(document =>
+    this.documentService.GetOnlyMetaData().subscribe(document =>
     {
-      let filename = document.headers.get("filename");
-      if (!filename)
-        return;
-
-      filename = decodeURIComponent(filename);
-
-      this.downloadFile(document, decodeURIComponent(filename));
+      console.log(document)
     });
+
+
+    // let filename = document.headers.get("filename");
+    // if (!filename)
+    //   return;
+
+    // filename = decodeURIComponent(filename);
+
+    // this.downloadFile(document, decodeURIComponent(filename));
+
   }
 
   private downloadFile = (data: HttpResponse<Blob>, filename: string) =>
