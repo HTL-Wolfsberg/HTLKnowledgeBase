@@ -39,7 +39,7 @@ namespace API
 
             app.UseCors(x => x
                 .AllowAnyMethod()
-                .AllowAnyHeader()
+                .AllowAnyHeader().WithExposedHeaders("filename")
                 .SetIsOriginAllowed(origin => true) // allow any origin
                 .AllowCredentials());
 

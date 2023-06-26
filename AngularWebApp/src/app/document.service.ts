@@ -1,4 +1,4 @@
-import { HttpClient, HttpStatusCode } from '@angular/common/http';
+import { HttpClient, HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from './api.service';
@@ -18,7 +18,7 @@ export class DocumentService {
     return this.http.post<null>(this.url + "", formData);
   }
 
-  Get(guid: string): Observable<Blob> {
-    return this.http.get<Blob>(this.url + guid);
+  Get(guid: string): Observable<HttpResponse<Blob>> {
+    return this.http.get(this.url + guid, {observe: 'response', responseType:'blob', reportProgress: true,});
   }
 }

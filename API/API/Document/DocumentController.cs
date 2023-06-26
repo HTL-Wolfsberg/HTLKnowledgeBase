@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using System;
+using System.Net;
+using System.Web;
 
 namespace API.Document
 {
@@ -20,20 +23,23 @@ namespace API.Document
         }
 
         [HttpGet("{guid}")]
-        public byte[] Get(Guid guid)
+        public async Task<FileStreamResult> Get(Guid guid)
         {
             Document document = _documentContext.Documents.First(document => document.Guid == guid);
 
             string myDocumentsWindowsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             string documentPath = Path.Combine(myDocumentsWindowsPath, "HTLKnowledgeBase", "Documents", document.Path);
 
-            byte[] fileBytes = System.IO.File.ReadAllBytes(documentPath);
+            var memory = new MemoryStream();
+            await using (var stream = new FileStream(documentPath, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
 
-            _logger.LogDebug(fileBytes.Length.ToString());
+            Response.Headers.Add("filename", HttpUtility.UrlEncode(document.Path, System.Text.Encoding.UTF8));
 
-            //return File(fileBytes, ".png", document.Path);
-
-            return fileBytes;
+            return File(memory, GetContentType(documentPath), documentPath);
         }
 
         [HttpGet]
@@ -77,6 +83,19 @@ namespace API.Document
             {
                 Directory.CreateDirectory(directory);
             }
+        }
+
+        private string GetContentType(string path)
+        {
+            var provider = new FileExtensionContentTypeProvider();
+            string contentType;
+
+            if (!provider.TryGetContentType(path, out contentType))
+            {
+                contentType = "application/octet-stream";
+            }
+
+            return contentType;
         }
     }
 
