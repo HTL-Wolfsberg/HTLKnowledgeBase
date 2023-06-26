@@ -1,1 +1,2 @@
 <input type="file" class="file-upload" (change)="OnBtnUploadClicked($event)">
+<p-dropdown [options]="documents" optionLabel="path" (onChange)="onFileSelected($event)"></p-dropdown>

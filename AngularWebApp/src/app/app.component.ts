@@ -1,40 +1,43 @@
 import { HttpResponse, HttpUrlEncodingCodec } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { DocumentService } from './document.service';
-
+import { Document } from './document.model';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit
-{
+export class AppComponent implements OnInit {
 
-  constructor(private documentService: DocumentService)
-  {
+  documents: Document[] = [];
 
-  }
-  ngOnInit(): void
-  {
-    this.documentService.GetOnlyMetaData().subscribe(document =>
-    {
-      console.log(document)
+  constructor(private documentService: DocumentService) { }
+
+  ngOnInit(): void {
+    this.documentService.GetOnlyMetaData().subscribe(documents => {
+      this.documents = documents;
     });
-
-
-    // let filename = document.headers.get("filename");
-    // if (!filename)
-    //   return;
-
-    // filename = decodeURIComponent(filename);
-
-    // this.downloadFile(document, decodeURIComponent(filename));
-
   }
 
-  private downloadFile = (data: HttpResponse<Blob>, filename: string) =>
-  {
+  onFileSelected(event: any) {
+    if (!event.value)
+      return;
+
+    let document: Document = event.value;
+
+    this.documentService.Get(document?.guid).subscribe(document => {
+      let filename = document.headers.get("filename");
+      if (!filename)
+        return;
+
+      filename = decodeURIComponent(filename);
+
+      this.downloadFile(document, decodeURIComponent(filename));
+    })
+  }
+
+  private downloadFile = (data: HttpResponse<Blob>, filename: string) => {
     if (!data.body)
       return;
 
@@ -49,15 +52,11 @@ export class AppComponent implements OnInit
     document.body.removeChild(a);
   }
 
-  OnBtnUploadClicked(event: Event)
-  {
+  OnBtnUploadClicked(event: Event) {
     if (!event)
       return;
 
     const target = event.target as HTMLInputElement;
-
-    if (!target)
-      return;
 
     if (!target.files)
       return;
@@ -67,8 +66,7 @@ export class AppComponent implements OnInit
     const formData = new FormData();
     formData.append('file', file, file.name);
 
-    this.documentService.postDocument(formData).subscribe((response) =>
-    {
+    this.documentService.postDocument(formData).subscribe((response) => {
 
     });
   }

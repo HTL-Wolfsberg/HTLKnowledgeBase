@@ -1,4 +1,4 @@
 export interface Document {
-    Guid:string;
-    Path:string;
+    guid: string;
+    path: string;
 }
