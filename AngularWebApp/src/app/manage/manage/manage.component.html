@@ -1,1 +1,10 @@
-<p>manage works!</p>
+<div class="downloadContainer">
+    <div class="card">
+        <div class="downloadContainerInCard">
+            <h2>Verwalten</h2>
+
+            <input #btnUpload type="file" class="btnUpload" (change)="OnBtnUploadClicked($event)">
+            <p-button label="Hochladen" (onClick)="btnUpload.click()"></p-button>
+        </div>
+    </div>
+</div>

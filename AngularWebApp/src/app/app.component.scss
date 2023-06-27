@@ -1,5 +1,6 @@
 .mainContainer{
     position: relative;
+    margin: 1em;
 }
 
 .navBarContainer{
@@ -7,18 +8,13 @@
     width: 100%;
 
     div{
-        margin: 1em;
         display: flex;
         justify-content: end;
     }
 }
 
-.btnUpload{
-    display: none;
-}
-
 .header{
     font-size: 1.5em;
-    margin: 0;
-    padding: 1em;
+    padding-top: 0.5em;
+    margin-bottom: 2.5em;
 }
