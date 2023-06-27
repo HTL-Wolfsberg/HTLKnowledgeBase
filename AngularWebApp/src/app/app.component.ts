@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { DocumentService } from './document.service';
 import { Document } from './document.model';
 import { MessageService } from 'primeng/api';
+import { Router } from '@angular/router';
+import { RoutingPaths } from './routing-paths';
 
 @Component({
   selector: 'app-root',
@@ -32,18 +34,19 @@ export class AppComponent implements OnInit {
   ]
 
   constructor(private documentService: DocumentService,
-    private messageService: MessageService) { }
+    private messageService: MessageService,
+    private router:Router) { }
 
   ngOnInit(): void {
     this.getDocumentsWithOnlyMetaData();
   }
 
   onNavigateToSearchClicked(){
-
+    this.router.navigate([RoutingPaths.searchPath]);
   }
 
   onNavigateToManageClicked(){
-
+    this.router.navigate([RoutingPaths.managePath]);
   }
 
   getDocumentsWithOnlyMetaData() {

@@ -11,11 +11,15 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { MenuModule } from 'primeng/menu';
+import { SearchComponent } from './search/search/search.component';
+import { ManageComponent } from './manage/manage/manage.component';
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    SearchComponent,
+    ManageComponent
   ],
   imports: [
     BrowserModule,
