@@ -1,3 +1,10 @@
+<div class="navBar">
+    <p-menu #menu [model]="items" [popup]="true"></p-menu>
+    <button pButton type="button" (click)="menu.toggle($event)" icon="pi pi-bars"></button>
+</div>
+
+<h1 class="header">HTL Knowledge Base</h1>
+
 <input #btnUpload type="file" class="btnUpload" (change)="OnBtnUploadClicked($event)">
 
 <p-button label="Hochladen" (onClick)="btnUpload.click()"></p-button>
@@ -5,4 +12,5 @@
 <br>
 <p-dropdown [options]="documents" optionLabel="path" [(ngModel)]="selectedDocument"></p-dropdown>
 <p-button label="herunterladen" (onClick)="onFileSelected()"></p-button>
+
 <p-toast position="bottom-center"></p-toast>

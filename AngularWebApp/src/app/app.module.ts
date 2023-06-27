@@ -10,6 +10,8 @@ import { DropdownModule } from 'primeng/dropdown';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { MenuModule } from 'primeng/menu';
+
 
 @NgModule({
   declarations: [
@@ -23,7 +25,8 @@ import { MessageService } from 'primeng/api';
     FormsModule,
     DropdownModule,
     BrowserAnimationsModule,
-    ToastModule
+    ToastModule,
+    MenuModule
   ],
   providers: [MessageService],
   bootstrap: [AppComponent]

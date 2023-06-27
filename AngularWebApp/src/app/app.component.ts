@@ -14,6 +14,23 @@ export class AppComponent implements OnInit {
   documents: Document[] = [];
   selectedDocument?: Document;
 
+  items = [
+    {
+      label: 'Suche',
+      icon: 'pi pi-search',
+      command: () => {
+        this.onNavigateToSearchClicked();
+      }
+    },
+    {
+      label: 'Verwalten',
+      icon: 'pi pi-upload',
+      command: () => {
+        this.onNavigateToManageClicked();
+      }
+    }
+  ]
+
   constructor(private documentService: DocumentService,
     private messageService: MessageService) { }
 
@@ -21,7 +38,15 @@ export class AppComponent implements OnInit {
     this.getDocumentsWithOnlyMetaData();
   }
 
-  getDocumentsWithOnlyMetaData(){
+  onNavigateToSearchClicked(){
+
+  }
+
+  onNavigateToManageClicked(){
+
+  }
+
+  getDocumentsWithOnlyMetaData() {
     this.documentService.GetOnlyMetaData().subscribe(documents => {
       this.documents = documents;
     });
@@ -77,7 +102,7 @@ export class AppComponent implements OnInit {
     });
   }
 
-  showToastSuccess(summary:string, detail:string) {
+  showToastSuccess(summary: string, detail: string) {
     this.messageService.add({ severity: 'success', summary: summary, detail: detail });
   }
 
