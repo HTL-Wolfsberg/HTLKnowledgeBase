@@ -2,6 +2,7 @@ import { HttpResponse, HttpUrlEncodingCodec } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { DocumentService } from './document.service';
 import { Document } from './document.model';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-root',
@@ -11,22 +12,26 @@ import { Document } from './document.model';
 export class AppComponent implements OnInit {
 
   documents: Document[] = [];
+  selectedDocument?: Document;
 
-  constructor(private documentService: DocumentService) { }
+  constructor(private documentService: DocumentService,
+    private messageService: MessageService) { }
 
   ngOnInit(): void {
+    this.getDocumentsWithOnlyMetaData();
+  }
+
+  getDocumentsWithOnlyMetaData(){
     this.documentService.GetOnlyMetaData().subscribe(documents => {
       this.documents = documents;
     });
   }
 
-  onFileSelected(event: any) {
-    if (!event.value)
+  onFileSelected() {
+    if (!this.selectedDocument)
       return;
 
-    let document: Document = event.value;
-
-    this.documentService.Get(document?.guid).subscribe(document => {
+    this.documentService.Get(this.selectedDocument.guid).subscribe(document => {
       let filename = document.headers.get("filename");
       if (!filename)
         return;
@@ -67,7 +72,13 @@ export class AppComponent implements OnInit {
     formData.append('file', file, file.name);
 
     this.documentService.postDocument(formData).subscribe((response) => {
-
+      this.showToastSuccess("Erfolgreich hochgeladen", "Die Datei " + file.name + " wurde hochgeladen");
+      this.getDocumentsWithOnlyMetaData();
     });
   }
+
+  showToastSuccess(summary:string, detail:string) {
+    this.messageService.add({ severity: 'success', summary: summary, detail: detail });
+  }
+
 }
