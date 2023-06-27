@@ -1,7 +1,24 @@
+.mainContainer{
+    position: relative;
+}
+
+.navBarContainer{
+    position: absolute;  
+    width: 100%;
+
+    div{
+        margin: 1em;
+        display: flex;
+        justify-content: end;
+    }
+}
+
 .btnUpload{
     display: none;
 }
 
 .header{
-    text-align: center;
+    font-size: 1.5em;
+    margin: 0;
+    padding: 1em;
 }
