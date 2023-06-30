@@ -7,7 +7,7 @@ using System.Web;
 namespace API.Document
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]/[action]")]
 
     public class DocumentController : ControllerBase
     {
@@ -52,14 +52,14 @@ namespace API.Document
 
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromForm] IFormFile file)
+        public async Task<Guid> Post([FromForm] IFormFile file)
         {
             Document document = new Document();
             document.Guid = Guid.NewGuid();
             document.Path = file.FileName;
 
             _documentContext.Add(document);
-            _documentContext.SaveChanges();
+            await _documentContext.SaveChangesAsync();
 
             string myDocumentsWindowsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             string documentPath = Path.Combine(myDocumentsWindowsPath, "HTLKnowledgeBase", "Documents", file.FileName);
@@ -70,10 +70,27 @@ namespace API.Document
 
             using (FileStream fs = new FileStream(documentPath, FileMode.Create))
             {
-                file.CopyTo(fs);
+                await file.CopyToAsync(fs);
             }
 
-            return Ok();
+            return document.Guid;
+        }
+
+        [HttpPost()]
+        public async Task<Guid> PostDocumentTags([FromBody] TagWithGuid tagWithGuid)
+        {
+            var document = _documentContext.Documents.First(document => document.Guid == tagWithGuid.Guid);
+            document.Tags = tagWithGuid.Tags;
+            _documentContext.Documents.Update(document);
+            await _documentContext.SaveChangesAsync();
+
+            return document.Guid;
+        }
+
+        public class TagWithGuid
+        {
+            public Tag[] Tags { get; set; }
+            public Guid Guid { get; set; }
         }
 
         private void CreateDirectoryIfNotExistsFromDocumentPath(string documentPath)

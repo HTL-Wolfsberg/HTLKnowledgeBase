@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
+import { Tag } from 'src/app/document/Tag';
 import { DocumentService } from 'src/app/document/document.service';
 
 @Component({
@@ -9,6 +10,9 @@ import { DocumentService } from 'src/app/document/document.service';
   styleUrls: ['./manage.component.scss']
 })
 export class ManageComponent {
+
+  tags: Tag[] = [];
+  newTagString: string = "";
 
   constructor(private documentService: DocumentService,
     private messageService: MessageService,
@@ -28,8 +32,10 @@ export class ManageComponent {
     const formData = new FormData();
     formData.append('file', file, file.name);
 
-    this.documentService.postDocument(formData).subscribe((response) => {
-      this.showToastSuccess("Erfolgreich hochgeladen", "Die Datei " + file.name + " wurde hochgeladen");
+    this.documentService.post(formData).subscribe(guid => {
+      this.documentService.postDocumentTags(this.tags, guid).subscribe(() => {
+        this.showToastSuccess("Erfolgreich hochgeladen", "Die Datei " + file.name + " wurde hochgeladen");
+      })
     });
   }
 
@@ -37,4 +43,20 @@ export class ManageComponent {
     this.messageService.add({ severity: 'success', summary: summary, detail: detail });
   }
 
+  onAddTag() {
+    let tag: Tag = {
+      guid: '',
+      name: this.newTagString
+    };
+
+    this.tags.push(tag);
+
+    this.newTagString = "";
+  }
+
+  onRemoveTag(tag: Tag) {
+    this.tags = this.tags.filter(item => {
+      return item != tag;
+    })
+  }
 }

@@ -13,7 +13,8 @@ import { MessageService } from 'primeng/api';
 import { MenuModule } from 'primeng/menu';
 import { SearchComponent } from './search/search/search.component';
 import { ManageComponent } from './manage/manage/manage.component';
-
+import { ChipModule } from 'primeng/chip';
+import { InputTextModule } from 'primeng/inputtext';
 
 @NgModule({
   declarations: [
@@ -30,9 +31,14 @@ import { ManageComponent } from './manage/manage/manage.component';
     DropdownModule,
     BrowserAnimationsModule,
     ToastModule,
-    MenuModule
+    MenuModule,
+    ChipModule,
+    InputTextModule
   ],
   providers: [MessageService],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule { 
+
+
+}

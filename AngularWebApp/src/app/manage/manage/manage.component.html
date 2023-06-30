@@ -5,6 +5,14 @@
 
             <input #btnUpload type="file" class="btnUpload" (change)="OnBtnUploadClicked($event)">
             <p-button label="Hochladen" (onClick)="btnUpload.click()"></p-button>
+            
+            <div class="tagContainer">
+                <p-chip *ngFor="let tag of tags" [label]="tag.name" (onRemove)="onRemoveTag(tag)" [removable]="true"></p-chip>
+            </div>
+
+            <input type="text" pInputText [(ngModel)]="newTagString" #inputTag/>
+            <p-button icon="pi pi-plus" (onClick)="onAddTag(); "></p-button>
+        
         </div>
     </div>
 </div>
