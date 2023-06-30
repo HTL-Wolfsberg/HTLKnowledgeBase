@@ -1,7 +1,7 @@
 import { HttpClient, HttpResponse, HttpStatusCode } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { ApiService } from './api.service';
+import { ApiService } from '../api.service';
 import { Document } from './document.model';
 
 @Injectable({

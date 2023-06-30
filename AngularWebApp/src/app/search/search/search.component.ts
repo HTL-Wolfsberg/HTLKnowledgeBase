@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { DocumentService } from 'src/app/document.service';
-import { Document } from '../../document.model';
+import { DocumentService } from 'src/app/document/document.service';
+import { Document } from '../../document/document.model';
 import { HttpResponse } from '@angular/common/http';
 
 @Component({

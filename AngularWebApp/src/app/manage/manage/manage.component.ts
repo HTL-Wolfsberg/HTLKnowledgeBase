@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { DocumentService } from 'src/app/document.service';
+import { DocumentService } from 'src/app/document/document.service';
 
 @Component({
   selector: 'app-manage',

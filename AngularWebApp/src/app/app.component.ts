@@ -1,7 +1,7 @@
 import { HttpResponse, HttpUrlEncodingCodec } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { DocumentService } from './document.service';
-import { Document } from './document.model';
+import { DocumentService } from './document/document.service';
+import { Document } from './document/document.model';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { RoutingPaths } from './routing-paths';
