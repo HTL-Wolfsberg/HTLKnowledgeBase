@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.EntityFrameworkCore;
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Web;
 
@@ -43,9 +45,26 @@ namespace API.Document
         }
 
         [HttpGet]
+        public Tag[] GetTags()
+        {
+            Tag[] documents = _documentContext.Tags.ToArray();
+
+            return documents;
+        }
+
+
+        [HttpGet]
         public Document[] Get()
         {
-            Document[] documents = _documentContext.Documents.ToArray();
+            var documents = _documentContext.Documents.Include(document => document.Tags).ToArray();
+
+            //foreach (var document in documents)
+            //{
+            //    foreach (var tag in document.Tags)
+            //    {
+            //        tag.Documents = null;
+            //    }
+            //}
 
             return documents;
         }
@@ -80,16 +99,32 @@ namespace API.Document
         public async Task<Guid> PostDocumentTags([FromBody] TagWithGuid tagWithGuid)
         {
             var document = _documentContext.Documents.First(document => document.Guid == tagWithGuid.Guid);
-            document.Tags = tagWithGuid.Tags;
+           
+            foreach(Tag tag in tagWithGuid.Tags)
+            {
+                Trace.WriteLine(tag.Guid);
+                document.Tags.Add(tag);
+            }
+    
             _documentContext.Documents.Update(document);
             await _documentContext.SaveChangesAsync();
 
             return document.Guid;
         }
 
+        [HttpPost]
+        public async Task<Guid> PostTag([FromBody] Tag tag)
+        {
+            tag.Guid = Guid.NewGuid();
+            _documentContext.Tags.Add(tag);
+            await _documentContext.SaveChangesAsync();
+
+            return tag.Guid;
+        }
+
         public class TagWithGuid
         {
-            public Tag[] Tags { get; set; }
+            public ICollection<Tag> Tags { get; set; }
             public Guid Guid { get; set; }
         }
 

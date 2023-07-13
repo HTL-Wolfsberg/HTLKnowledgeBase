@@ -20,7 +20,8 @@ export class DocumentService {
   }
 
   postDocumentTags(tags: Tag[], guid: string): Observable<null> {
-    let tagsWithGuid:TagsWithGuid = {
+
+    let tagsWithGuid: TagsWithGuid = {
       tags: tags,
       guid: guid
     }
@@ -29,16 +30,27 @@ export class DocumentService {
 
 
 
-  Get(guid: string): Observable<HttpResponse<Blob>> {
-    return this.http.get(this.url + "Get/" + guid , { observe: 'response', responseType: 'blob', reportProgress: true });
+  get(guid: string): Observable<HttpResponse<Blob>> {
+    return this.http.get(this.url + "Get/" + guid, { observe: 'response', responseType: 'blob', reportProgress: true });
   }
 
-  GetOnlyMetaData(): Observable<Document[]> {
-    return this.http.get<Document[]>(this.url + "/Get");
+  getTags(): Observable<Tag[]> {
+    return this.http.get<Tag[]>(this.url + "GetTags" );
+  }
+
+  postTag(tag: Tag): Observable<string> {
+    tag.guid = crypto.randomUUID();
+
+    return this.http.post<string>(this.url + "PostTag", tag);
+  }
+
+
+  getOnlyMetaData(): Observable<Document[]> {
+    return this.http.get<Document[]>(this.url + "Get");
   }
 }
 
-interface TagsWithGuid{
-  tags:Tag[];
-  guid:string;
+interface TagsWithGuid {
+  tags: Tag[];
+  guid: string;
 }

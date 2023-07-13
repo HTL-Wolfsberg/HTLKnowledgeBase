@@ -23,8 +23,9 @@ export class SearchComponent {
   }
 
   getDocumentsWithOnlyMetaData() {
-    this.documentService.GetOnlyMetaData().subscribe(documents => {
+    this.documentService.getOnlyMetaData().subscribe(documents => {
       this.documents = documents;
+      console.log(documents)
     });
   }
 
@@ -32,7 +33,7 @@ export class SearchComponent {
     if (!this.selectedDocument)
       return;
 
-    this.documentService.Get(this.selectedDocument.guid).subscribe(document => {
+    this.documentService.get(this.selectedDocument.guid).subscribe(document => {
       let filename = document.headers.get("filename");
       if (!filename)
         return;

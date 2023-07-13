@@ -7,6 +7,24 @@
             <p-button label="Hochladen" (onClick)="btnUpload.click()"></p-button>
             
             <div class="tagContainer">
+                <p-chip *ngFor="let tag of selectedTags" [label]="tag.name" (onRemove)="onRemoveSelectedTag(tag)" [removable]="true"></p-chip>
+            </div>
+
+            <div *ngIf="notSelectedTags.length > 0">
+                <h3>Tags zum Dokument hinzufügen</h3>
+
+                <div class="tagContainer">
+                    <p-button *ngFor="let tag of notSelectedTags" [label]="tag.name" (onClick)="onAddTagToDocument(tag)"></p-button>
+                </div>
+            </div>   
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="downloadContainerInCard">
+            <h2>Tags</h2>
+            
+            <div class="tagContainer">
                 <p-chip *ngFor="let tag of tags" [label]="tag.name" (onRemove)="onRemoveTag(tag)" [removable]="true"></p-chip>
             </div>
 
