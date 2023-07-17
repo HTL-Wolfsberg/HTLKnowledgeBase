@@ -8,6 +8,10 @@
 
     <h1 class="header">HTL Knowledge Base</h1>
 
+    <p-button *ngIf="!accountInfo" label="Login" (onClick)="onLoginClicked()"></p-button>
+    <p-button *ngIf="accountInfo" label="Logout" (onClick)="onLogoutClicked()"></p-button>
+    {{accountInfo?.name}}
+
     <router-outlet></router-outlet>
 </div>
 

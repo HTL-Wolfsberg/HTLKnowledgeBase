@@ -15,6 +15,22 @@ import { SearchComponent } from './search/search/search.component';
 import { ManageComponent } from './manage/manage/manage.component';
 import { ChipModule } from 'primeng/chip';
 import { InputTextModule } from 'primeng/inputtext';
+import { MsalModule, MsalService, MSAL_INSTANCE } from '@azure/msal-angular';
+import { IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
+
+export function MSALInstanceFactory(): IPublicClientApplication {
+  return new PublicClientApplication({
+    auth: {
+      clientId: "6085ae93-5c1f-4355-8345-cb8b2387364a",
+      redirectUri: "http://localhost:4200",
+      postLogoutRedirectUri: "http://localhost:4200"
+    },cache: {
+      cacheLocation: "localStorage",
+      
+    },
+
+  })
+}
 
 @NgModule({
   declarations: [
@@ -33,12 +49,20 @@ import { InputTextModule } from 'primeng/inputtext';
     ToastModule,
     MenuModule,
     ChipModule,
-    InputTextModule
+    InputTextModule,
+    MsalModule
   ],
-  providers: [MessageService],
+  providers: [
+    MessageService,
+    {
+      provide: MSAL_INSTANCE,
+      useFactory: MSALInstanceFactory
+    },
+    MsalService],
+    
   bootstrap: [AppComponent]
 })
-export class AppModule { 
+export class AppModule {
 
 
 }
