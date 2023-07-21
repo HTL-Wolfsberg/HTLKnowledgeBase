@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { ButtonModule } from 'primeng/button';
 import { FormsModule } from '@angular/forms';
 import { DropdownModule } from 'primeng/dropdown';
@@ -15,8 +15,9 @@ import { SearchComponent } from './search/search/search.component';
 import { ManageComponent } from './manage/manage/manage.component';
 import { ChipModule } from 'primeng/chip';
 import { InputTextModule } from 'primeng/inputtext';
-import { MsalModule, MsalService, MSAL_INSTANCE } from '@azure/msal-angular';
-import { IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
+import { MsalModule, MsalService, MSAL_INSTANCE, MsalInterceptor, MSAL_INTERCEPTOR_CONFIG, MsalInterceptorConfiguration, ProtectedResourceScopes } from '@azure/msal-angular';
+import { IPublicClientApplication, InteractionType, PublicClientApplication } from '@azure/msal-browser';
+import { ApiService } from './api.service';
 
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
@@ -24,12 +25,29 @@ export function MSALInstanceFactory(): IPublicClientApplication {
       clientId: "6085ae93-5c1f-4355-8345-cb8b2387364a",
       redirectUri: "http://localhost:4200",
       postLogoutRedirectUri: "http://localhost:4200"
-    },cache: {
+    }, cache: {
       cacheLocation: "localStorage",
-      
-    },
 
+    },
   })
+}
+
+// provides authRequest configuration
+export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
+  const protectedResourceMap = new Map<string, Array<string | ProtectedResourceScopes> | null>([
+    ["http://127.0.0.1:5244/", [
+      {
+        httpMethod: "*",
+        scopes: ["*"]
+      }
+    ]]
+  ])
+
+
+  return {
+    interactionType: InteractionType.Redirect,
+    protectedResourceMap
+  };
 }
 
 @NgModule({
@@ -50,7 +68,8 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     MenuModule,
     ChipModule,
     InputTextModule,
-    MsalModule
+    MsalModule,
+
   ],
   providers: [
     MessageService,
@@ -58,8 +77,17 @@ export function MSALInstanceFactory(): IPublicClientApplication {
       provide: MSAL_INSTANCE,
       useFactory: MSALInstanceFactory
     },
+    {
+      provide: MSAL_INTERCEPTOR_CONFIG,
+      useFactory: MSALInterceptorConfigFactory
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: MsalInterceptor,
+      multi: true
+    },
     MsalService],
-    
+
   bootstrap: [AppComponent]
 })
 export class AppModule {
