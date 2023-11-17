@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
@@ -44,6 +45,7 @@ namespace API.Document
             return File(memory, GetContentType(documentPath), documentPath);
         }
 
+        [Authorize]
         [HttpGet]
         public Tag[] GetTags()
         {
