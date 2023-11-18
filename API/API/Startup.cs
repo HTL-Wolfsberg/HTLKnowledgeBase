@@ -43,8 +43,9 @@ namespace API
             {
                 options.Limits.MaxRequestBodySize = 100 * 1000 * 1000;
             });
-            services.AddMicrosoftIdentityWebApiAuthentication(Configuration, "AzureAd");
-
+            services.AddMicrosoftIdentityWebApiAuthentication(Configuration, "AzureAd")
+                .EnableTokenAcquisitionToCallDownstreamApi()
+                .AddInMemoryTokenCaches(); 
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -69,16 +70,16 @@ namespace API
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.Use(async (context, next) =>
-            {
-                if (!context.User.Identity?.IsAuthenticated ?? false)
-                {
-                    context.Response.StatusCode = 401;
-                    await context.Response.WriteAsync("Not Authenticated");
-                }
-                else await next();
+            //app.Use(async (context, next) =>
+            //{
+            //    if (!context.User.Identity?.IsAuthenticated ?? false)
+            //    {
+            //        context.Response.StatusCode = 401;
+            //        await context.Response.WriteAsync("Not Authenticated");
+            //    }
+            //    else await next();
 
-            });
+            //});
 
             app.UseEndpoints(endpoints =>
             {

@@ -53,6 +53,7 @@ namespace API.Document
             return documents;
         }
 
+        [Authorize]
         [HttpGet]
         public Document[] Get()
         {
