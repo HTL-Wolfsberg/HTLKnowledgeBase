@@ -1,4 +1,4 @@
-import { HttpResponse, HttpUrlEncodingCodec } from '@angular/common/http';
+import { HttpClient, HttpResponse, HttpUrlEncodingCodec } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { DocumentService } from './document/document.service';
 import { Document } from './document/document.model';
@@ -37,13 +37,23 @@ export class AppComponent implements OnInit {
   constructor(private documentService: DocumentService,
     private messageService: MessageService,
     private router: Router,
-    private msalService: MsalService) { }
+    private msalService: MsalService,
+    private httpclient:HttpClient) { }
 
   ngOnInit(): void {
+    this.msalService.initialize().subscribe(()=>{
+      this.accountInfo = this.msalService.instance.getActiveAccount() ?? undefined;
+      console.log(this.accountInfo)
+      // this.callProfile()
+    })
+  
 
-    this.accountInfo = this.msalService.instance.getActiveAccount() ?? undefined;
+  }
 
-
+  callProfile () {
+    this.httpclient.get("https://graph.microsoft.com/v1.0/me").subscribe( resp  => {
+      console.log(resp)
+    })
   }
 
   onNavigateToSearchClicked() {
@@ -53,6 +63,10 @@ export class AppComponent implements OnInit {
   onNavigateToManageClicked() {
     this.router.navigate([RoutingPaths.managePath]);
   }
+
+
+
+
 
   onLoginClicked() {
     this.msalService.loginPopup().subscribe((t) => {

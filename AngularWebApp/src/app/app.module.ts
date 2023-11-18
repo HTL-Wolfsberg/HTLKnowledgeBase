@@ -23,13 +23,18 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     auth: {
       clientId: '6085ae93-5c1f-4355-8345-cb8b2387364a',
       redirectUri: 'http://localhost:4200'
+      
+    },
+    cache:{
+      cacheLocation:"localStorage"
     }
   });
 }
 
 export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
   const protectedResourceMap = new Map<string, Array<string>>();
-  protectedResourceMap.set('http://localhost:5244', []);
+  protectedResourceMap.set('https://graph.microsoft.com/v1.0/me', ['user.read', 'mail.read']);
+  protectedResourceMap.set('http://127.0.0.1:5244', ['user.read']);
 
   return {
     interactionType: InteractionType.Popup,
