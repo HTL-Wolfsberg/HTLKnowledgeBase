@@ -4,6 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Microsoft.Identity.Web;
 using Microsoft.EntityFrameworkCore.Design;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 
 namespace API
 {
@@ -38,7 +43,8 @@ namespace API
             {
                 options.Limits.MaxRequestBodySize = 100 * 1000 * 1000;
             });
-            services.AddMicrosoftIdentityWebApiAuthentication(Configuration);
+            services.AddMicrosoftIdentityWebApiAuthentication(Configuration, "AzureAd");
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -62,6 +68,17 @@ namespace API
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.Use(async (context, next) =>
+            {
+                if (!context.User.Identity?.IsAuthenticated ?? false)
+                {
+                    context.Response.StatusCode = 401;
+                    await context.Response.WriteAsync("Not Authenticated");
+                }
+                else await next();
+
+            });
 
             app.UseEndpoints(endpoints =>
             {

@@ -22,8 +22,9 @@ export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
     auth: {
       clientId: '6085ae93-5c1f-4355-8345-cb8b2387364a',
-      redirectUri: 'http://localhost:4200'
-      
+      redirectUri: 'http://localhost:4200',
+      authority: "https://login.microsoftonline.com/c575d54d-0908-4084-a93d-fc669e83cbab"
+
     },
     cache:{
       cacheLocation:"localStorage"
@@ -34,7 +35,7 @@ export function MSALInstanceFactory(): IPublicClientApplication {
 export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
   const protectedResourceMap = new Map<string, Array<string>>();
   protectedResourceMap.set('https://graph.microsoft.com/v1.0/me', ['user.read', 'mail.read']);
-  protectedResourceMap.set('http://127.0.0.1:5244', ['user.read']);
+  protectedResourceMap.set('http://127.0.0.1:5244', ['api://6085ae93-5c1f-4355-8345-cb8b2387364a/Test']);
 
   return {
     interactionType: InteractionType.Popup,

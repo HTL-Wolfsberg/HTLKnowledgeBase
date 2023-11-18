@@ -45,7 +45,6 @@ namespace API.Document
             return File(memory, GetContentType(documentPath), documentPath);
         }
 
-        [Authorize]
         [HttpGet]
         public Tag[] GetTags()
         {
@@ -53,7 +52,6 @@ namespace API.Document
 
             return documents;
         }
-
 
         [HttpGet]
         public Document[] Get()

@@ -69,7 +69,7 @@ export class AppComponent implements OnInit {
 
 
   onLoginClicked() {
-    this.msalService.loginPopup().subscribe((t) => {
+    this.msalService.loginPopup({scopes: ["api://6085ae93-5c1f-4355-8345-cb8b2387364a/Test"]}).subscribe((t) => {
       this.msalService.instance.setActiveAccount(t.account)
       this.accountInfo = this.msalService.instance.getActiveAccount() ?? undefined;
     });
