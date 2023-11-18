@@ -15,37 +15,24 @@ import { SearchComponent } from './search/search/search.component';
 import { ManageComponent } from './manage/manage/manage.component';
 import { ChipModule } from 'primeng/chip';
 import { InputTextModule } from 'primeng/inputtext';
-import { MsalModule, MsalService, MSAL_INSTANCE, MsalInterceptor, MSAL_INTERCEPTOR_CONFIG, MsalInterceptorConfiguration, ProtectedResourceScopes } from '@azure/msal-angular';
-import { IPublicClientApplication, InteractionType, PublicClientApplication } from '@azure/msal-browser';
-import { ApiService } from './api.service';
+import { InteractionType, IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
+import { MsalInterceptor, MsalInterceptorConfiguration, MsalModule, MsalService, MSAL_INSTANCE, MSAL_INTERCEPTOR_CONFIG } from '@azure/msal-angular';
 
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
     auth: {
-      clientId: "6085ae93-5c1f-4355-8345-cb8b2387364a",
-      redirectUri: "http://localhost:4200",
-      postLogoutRedirectUri: "http://localhost:4200"
-    }, cache: {
-      cacheLocation: "localStorage",
-
-    },
-  })
+      clientId: '6085ae93-5c1f-4355-8345-cb8b2387364a',
+      redirectUri: 'http://localhost:4200'
+    }
+  });
 }
 
-// provides authRequest configuration
 export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
-  const protectedResourceMap = new Map<string, Array<string | ProtectedResourceScopes> | null>([
-    ["http://127.0.0.1:5244/", [
-      {
-        httpMethod: "*",
-        scopes: ["*"]
-      }
-    ]]
-  ])
-
+  const protectedResourceMap = new Map<string, Array<string>>();
+  protectedResourceMap.set('http://localhost:5244', []);
 
   return {
-    interactionType: InteractionType.Redirect,
+    interactionType: InteractionType.Popup,
     protectedResourceMap
   };
 }
@@ -69,24 +56,23 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
     ChipModule,
     InputTextModule,
     MsalModule,
-
   ],
+
   providers: [
     MessageService,
-    {
-      provide: MSAL_INSTANCE,
-      useFactory: MSALInstanceFactory
-    },
-    {
-      provide: MSAL_INTERCEPTOR_CONFIG,
-      useFactory: MSALInterceptorConfigFactory
-    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: MsalInterceptor,
       multi: true
+    }, {
+      provide: MSAL_INSTANCE,
+      useFactory: MSALInstanceFactory
+    }, {
+      provide: MSAL_INTERCEPTOR_CONFIG,
+      useFactory: MSALInterceptorConfigFactory
     },
-    MsalService],
+    MsalService
+  ],
 
   bootstrap: [AppComponent]
 })
