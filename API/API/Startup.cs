@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Microsoft.Identity.Web;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace API
 {
@@ -17,7 +18,7 @@ namespace API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var postgresConnectionString = Configuration.GetValue<string>("ConnectionStrings:postgres");
+            var postgresConnectionString = Configuration.GetConnectionString("postgres");
 
             services.AddDbContext<DocumentContext>(options =>
                options.UseNpgsql(postgresConnectionString));
@@ -69,3 +70,19 @@ namespace API
         }
     }
 }
+
+
+//public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<DocumentContext>
+//{
+//    public DocumentContext CreateDbContext(string[] args)
+//    {
+//        IConfigurationRoot configuration = new ConfigurationBuilder()
+//            .SetBasePath(Directory.GetCurrentDirectory())
+//            .AddJsonFile("appsettings.json")
+//            .Build();
+//        var builder = new DbContextOptionsBuilder<DocumentContext>();
+//        var connectionString = configuration.GetConnectionString("postgres");
+//        builder.UseNpgsql(connectionString);
+//        return new DocumentContext(builder.Options);
+//    }
+//}
