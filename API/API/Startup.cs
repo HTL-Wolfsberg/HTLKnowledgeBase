@@ -9,9 +9,12 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace API
 {
+    //https://learn.microsoft.com/de-de/aspnet/core/security/authentication/azure-ad-b2c?view=aspnetcore-8.0
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -45,7 +48,49 @@ namespace API
             });
             services.AddMicrosoftIdentityWebApiAuthentication(Configuration, "AzureAd")
                 .EnableTokenAcquisitionToCallDownstreamApi()
-                .AddInMemoryTokenCaches(); 
+                .AddInMemoryTokenCaches()
+                ;
+
+            services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, ApplicationUserClaimsPrincipalFactory>();
+
+            //https://joonasw.net/view/adding-custom-claims-aspnet-core-2
+            //services.AddAuthentication().AddMicrosoftAccount(options =>
+            //{
+            //    options.Events.OnCreatingTicket = async ctx =>
+            //    {
+            //        var claims = new List<Claim>
+            //        {
+            //            new Claim(ClaimTypes.Role, "superadmin")
+            //        };
+            //        var appIdentity = new ClaimsIdentity(claims);
+
+            //        ctx.Principal?.AddIdentity(appIdentity);
+            //    };
+            //});
+
+
+            //    services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
+            //    {
+            //        options.Events = new OpenIdConnectEvents
+            //        {
+            //            OnTokenValidated = ctx =>
+            //            {
+
+
+            //                // add claims
+            //                var claims = new List<Claim>
+            //{
+            //        new Claim(ClaimTypes.Role, "Admin")
+            //};
+            //                var appIdentity = new ClaimsIdentity(claims);
+
+            //                ctx.Principal.AddIdentity(appIdentity);
+
+            //                return Task.CompletedTask;
+            //            },
+            //        };
+            //    });
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
