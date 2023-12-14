@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
+using Microsoft.Extensions.Options;
 
 namespace API
 {
@@ -46,29 +49,41 @@ namespace API
             {
                 options.Limits.MaxRequestBodySize = 100 * 1000 * 1000;
             });
-            services.AddMicrosoftIdentityWebApiAuthentication(Configuration, "AzureAd")
-                .EnableTokenAcquisitionToCallDownstreamApi()
-                .AddInMemoryTokenCaches()
-                ;
+            //services.AddMicrosoftIdentityWebApiAuthentication(Configuration, "AzureAd")
+            //    .EnableTokenAcquisitionToCallDownstreamApi()
+            //    .AddInMemoryTokenCaches()
+            //    ;
 
-            services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, ApplicationUserClaimsPrincipalFactory>();
+            //services.AddScoped<IUserClaimsPrincipalFactory<IdentityUser>, ApplicationUserClaimsPrincipalFactory>();
+           
 
             //https://joonasw.net/view/adding-custom-claims-aspnet-core-2
-            //services.AddAuthentication().AddMicrosoftAccount(options =>
-            //{
-            //    options.Events.OnCreatingTicket = async ctx =>
-            //    {
-            //        var claims = new List<Claim>
-            //        {
-            //            new Claim(ClaimTypes.Role, "superadmin")
-            //        };
-            //        var appIdentity = new ClaimsIdentity(claims);
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = MicrosoftAccountDefaults.AuthenticationScheme;
+            })
+                .AddCookie("Cookies")
+                .AddMicrosoftAccount(options =>
+                {
+                    options.ClientId = "";
+                    options.ClientSecret = "";
+                    options.SaveTokens = true;
+                    options.Events.OnCreatingTicket = async ctx =>
+                    {
+                        var claims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.Role, "superadmin")
+                        };
+                        var appIdentity = new ClaimsIdentity(claims);
 
-            //        ctx.Principal?.AddIdentity(appIdentity);
-            //    };
-            //});
-
-
+                        ctx.Principal?.AddIdentity(appIdentity);
+                    };
+                });
+            services.AddAuthorization(options =>
+            {
+                //options.AddPolicy("superadmin", policy => policy.RequireClaim("superadmin"));
+            });
             //    services.Configure<OpenIdConnectOptions>(AzureADDefaults.OpenIdScheme, options =>
             //    {
             //        options.Events = new OpenIdConnectEvents
@@ -108,6 +123,10 @@ namespace API
                 .SetIsOriginAllowed(origin => true) // allow any origin
                 .AllowCredentials());
 
+            app.UseCookiePolicy(new CookiePolicyOptions()
+            {
+                MinimumSameSitePolicy = SameSiteMode.Lax
+            });
             app.UseHttpsRedirection();
 
             app.UseRouting();

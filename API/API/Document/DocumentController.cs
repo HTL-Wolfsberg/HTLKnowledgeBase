@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
@@ -53,12 +55,13 @@ namespace API.Document
             return documents;
         }
 
-        [Authorize]
+        [Authorize(Roles ="superadmin")]
         [HttpGet]
         public Document[] Get()
         {
             var documents = _documentContext.Documents.Include(document => document.Tags).ToArray();
 
+            _logger.LogCritical(HttpContext.User.Claims.ToString());
             //foreach (var document in documents)
             //{
             //    foreach (var tag in document.Tags)
@@ -121,6 +124,15 @@ namespace API.Document
             await _documentContext.SaveChangesAsync();
 
             return tag.Guid;
+        }
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return Challenge(new AuthenticationProperties()
+            {
+                RedirectUri = "http://localhost:5244/"
+            });
         }
 
         public class TagWithGuid
