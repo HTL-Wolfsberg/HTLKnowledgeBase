@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -22,10 +23,13 @@ namespace API.Document
         DocumentContext _documentContext;
 
         private readonly ILogger<DocumentController> _logger;
+        private readonly IFileService _fileService;
 
         public DocumentController(ILogger<DocumentController> logger,
-            DocumentContext documentContext)
+            DocumentContext documentContext,
+            IFileService fileService)
         {
+            _fileService = fileService;
             _logger = logger;
             _documentContext = documentContext;
         }
@@ -66,29 +70,24 @@ namespace API.Document
             return documents;
         }
 
-
+        //https://code-maze.com/aspnetcore-upload-large-files/
         [HttpPost]
         [RequestSizeLimit(MAX_UPLOAD_SIZE_PER_DOCUMENT_MB * 1000 * 1000)]
-        public async Task<Guid> Post([FromForm] IFormFile file)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
+        [MultipartFormData]
+        [DisableFormValueModelBinding]
+        public async Task<Guid> Post()
         {
+            var fileUploadSummary = await _fileService.UploadFileAsync(HttpContext.Request.Body, Request.ContentType);
+            
             Document document = new Document();
             document.Guid = Guid.NewGuid();
-            document.Path = file.FileName;
+            document.Path = fileUploadSummary.FileNames[0];
 
             _documentContext.Add(document);
             await _documentContext.SaveChangesAsync();
-
-            string myDocumentsWindowsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string documentPath = Path.Combine(myDocumentsWindowsPath, "HTLKnowledgeBase", "Documents", file.FileName);
-
-            _logger.LogDebug(documentPath);
-
-            CreateDirectoryIfNotExistsFromDocumentPath(documentPath);
-
-            using (FileStream fs = new FileStream(documentPath, FileMode.Create))
-            {
-                await file.CopyToAsync(fs);
-            }
+            _logger.LogDebug($"Saved file {document.Path} to {fileUploadSummary.FilePaths[0]}. Space: {fileUploadSummary.TotalSizeUploaded}");         
 
             return document.Guid;
         }

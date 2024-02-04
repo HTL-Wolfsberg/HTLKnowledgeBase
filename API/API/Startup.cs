@@ -20,6 +20,9 @@ namespace API
         {
             var postgresConnectionString = Configuration.GetConnectionString("postgres");
 
+            services.AddScoped<IFileService, FileService>();
+
+
             services.AddDbContext<DocumentContext>(options =>
                options.UseNpgsql(postgresConnectionString));
 
@@ -34,6 +37,7 @@ namespace API
             {
                 c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
             });
+
             //services.Configure<KestrelServerOptions>(options =>
             //{
             //    options.Limits.MaxRequestBodySize = 1000 * 1000 * MAX_UPLOAD_SIZE_MB;
