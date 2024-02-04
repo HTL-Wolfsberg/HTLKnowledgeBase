@@ -1,14 +1,21 @@
-<div class="mainContainer">
-    <div class="navBarContainer">
-        <div>
-            <p-menu #menu [model]="items" [popup]="true" appendTo="body"></p-menu>
-            <button pButton type="button" (click)="menu.toggle($event)" icon="pi pi-bars"></button>
+<div class="bodyContent">
+    <div class="mainContainer">
+        <div class="navBarContainer">
+            <div>
+                <img class="htlLogo" src="/assets/Images/HTL Logo.png">                
+            </div>
+            <div>
+                <p-menu #menu [model]="items" [popup]="true" appendTo="body"></p-menu>
+                <button pButton type="button" (click)="menu.toggle($event)" icon="pi pi-bars"></button>
+            </div>           
         </div>
+
+        <h1 class="header">Knowledge Base</h1>    
+    
+        <router-outlet></router-outlet>
     </div>
-
-    <h1 class="header">HTL Knowledge Base</h1>
-
-    <router-outlet></router-outlet>
 </div>
+
+
 
 <p-toast position="bottom-center"></p-toast>
