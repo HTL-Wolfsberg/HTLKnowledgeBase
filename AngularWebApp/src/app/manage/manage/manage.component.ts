@@ -17,8 +17,7 @@ export class ManageComponent implements OnInit {
   newTagString: string = "";
 
   constructor(private documentService: DocumentService,
-    private messageService: MessageService,
-    private router: Router) { }
+    private messageService: MessageService) { }
 
   ngOnInit(): void {
     this.documentService.getTags().subscribe((tags) => {

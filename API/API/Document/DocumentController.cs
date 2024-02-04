@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.Net;
 using System.Web;
 
@@ -16,6 +17,8 @@ namespace API.Document
 
     public class DocumentController : ControllerBase
     {
+        private const long MAX_UPLOAD_SIZE_PER_DOCUMENT_MB = 10_000;
+
         DocumentContext _documentContext;
 
         private readonly ILogger<DocumentController> _logger;
@@ -55,26 +58,17 @@ namespace API.Document
             return documents;
         }
 
-        [Authorize(Roles ="superadmin")]
         [HttpGet]
         public Document[] Get()
         {
             var documents = _documentContext.Documents.Include(document => document.Tags).ToArray();
-
-            _logger.LogCritical(HttpContext.User.Claims.ToString());
-            //foreach (var document in documents)
-            //{
-            //    foreach (var tag in document.Tags)
-            //    {
-            //        tag.Documents = null;
-            //    }
-            //}
 
             return documents;
         }
 
 
         [HttpPost]
+        [RequestSizeLimit(MAX_UPLOAD_SIZE_PER_DOCUMENT_MB * 1000 * 1000)]
         public async Task<Guid> Post([FromForm] IFormFile file)
         {
             Document document = new Document();
@@ -103,13 +97,13 @@ namespace API.Document
         public async Task<Guid> PostDocumentTags([FromBody] TagWithGuid tagWithGuid)
         {
             var document = _documentContext.Documents.First(document => document.Guid == tagWithGuid.Guid);
-           
-            foreach(Tag tag in tagWithGuid.Tags)
+
+            foreach (Tag tag in tagWithGuid.Tags)
             {
                 Trace.WriteLine(tag.Guid);
                 document.Tags.Add(tag);
             }
-    
+
             _documentContext.Documents.Update(document);
             await _documentContext.SaveChangesAsync();
 
@@ -124,15 +118,6 @@ namespace API.Document
             await _documentContext.SaveChangesAsync();
 
             return tag.Guid;
-        }
-
-        [HttpGet]
-        public IActionResult Login()
-        {
-            return Challenge(new AuthenticationProperties()
-            {
-                RedirectUri = "http://localhost:5244/"
-            });
         }
 
         public class TagWithGuid
@@ -153,9 +138,8 @@ namespace API.Document
         private string GetContentType(string path)
         {
             var provider = new FileExtensionContentTypeProvider();
-            string contentType;
 
-            if (!provider.TryGetContentType(path, out contentType))
+            if (!provider.TryGetContentType(path, out string contentType))
             {
                 contentType = "application/octet-stream";
             }

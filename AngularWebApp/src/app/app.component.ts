@@ -5,8 +5,6 @@ import { Document } from './document/document.model';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
 import { RoutingPaths } from './routing-paths';
-import { MsalService } from '@azure/msal-angular';
-import { AccountInfo } from '@azure/msal-browser';
 
 @Component({
   selector: 'app-root',
@@ -14,8 +12,6 @@ import { AccountInfo } from '@azure/msal-browser';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-
-  accountInfo?: AccountInfo;
 
   items = [
     {
@@ -34,26 +30,10 @@ export class AppComponent implements OnInit {
     }
   ]
 
-  constructor(private documentService: DocumentService,
-    private messageService: MessageService,
-    private router: Router,
-    private msalService: MsalService,
-    private httpclient:HttpClient) { }
+  constructor(private router: Router) { }
 
-  ngOnInit(): void {
-    this.msalService.initialize().subscribe(()=>{
-      this.accountInfo = this.msalService.instance.getActiveAccount() ?? undefined;
-      console.log(this.accountInfo)
-      // this.callProfile()
-    })
+  ngOnInit(): void { 
   
-
-  }
-
-  callProfile () {
-    this.httpclient.get("https://graph.microsoft.com/v1.0/me").subscribe( resp  => {
-      console.log(resp)
-    })
   }
 
   onNavigateToSearchClicked() {
@@ -62,23 +42,5 @@ export class AppComponent implements OnInit {
 
   onNavigateToManageClicked() {
     this.router.navigate([RoutingPaths.managePath]);
-  }
-
-
-
-
-
-  onLoginClicked() {
-    this.msalService.loginPopup({scopes: ["api://6085ae93-5c1f-4355-8345-cb8b2387364a/Test"]}).subscribe((t) => {
-      this.msalService.instance.setActiveAccount(t.account)
-      this.accountInfo = this.msalService.instance.getActiveAccount() ?? undefined;
-    });
-  }
-
-  onLogoutClicked(){
-    this.msalService.logoutPopup().subscribe(()=>{
-      this.msalService.instance.setActiveAccount(null);
-      this.accountInfo = undefined;
-    })
   }
 }
