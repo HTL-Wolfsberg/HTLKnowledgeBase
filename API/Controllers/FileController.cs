@@ -21,7 +21,15 @@ public class FileController : ControllerBase
         if (file == null || file.Length == 0)
             return BadRequest("No file uploaded.");
 
-        var filePath = Path.Combine("Uploads", file.FileName);
+        var documentsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "HTLKnowledgeBase", "Files");
+
+        // Create the directory if it doesn't exist
+        if (!Directory.Exists(documentsFolderPath))
+        {
+            Directory.CreateDirectory(documentsFolderPath);
+        }
+
+        var filePath = Path.Combine(documentsFolderPath, file.FileName);
 
         using (var stream = new FileStream(filePath, FileMode.Create))
         {
@@ -40,6 +48,7 @@ public class FileController : ControllerBase
 
         return Ok(new { fileModel.Id, fileModel.FileName, fileModel.Tags });
     }
+
 
     [HttpGet]
     public async Task<IActionResult> GetFiles([FromQuery] string tags)
