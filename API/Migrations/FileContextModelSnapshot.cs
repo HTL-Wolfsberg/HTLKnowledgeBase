@@ -9,8 +9,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace API.Migrations
 {
-    [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(FileContext))]
+    partial class FileContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -21,7 +21,7 @@ namespace API.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("API.Models.FileItem", b =>
+            modelBuilder.Entity("API.Models.FileModel", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -37,47 +37,13 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("FileItems");
-                });
-
-            modelBuilder.Entity("API.Models.FileTag", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("FileItemId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Tag")
+                    b.Property<string>("Tags")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FileItemId");
-
-                    b.ToTable("FileTags");
-                });
-
-            modelBuilder.Entity("API.Models.FileTag", b =>
-                {
-                    b.HasOne("API.Models.FileItem", "FileItem")
-                        .WithMany("Tags")
-                        .HasForeignKey("FileItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("FileItem");
-                });
-
-            modelBuilder.Entity("API.Models.FileItem", b =>
-                {
-                    b.Navigation("Tags");
+                    b.ToTable("Files");
                 });
 #pragma warning restore 612, 618
         }

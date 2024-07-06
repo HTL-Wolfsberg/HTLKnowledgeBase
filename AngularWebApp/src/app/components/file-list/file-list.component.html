@@ -1,0 +1,8 @@
+<mat-form-field>
+    <input matInput placeholder="Filter by Tags" [(ngModel)]="filterTags">
+</mat-form-field>
+<button mat-raised-button (click)="getFiles()">Filter</button>
+<div *ngFor="let file of files">
+    <p>{{ file.fileName }}</p>
+    <a (click)="downloadFile(file.id)">Download</a>
+</div>
