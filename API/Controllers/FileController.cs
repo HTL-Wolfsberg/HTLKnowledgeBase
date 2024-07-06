@@ -16,7 +16,7 @@ public class FileController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> UploadFile([FromForm] IFormFile file, [FromForm] string tags)
+    public async Task<IActionResult> UploadFile(IFormFile file, [FromForm] string tags)
     {
         if (file == null || file.Length == 0)
             return BadRequest("No file uploaded.");
@@ -78,7 +78,7 @@ public class FileController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateFile(int id, [FromForm] IFormFile file, [FromForm] string tags)
+    public async Task<IActionResult> UpdateFile(int id, IFormFile file, [FromForm] string tags)
     {
         var fileModel = await _context.Files.FindAsync(id);
         if (fileModel == null)
