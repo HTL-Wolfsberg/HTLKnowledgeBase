@@ -26,7 +26,6 @@ export class FileService {
   }
 
   getFiles(tags?: string): Observable<any[]> {
-    console.log(this.apiUrl)
     return this.http.get<any[]>(`${this.apiUrl}?tags=${tags}`);
   }
 
