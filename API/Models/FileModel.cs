@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace API.Models
 {
@@ -11,7 +12,8 @@ namespace API.Models
         public long FileSize { get; set; }
         public string FileType { get; set; }
 
-        public ICollection<FileTagModel> FileTags { get; set; } = new List<FileTagFileTagModel>();
+        [JsonIgnore]
+        public ICollection<FileTagModel> FileTags { get; set; } = new List<FileTagModel>();
     }
 
 

@@ -3,12 +3,6 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
-const httpOptions = {
-  headers: new HttpHeaders({
-    'Content-Type': 'application/json'
-  })
-};
-
 @Injectable({
   providedIn: 'root'
 })
@@ -20,9 +14,10 @@ export class FileService {
   uploadFile(file: File, tags: string[]): Observable<any> {
     const formData: FormData = new FormData();
     formData.append('file', file);
-    tags.forEach(tag => formData.append('tags', tag));
 
-    return this.http.post<any>(this.apiUrl, formData);
+    const params = new HttpParams().set('tags', tags.join(','));
+
+    return this.http.post<any>(this.apiUrl, formData, { params });
   }
 
   getFiles(tags: string[]): Observable<any[]> {

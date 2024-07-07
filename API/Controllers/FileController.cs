@@ -3,7 +3,6 @@ using API.Models;
 using Azure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,17 +13,23 @@ using System.Threading.Tasks;
 public class FileController : ControllerBase
 {
     private readonly FileContext _context;
+    private readonly ILogger<FileController> _logger;
 
-    public FileController(FileContext context)
+    public FileController(FileContext context, ILogger<FileController> logger)
     {
         _context = context;
+        _logger = logger;
     }
+
 
     [HttpPost]
     public async Task<IActionResult> UploadFile([FromQuery] string[] tags, IFormFile file)
     {
         if (file == null || file.Length == 0)
+        {
+            _logger.LogWarning("No file uploaded.");
             return BadRequest("No file uploaded.");
+        }
 
         var documentsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "HTLKnowledgeBase", "Files");
 
@@ -46,17 +51,29 @@ public class FileController : ControllerBase
             FilePath = filePath,
             FileSize = file.Length,
             FileType = file.ContentType,
-            FileTags = tags.Select(tagName => new FileTagModel
-            {
-                Tag = new TagModel { TagName = tagName.Trim() }
-            }).ToList()
+            FileTags = new List<FileTagModel>()
         };
+
+        foreach (var tagName in tags)
+        {
+            var tag = await _context.Tags.FirstOrDefaultAsync(t => t.TagName == tagName.Trim());
+            if (tag == null)
+            {
+                tag = new TagModel { TagName = tagName.Trim() };
+                _context.Tags.Add(tag);
+            }
+
+            fileModel.FileTags.Add(new FileTagModel { Tag = tag, File = fileModel });
+        }
 
         _context.Files.Add(fileModel);
         await _context.SaveChangesAsync();
 
+        _logger.LogInformation("File uploaded successfully: {FileName}", fileModel.FileName);
+
         return Ok(new { fileModel.Id, fileModel.FileName, fileModel.FileTags });
     }
+
 
     [HttpGet]
     public async Task<IActionResult> GetFiles([FromQuery] string[] tags)
@@ -114,10 +131,17 @@ public class FileController : ControllerBase
         if (tags != null && tags.Length > 0)
         {
             fileModel.FileTags.Clear();
-            fileModel.FileTags = tags.Select(tagName => new FileTagModel
+            foreach (var tagName in tags)
             {
-                Tag = new TagModel { TagName = tagName }
-            }).ToList();
+                var tag = await _context.Tags.FirstOrDefaultAsync(t => t.TagName == tagName.Trim());
+                if (tag == null)
+                {
+                    tag = new TagModel { TagName = tagName.Trim() };
+                    _context.Tags.Add(tag);
+                }
+
+                fileModel.FileTags.Add(new FileTagModel { Tag = tag, File = fileModel });
+            }
         }
 
         _context.Files.Update(fileModel);
