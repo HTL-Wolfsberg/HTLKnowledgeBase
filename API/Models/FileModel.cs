@@ -11,7 +11,7 @@ namespace API.Models
         public long FileSize { get; set; }
         public string FileType { get; set; }
 
-        public ICollection<FileTagModel> FileTags { get; set; }
+        public ICollection<FileTagModel> FileTags { get; set; } = new List<FileTagFileTagModel>();
     }
 
 

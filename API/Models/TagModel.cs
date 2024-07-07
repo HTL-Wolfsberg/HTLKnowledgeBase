@@ -10,7 +10,8 @@
         public int Id { get; set; }
         public string TagName { get; set; }
 
-        public ICollection<FileTagModel> FileTags { get; set; }
+        public ICollection<FileTagModel> FileTags { get; set; } = new List<FileTagModel>();
+
     }
 
 }

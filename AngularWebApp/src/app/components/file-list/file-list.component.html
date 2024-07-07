@@ -1,5 +1,5 @@
 <mat-form-field>
-    <input matInput placeholder="Filter by Tags" [(ngModel)]="filterTags">
+    <input matInput placeholder="Filter by Tags (comma-separated)" (change)="onTagsChange($event)">
 </mat-form-field>
 <button mat-raised-button (click)="getFiles()">Filter</button>
 <div *ngFor="let file of files">

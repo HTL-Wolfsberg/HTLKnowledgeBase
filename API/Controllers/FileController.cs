@@ -21,7 +21,7 @@ public class FileController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> UploadFile([FromQuery] string tags, IFormFile file)
+    public async Task<IActionResult> UploadFile([FromQuery] string[] tags, IFormFile file)
     {
         if (file == null || file.Length == 0)
             return BadRequest("No file uploaded.");
@@ -46,7 +46,7 @@ public class FileController : ControllerBase
             FilePath = filePath,
             FileSize = file.Length,
             FileType = file.ContentType,
-            FileTags = tags.Split(',').Select(tagName => new FileTagModel
+            FileTags = tags.Select(tagName => new FileTagModel
             {
                 Tag = new TagModel { TagName = tagName.Trim() }
             }).ToList()
@@ -59,14 +59,13 @@ public class FileController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetFiles([FromQuery] string tags)
+    public async Task<IActionResult> GetFiles([FromQuery] string[] tags)
     {
         var filesQuery = _context.Files.Include(f => f.FileTags).ThenInclude(ft => ft.Tag).AsQueryable();
 
-        if (!string.IsNullOrEmpty(tags))
+        if (tags != null && tags.Length > 0)
         {
-            var tagList = tags.Split(',').Select(tag => tag.Trim()).ToList();
-            filesQuery = filesQuery.Where(f => f.FileTags.Any(ft => tagList.Contains(ft.Tag.TagName)));
+            filesQuery = filesQuery.Where(f => f.FileTags.Any(ft => tags.Contains(ft.Tag.TagName)));
         }
 
         var files = await filesQuery.ToListAsync();
@@ -92,7 +91,7 @@ public class FileController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateFile(int id, [FromQuery] string tags, IFormFile file)
+    public async Task<IActionResult> UpdateFile(int id, [FromQuery] string[] tags, IFormFile file)
     {
         var fileModel = await _context.Files.Include(f => f.FileTags).ThenInclude(ft => ft.Tag).FirstOrDefaultAsync(f => f.Id == id);
         if (fileModel == null)
@@ -112,11 +111,10 @@ public class FileController : ControllerBase
             fileModel.FileType = file.ContentType;
         }
 
-        if (!string.IsNullOrEmpty(tags))
+        if (tags != null && tags.Length > 0)
         {
-            var tagList = tags.Split(',').Select(tagName => tagName.Trim()).ToList();
             fileModel.FileTags.Clear();
-            fileModel.FileTags = tagList.Select(tagName => new FileTagModel
+            fileModel.FileTags = tags.Select(tagName => new FileTagModel
             {
                 Tag = new TagModel { TagName = tagName }
             }).ToList();

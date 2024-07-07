@@ -8,7 +8,7 @@ import { FileService } from '../../services/file.service';
 })
 export class FileListComponent implements OnInit {
   files: any[] = [];
-  filterTags: string = 'test';
+  filterTags: string[] = [];
 
   constructor(private fileService: FileService) { }
 
@@ -16,10 +16,13 @@ export class FileListComponent implements OnInit {
     this.getFiles();
   }
 
+  onTagsChange(event: any) {
+    this.filterTags = event.target.value.split(',').map((tag: string) => tag.trim());
+  }
+
   getFiles() {
     this.fileService.getFiles(this.filterTags).subscribe(response => {
       this.files = response;
-      console.log(response)
     });
   }
 

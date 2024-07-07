@@ -11,5 +11,6 @@ namespace API.Models
 
         public int TagId { get; set; }
         public TagModel Tag { get; set; }
+
     }
 }

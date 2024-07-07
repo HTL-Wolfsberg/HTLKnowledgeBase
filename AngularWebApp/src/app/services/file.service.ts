@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -17,26 +17,29 @@ export class FileService {
 
   constructor(private http: HttpClient) { }
 
-  uploadFile(file: File, tags: string): Observable<any> {
+  uploadFile(file: File, tags: string[]): Observable<any> {
     const formData: FormData = new FormData();
     formData.append('file', file);
-    formData.append('tags', tags);
+    tags.forEach(tag => formData.append('tags', tag));
 
     return this.http.post<any>(this.apiUrl, formData);
   }
 
-  getFiles(tags?: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}?tags=${tags}`);
+  getFiles(tags: string[]): Observable<any[]> {
+    let params = new HttpParams();
+    tags.forEach(tag => params = params.append('tags', tag));
+
+    return this.http.get<any[]>(this.apiUrl, { params });
   }
 
   downloadFile(id: number): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/${id}`, { responseType: 'blob' });
   }
 
-  updateFile(id: number, file: File, tags: string): Observable<any> {
+  updateFile(id: number, file: File, tags: string[]): Observable<any> {
     const formData: FormData = new FormData();
     formData.append('file', file);
-    formData.append('tags', tags);
+    tags.forEach(tag => formData.append('tags', tag));
 
     return this.http.put<any>(`${this.apiUrl}/${id}`, formData);
   }
