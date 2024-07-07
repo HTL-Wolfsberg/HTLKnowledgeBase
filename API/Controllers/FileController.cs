@@ -1,8 +1,13 @@
 ﻿using API.Data;
 using API.Models;
-using Microsoft.AspNetCore.Authorization;
+using Azure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -16,14 +21,13 @@ public class FileController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> UploadFile(IFormFile file, [FromForm] string tags)
+    public async Task<IActionResult> UploadFile([FromQuery] string tags, IFormFile file)
     {
         if (file == null || file.Length == 0)
             return BadRequest("No file uploaded.");
 
         var documentsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "HTLKnowledgeBase", "Files");
 
-        // Create the directory if it doesn't exist
         if (!Directory.Exists(documentsFolderPath))
         {
             Directory.CreateDirectory(documentsFolderPath);
@@ -40,22 +44,32 @@ public class FileController : ControllerBase
         {
             FileName = file.FileName,
             FilePath = filePath,
-            Tags = tags
+            FileSize = file.Length,
+            FileType = file.ContentType,
+            FileTags = tags.Split(',').Select(tagName => new FileTagModel
+            {
+                Tag = new TagModel { TagName = tagName.Trim() }
+            }).ToList()
         };
 
         _context.Files.Add(fileModel);
         await _context.SaveChangesAsync();
 
-        return Ok(new { fileModel.Id, fileModel.FileName, fileModel.Tags });
+        return Ok(new { fileModel.Id, fileModel.FileName, fileModel.FileTags });
     }
-
 
     [HttpGet]
     public async Task<IActionResult> GetFiles([FromQuery] string tags)
     {
-        var files = string.IsNullOrEmpty(tags) ?
-            await _context.Files.ToListAsync() :
-            await _context.Files.Where(f => f.Tags.Contains(tags)).ToListAsync();
+        var filesQuery = _context.Files.Include(f => f.FileTags).ThenInclude(ft => ft.Tag).AsQueryable();
+
+        if (!string.IsNullOrEmpty(tags))
+        {
+            var tagList = tags.Split(',').Select(tag => tag.Trim()).ToList();
+            filesQuery = filesQuery.Where(f => f.FileTags.Any(ft => tagList.Contains(ft.Tag.TagName)));
+        }
+
+        var files = await filesQuery.ToListAsync();
 
         return Ok(files);
     }
@@ -74,19 +88,19 @@ public class FileController : ControllerBase
         }
         memory.Position = 0;
 
-        return File(memory, "application/octet-stream", file.FileName);
+        return File(memory, file.FileType, file.FileName);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateFile(int id, IFormFile file, [FromForm] string tags)
+    public async Task<IActionResult> UpdateFile(int id, [FromQuery] string tags, IFormFile file)
     {
-        var fileModel = await _context.Files.FindAsync(id);
+        var fileModel = await _context.Files.Include(f => f.FileTags).ThenInclude(ft => ft.Tag).FirstOrDefaultAsync(f => f.Id == id);
         if (fileModel == null)
             return NotFound();
 
         if (file != null)
         {
-            var filePath = Path.Combine("Uploads", file.FileName);
+            var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "HTLKnowledgeBase", "Files", file.FileName);
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
@@ -94,11 +108,18 @@ public class FileController : ControllerBase
 
             fileModel.FileName = file.FileName;
             fileModel.FilePath = filePath;
+            fileModel.FileSize = file.Length;
+            fileModel.FileType = file.ContentType;
         }
 
         if (!string.IsNullOrEmpty(tags))
         {
-            fileModel.Tags = tags;
+            var tagList = tags.Split(',').Select(tagName => tagName.Trim()).ToList();
+            fileModel.FileTags.Clear();
+            fileModel.FileTags = tagList.Select(tagName => new FileTagModel
+            {
+                Tag = new TagModel { TagName = tagName }
+            }).ToList();
         }
 
         _context.Files.Update(fileModel);

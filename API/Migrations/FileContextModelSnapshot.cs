@@ -37,13 +37,77 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Tags")
+                    b.Property<long>("FileSize")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("FileType")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
                     b.ToTable("Files");
+                });
+
+            modelBuilder.Entity("API.Models.FileTagModel", b =>
+                {
+                    b.Property<int>("FileId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TagId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("FileId", "TagId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("FileTags");
+                });
+
+            modelBuilder.Entity("API.Models.TagModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("TagName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tags");
+                });
+
+            modelBuilder.Entity("API.Models.FileTagModel", b =>
+                {
+                    b.HasOne("API.Models.FileModel", "File")
+                        .WithMany("FileTags")
+                        .HasForeignKey("FileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("API.Models.TagModel", "Tag")
+                        .WithMany("FileTags")
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("File");
+
+                    b.Navigation("Tag");
+                });
+
+            modelBuilder.Entity("API.Models.FileModel", b =>
+                {
+                    b.Navigation("FileTags");
+                });
+
+            modelBuilder.Entity("API.Models.TagModel", b =>
+                {
+                    b.Navigation("FileTags");
                 });
 #pragma warning restore 612, 618
         }
