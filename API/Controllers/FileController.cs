@@ -3,6 +3,7 @@ using API.Models;
 using Azure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -20,7 +21,6 @@ public class FileController : ControllerBase
         _context = context;
         _logger = logger;
     }
-
 
     [HttpPost]
     public async Task<IActionResult> UploadFile([FromQuery] string[] tags, IFormFile file)
@@ -74,7 +74,6 @@ public class FileController : ControllerBase
         return Ok(new { fileModel.Id, fileModel.FileName, fileModel.FileTags });
     }
 
-
     [HttpGet]
     public async Task<IActionResult> GetFiles([FromQuery] string[] tags)
     {
@@ -87,6 +86,8 @@ public class FileController : ControllerBase
 
         var files = await filesQuery.ToListAsync();
 
+        _logger.LogInformation("Retrieved {FileCount} files", files.Count);
+
         return Ok(files);
     }
 
@@ -95,7 +96,10 @@ public class FileController : ControllerBase
     {
         var file = await _context.Files.FindAsync(id);
         if (file == null)
+        {
+            _logger.LogWarning("File not found: {FileId}", id);
             return NotFound();
+        }
 
         var memory = new MemoryStream();
         using (var stream = new FileStream(file.FilePath, FileMode.Open))
@@ -104,15 +108,27 @@ public class FileController : ControllerBase
         }
         memory.Position = 0;
 
-        return File(memory, file.FileType, file.FileName);
+        _logger.LogInformation("File downloaded: {FileName}", file.FileName);
+
+        Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{file.FileName}\"");
+
+        return File(memory, file.FileType);
     }
+
+
+
+
+
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdateFile(int id, [FromQuery] string[] tags, IFormFile file)
     {
         var fileModel = await _context.Files.Include(f => f.FileTags).ThenInclude(ft => ft.Tag).FirstOrDefaultAsync(f => f.Id == id);
         if (fileModel == null)
+        {
+            _logger.LogWarning("File not found: {FileId}", id);
             return NotFound();
+        }
 
         if (file != null)
         {
@@ -146,6 +162,8 @@ public class FileController : ControllerBase
 
         _context.Files.Update(fileModel);
         await _context.SaveChangesAsync();
+
+        _logger.LogInformation("File updated: {FileName}", fileModel.FileName);
 
         return Ok(fileModel);
     }

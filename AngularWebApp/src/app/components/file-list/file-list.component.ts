@@ -26,14 +26,17 @@ export class FileListComponent implements OnInit {
     });
   }
 
-  downloadFile(id: number) {
-    this.fileService.downloadFile(id).subscribe(blob => {
+  downloadFile(fileId: number, fileName: string) {
+    this.fileService.downloadFile(fileId).subscribe(blob => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'file';
+      a.download = fileName;
+      document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
     });
   }
+
 }

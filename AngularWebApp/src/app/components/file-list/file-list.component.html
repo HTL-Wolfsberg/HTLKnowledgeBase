@@ -4,5 +4,5 @@
 <button mat-raised-button (click)="getFiles()">Filter</button>
 <div *ngFor="let file of files">
     <p>{{ file.fileName }}</p>
-    <a (click)="downloadFile(file.id)">Download</a>
+    <button mat-raised-button (click)="downloadFile(file.id, file.fileName)">Download File</button>
 </div>
