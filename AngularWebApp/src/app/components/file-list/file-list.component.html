@@ -1,8 +1,10 @@
-<mat-form-field>
-    <input matInput placeholder="Filter by Tags (comma-separated)" (change)="onTagsChange($event)">
-</mat-form-field>
-<button mat-raised-button (click)="getFiles()">Filter</button>
-<div *ngFor="let file of files">
-    <p>{{ file.fileName }}</p>
-    <button mat-raised-button (click)="downloadFile(file.id, file.fileName)">Download File</button>
+<div>
+    <label for="filter">Filter by:</label>
+    <select id="filter" multiple (change)="onFilterChange($event)">
+        <option *ngFor="let filter of availaibleFilterTags" [value]="filter">{{ filter }}</option>
+    </select>
+</div>
+
+<div *ngFor="let file of filteredFileModels">
+    {{ file.name }}
 </div>

@@ -19,7 +19,9 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetTags()
         {
-            var tags = await _context.Tags.ToListAsync();
+            var tagModels = await _context.Tags.ToListAsync();
+            var tags = tagModels.Select(tag => tag.TagName).ToList();
+
             return Ok(tags);
         }
     }

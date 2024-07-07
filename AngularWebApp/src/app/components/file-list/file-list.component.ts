@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FileService } from '../../services/file.service';
+import { TagService } from '../../services/tag.service';
+import { FileModel } from '../../file-model';
 
 @Component({
   selector: 'app-file-list',
@@ -7,24 +9,53 @@ import { FileService } from '../../services/file.service';
   styleUrls: ['./file-list.component.scss']
 })
 export class FileListComponent implements OnInit {
-  files: any[] = [];
-  filterTags: string[] = [];
+  selectedFilterTags: string[] = [];
+  availaibleFilterTags: string[] = [];
 
-  constructor(private fileService: FileService) { }
+  fileModels: FileModel[] = [];  // Replace `any` with your file type
+  filteredFileModels: FileModel[] = [];  // Replace `any` with your file type
+
+  constructor(private fileService: FileService,
+    private tagService: TagService) { }
 
   ngOnInit() {
-    this.getFiles();
-  }
-
-  onTagsChange(event: any) {
-    this.filterTags = event.target.value.split(',').map((tag: string) => tag.trim());
-  }
-
-  getFiles() {
-    this.fileService.getFiles(this.filterTags).subscribe(response => {
-      this.files = response;
+    this.fetchFiles();
+    this.tagService.getFilters().subscribe((data: string[]) => {
+      this.availaibleFilterTags = data;
     });
   }
+
+
+  onFilterChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    const selectedOptions = Array.from(target.selectedOptions).map(option => option.value);
+    this.selectedFilterTags = selectedOptions;
+    this.filterFiles();
+  }
+
+  filterFiles(): void {
+    if (this.selectedFilterTags.length > 0) {
+      this.filteredFileModels = this.fileModels.filter(fileModel =>
+        this.selectedFilterTags.every(filter => fileModel.tags.includes(filter))
+      );
+    } else {
+      this.filteredFileModels = [...this.fileModels];
+    }
+  }
+
+  // getFiles() {
+  //   this.fileService.getFiles(this.selectedFilterTags).subscribe(response => {
+  //     this.fileModels = response;
+  //   });
+  // }
+
+  fetchFiles(): void {
+    this.fileService.getFiles(this.selectedFilterTags).subscribe((data: FileModel[]) => {
+      this.fileModels = data;
+      this.filteredFileModels = [...this.fileModels];
+    });
+  }
+
 
   downloadFile(fileId: number, fileName: string) {
     this.fileService.downloadFile(fileId).subscribe(blob => {

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { FileModel } from '../file-model';
 
 @Injectable({
   providedIn: 'root'
@@ -20,11 +21,11 @@ export class FileService {
     return this.http.post<any>(this.apiUrl, formData, { params });
   }
 
-  getFiles(tags: string[]): Observable<any[]> {
+  getFiles(tags: string[]): Observable<FileModel[]> {
     let params = new HttpParams();
     tags.forEach(tag => params = params.append('tags', tag));
 
-    return this.http.get<any[]>(this.apiUrl, { params });
+    return this.http.get<FileModel[]>(this.apiUrl, { params });
   }
 
   downloadFile(id: number): Observable<Blob> {

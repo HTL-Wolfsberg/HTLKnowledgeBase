@@ -12,8 +12,10 @@ namespace API.Models
         public long FileSize { get; set; }
         public string FileType { get; set; }
 
+        public ICollection<string> TagNameList { get; set; } = [];
+
         [JsonIgnore]
-        public ICollection<FileTagModel> FileTags { get; set; } = new List<FileTagModel>();
+        public ICollection<FileTagModel> FileTags { get; set; } = [];
     }
 
 
