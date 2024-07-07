@@ -4,7 +4,8 @@
         <option *ngFor="let filter of availaibleFilterTags" [value]="filter">{{ filter }}</option>
     </select>
 </div>
-
+<br>
 <div *ngFor="let file of filteredFileModels">
     {{ file.name }}
+    <button mat-raised-button (click)="downloadFile(file)">Download</button>
 </div>

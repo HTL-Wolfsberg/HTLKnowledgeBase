@@ -8,15 +8,16 @@ namespace API.Files
     public class FileModel
     {
         public int Id { get; set; }
-        public string FileName { get; set; }
-        public string FilePath { get; set; }
-        public long FileSize { get; set; }
-        public string FileType { get; set; }
+        public string Name { get; set; }
+        public string Path { get; set; }
+        public long Size { get; set; }
+        public string Type { get; set; }
 
-        public ICollection<string> TagNameList { get; set; } = [];
+        [NotMapped]
+        public ICollection<string> TagNameList { get; set; } = new List<string>();
 
         [JsonIgnore]
-        public ICollection<FileTagModel> FileTags { get; set; } = [];
+        public ICollection<FileTagModel> FileTags { get; set; } = new List<FileTagModel>();
     }
 
 

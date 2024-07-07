@@ -2,8 +2,9 @@ export interface FileModel {
     id: number;
     name: string;
     size: number;
-    fileType: string;
-    tags: string[];
+    type: string;
+    tagNameList: string[];
+    Path: string;
     createdDate: Date;
     modifiedDate: Date;
 }

@@ -36,7 +36,7 @@ export class FileListComponent implements OnInit {
   filterFiles(): void {
     if (this.selectedFilterTags.length > 0) {
       this.filteredFileModels = this.fileModels.filter(fileModel =>
-        this.selectedFilterTags.every(filter => fileModel.tags.includes(filter))
+        this.selectedFilterTags.every(filter => fileModel.tagNameList.includes(filter))
       );
     } else {
       this.filteredFileModels = [...this.fileModels];
@@ -57,12 +57,14 @@ export class FileListComponent implements OnInit {
   }
 
 
-  downloadFile(fileId: number, fileName: string) {
-    this.fileService.downloadFile(fileId).subscribe(blob => {
+  downloadFile(file: FileModel) {
+
+
+    this.fileService.downloadFile(file.id).subscribe(blob => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = fileName;
+      a.download = file.name;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);

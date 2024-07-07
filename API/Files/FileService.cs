@@ -20,9 +20,17 @@ namespace API.Files
             _logger = logger;
         }
 
-        public async Task<List<FileModel>> GetAllFiles()
+        public async Task<IEnumerable<FileModel>> GetAllFiles()
         {
-            return await _context.Files.ToListAsync();
+            var files = await _context.Files.ToListAsync();
+
+            foreach (var file in files)
+            {
+                var tags = await _tagService.GetTagsForFile(file.Id);
+                file.TagNameList = tags.Select(tag => tag.TagName).ToList();
+            }
+
+            return files;
         }
 
         public async Task<FileModel> GetFileById(int id)
@@ -30,11 +38,11 @@ namespace API.Files
             return await _context.Files.FindAsync(id);
         }
 
-        public async Task<List<FileModel>> GetFilesByTags(string[] tags)
+        public async Task<List<FileModel>> GetFilesByTags(List<string> tags)
         {
             var filesQuery = _context.Files.Include(f => f.FileTags).ThenInclude(ft => ft.Tag).AsQueryable();
 
-            if (tags != null && tags.Length > 0)
+            if (tags != null && tags.Count > 0)
             {
                 filesQuery = filesQuery.Where(f => f.FileTags.Any(ft => tags.Contains(ft.Tag.TagName)));
             }

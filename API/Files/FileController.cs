@@ -49,34 +49,28 @@ public class FileController : ControllerBase
 
         var fileModel = new FileModel
         {
-            FileName = file.FileName,
-            FilePath = filePath,
-            FileSize = file.Length,
-            FileType = file.ContentType,
+            Name = file.FileName,
+            Path = filePath,
+            Size = file.Length,
+            Type = file.ContentType,
             FileTags = []
         };
 
         await _fileTagService.AddFileTag(tags, fileModel);
 
-        _logger.LogInformation("File uploaded successfully: {FileName}", fileModel.FileName);
+        _logger.LogInformation("File uploaded successfully: {FileName}", fileModel.Name);
 
-        return Ok(new { fileModel.Id, fileModel.FileName, fileModel.FileTags });
+        return Ok(new { fileModel.Id, fileModel.Name, fileModel.FileTags });
     }
 
     [HttpGet]
     public async Task<IActionResult> GetFiles([FromQuery] List<string>? tags)
     {
         if (tags != null && tags.Count > 0)
-            return Ok(await _fileService.GetFilesByTags(tags.ToArray()));
+            return Ok(await _fileService.GetFilesByTags(tags));
         else
             return Ok(await _fileService.GetAllFiles());
     }
-
-    //[HttpGet]
-    //public async Task<IActionResult> GetAllFiles()
-    //{
-    //    return Ok(await _fileService.GetAllFiles());
-    //}
 
     [HttpGet("{id}")]
     public async Task<IActionResult> DownloadFile(int id)
@@ -89,15 +83,15 @@ public class FileController : ControllerBase
         }
 
         var memory = new MemoryStream();
-        using (var stream = new FileStream(file.FilePath, FileMode.Open))
+        using (var stream = new FileStream(file.Path, FileMode.Open))
         {
             await stream.CopyToAsync(memory);
         }
         memory.Position = 0;
 
-        _logger.LogInformation("File downloaded: {FileName}", file.FileName);
+        _logger.LogInformation("File downloaded: {FileName}", file.Name);
 
-        return File(memory, file.FileType);
+        return File(memory, file.Type);
     }
 
 

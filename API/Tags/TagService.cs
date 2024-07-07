@@ -1,4 +1,5 @@
 ﻿using API.Files;
+using Azure;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Tags
@@ -28,5 +29,4 @@ namespace API.Tags
                            .ToListAsync();
         }
     }
-
 }
