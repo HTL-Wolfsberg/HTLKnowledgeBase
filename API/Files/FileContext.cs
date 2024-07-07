@@ -1,6 +1,6 @@
 ﻿namespace API.Files
 {
-    using API.Models;
+    using API.FileTags;
     using API.Tags;
     using Azure;
     using Microsoft.EntityFrameworkCore;

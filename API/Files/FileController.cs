@@ -1,29 +1,27 @@
 ﻿using API.Files;
-using API.Models;
+using API.FileTags;
 using API.Tags;
-using Azure;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
+
 
 [ApiController]
 [Route("api/[controller]")]
 public class FileController : ControllerBase
 {
-    private readonly FileContext _context;
     private readonly ILogger<FileController> _logger;
     private readonly ITagService _tagService;
+    private readonly IFileService _fileService;
+    private readonly IFileTagService _fileTagService;
 
-    public FileController(FileContext context,
-        ILogger<FileController> logger, ITagService tagService)
+    public FileController(ILogger<FileController> logger,
+        ITagService tagService,
+        IFileService fileService,
+        IFileTagService fileTagService)
     {
-        _context = context;
         _logger = logger;
         _tagService = tagService;
+        _fileService = fileService;
+        _fileTagService = fileTagService;
     }
 
     [HttpPost]
@@ -55,23 +53,10 @@ public class FileController : ControllerBase
             FilePath = filePath,
             FileSize = file.Length,
             FileType = file.ContentType,
-            FileTags = new List<FileTagModel>()
+            FileTags = []
         };
 
-        foreach (var tagName in tags)
-        {
-            var tag = await _context.Tags.FirstOrDefaultAsync(t => t.TagName == tagName.Trim());
-            if (tag == null)
-            {
-                tag = new TagModel { TagName = tagName.Trim() };
-                _context.Tags.Add(tag);
-            }
-
-            fileModel.FileTags.Add(new FileTagModel { Tag = tag, File = fileModel });
-        }
-
-        _context.Files.Add(fileModel);
-        await _context.SaveChangesAsync();
+        await _fileTagService.AddFileTag(tags, fileModel);
 
         _logger.LogInformation("File uploaded successfully: {FileName}", fileModel.FileName);
 
@@ -79,33 +64,24 @@ public class FileController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetFiles([FromQuery] string[] tags)
+    public async Task<IActionResult> GetFiles([FromQuery] List<string>? tags)
     {
-        var filesQuery = _context.Files.Include(f => f.FileTags).ThenInclude(ft => ft.Tag).AsQueryable();
-
-        if (tags != null && tags.Length > 0)
-        {
-            filesQuery = filesQuery.Where(f => f.FileTags.Any(ft => tags.Contains(ft.Tag.TagName)));
-        }
-
-        var files = await filesQuery.ToListAsync();
-
-        files.ForEach(async file =>
-        {
-            file.TagNameList = (await _tagService.GetTagsForFile(file.Id))
-                .Select(tag => tag.TagName)
-                .ToList();
-        });
-
-        _logger.LogInformation("Retrieved {FileCount} files", files.Count);
-
-        return Ok(files);
+        if (tags != null && tags.Count > 0)
+            return Ok(await _fileService.GetFilesByTags(tags.ToArray()));
+        else
+            return Ok(await _fileService.GetAllFiles());
     }
+
+    //[HttpGet]
+    //public async Task<IActionResult> GetAllFiles()
+    //{
+    //    return Ok(await _fileService.GetAllFiles());
+    //}
 
     [HttpGet("{id}")]
     public async Task<IActionResult> DownloadFile(int id)
     {
-        var file = await _context.Files.FindAsync(id);
+        var file = await _fileService.GetFileById(id);
         if (file == null)
         {
             _logger.LogWarning("File not found: {FileId}", id);
@@ -129,51 +105,51 @@ public class FileController : ControllerBase
 
 
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateFile(int id, [FromQuery] string[] tags, IFormFile file)
-    {
-        var fileModel = await _context.Files.Include(f => f.FileTags).ThenInclude(ft => ft.Tag).FirstOrDefaultAsync(f => f.Id == id);
-        if (fileModel == null)
-        {
-            _logger.LogWarning("File not found: {FileId}", id);
-            return NotFound();
-        }
+    //[HttpPut("{id}")]
+    //public async Task<IActionResult> UpdateFile(int id, [FromQuery] string[] tags, IFormFile file)
+    //{
+    //    var fileModel = await _context.Files.Include(f => f.FileTags).ThenInclude(ft => ft.Tag).FirstOrDefaultAsync(f => f.Id == id);
+    //    if (fileModel == null)
+    //    {
+    //        _logger.LogWarning("File not found: {FileId}", id);
+    //        return NotFound();
+    //    }
 
-        if (file != null)
-        {
-            var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "HTLKnowledgeBase", "Files", file.FileName);
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(stream);
-            }
+    //    if (file != null)
+    //    {
+    //        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "HTLKnowledgeBase", "Files", file.FileName);
+    //        using (var stream = new FileStream(filePath, FileMode.Create))
+    //        {
+    //            await file.CopyToAsync(stream);
+    //        }
 
-            fileModel.FileName = file.FileName;
-            fileModel.FilePath = filePath;
-            fileModel.FileSize = file.Length;
-            fileModel.FileType = file.ContentType;
-        }
+    //        fileModel.FileName = file.FileName;
+    //        fileModel.FilePath = filePath;
+    //        fileModel.FileSize = file.Length;
+    //        fileModel.FileType = file.ContentType;
+    //    }
 
-        if (tags != null && tags.Length > 0)
-        {
-            fileModel.FileTags.Clear();
-            foreach (var tagName in tags)
-            {
-                var tag = await _context.Tags.FirstOrDefaultAsync(t => t.TagName == tagName.Trim());
-                if (tag == null)
-                {
-                    tag = new TagModel { TagName = tagName.Trim() };
-                    _context.Tags.Add(tag);
-                }
+    //    if (tags != null && tags.Length > 0)
+    //    {
+    //        fileModel.FileTags.Clear();
+    //        foreach (var tagName in tags)
+    //        {
+    //            var tag = await _context.Tags.FirstOrDefaultAsync(t => t.TagName == tagName.Trim());
+    //            if (tag == null)
+    //            {
+    //                tag = new TagModel { TagName = tagName.Trim() };
+    //                _context.Tags.Add(tag);
+    //            }
 
-                fileModel.FileTags.Add(new FileTagModel { Tag = tag, File = fileModel });
-            }
-        }
+    //            fileModel.FileTags.Add(new FileTagModel { Tag = tag, File = fileModel });
+    //        }
+    //    }
 
-        _context.Files.Update(fileModel);
-        await _context.SaveChangesAsync();
+    //    _context.Files.Update(fileModel);
+    //    await _context.SaveChangesAsync();
 
-        _logger.LogInformation("File updated: {FileName}", fileModel.FileName);
+    //    _logger.LogInformation("File updated: {FileName}", fileModel.FileName);
 
-        return Ok(fileModel);
-    }
+    //    return Ok(fileModel);
+    //}
 }

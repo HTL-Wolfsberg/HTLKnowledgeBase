@@ -1,8 +1,5 @@
 ﻿using API.Files;
-using API.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace API.Tags
 {

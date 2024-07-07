@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using API.Tags;
 using API.Files;
 
-namespace API.Models
+namespace API.FileTags
 {
     public class FileTagModel
     {

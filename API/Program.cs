@@ -1,4 +1,5 @@
 using API.Files;
+using API.FileTags;
 using API.Tags;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -49,6 +50,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 builder.Services.AddScoped<ITagService, TagService>();
+builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IFileTagService, FileTagService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
