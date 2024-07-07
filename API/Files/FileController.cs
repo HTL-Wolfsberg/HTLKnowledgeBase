@@ -1,5 +1,6 @@
-﻿using API.Data;
+﻿using API.Files;
 using API.Models;
+using API.Tags;
 using Azure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,11 +16,14 @@ public class FileController : ControllerBase
 {
     private readonly FileContext _context;
     private readonly ILogger<FileController> _logger;
+    private readonly ITagService _tagService;
 
-    public FileController(FileContext context, ILogger<FileController> logger)
+    public FileController(FileContext context,
+        ILogger<FileController> logger, ITagService tagService)
     {
         _context = context;
         _logger = logger;
+        _tagService = tagService;
     }
 
     [HttpPost]
@@ -85,6 +89,13 @@ public class FileController : ControllerBase
         }
 
         var files = await filesQuery.ToListAsync();
+
+        files.ForEach(async file =>
+        {
+            file.TagNameList = (await _tagService.GetTagsForFile(file.Id))
+                .Select(tag => tag.TagName)
+                .ToList();
+        });
 
         _logger.LogInformation("Retrieved {FileCount} files", files.Count);
 

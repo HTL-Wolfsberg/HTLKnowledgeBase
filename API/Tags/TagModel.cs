@@ -1,4 +1,6 @@
-﻿namespace API.Models
+﻿using API.Models;
+
+namespace API.Tags
 {
     using System;
     using System.Collections.Generic;

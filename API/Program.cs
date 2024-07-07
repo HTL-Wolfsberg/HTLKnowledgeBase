@@ -1,4 +1,5 @@
-using API.Data;
+using API.Files;
+using API.Tags;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,6 +48,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
+builder.Services.AddScoped<ITagService, TagService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
