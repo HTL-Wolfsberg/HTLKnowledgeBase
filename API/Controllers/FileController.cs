@@ -110,8 +110,6 @@ public class FileController : ControllerBase
 
         _logger.LogInformation("File downloaded: {FileName}", file.FileName);
 
-        Response.Headers.Add("Content-Disposition", $"attachment; filename=\"{file.FileName}\"");
-
         return File(memory, file.FileType);
     }
 
