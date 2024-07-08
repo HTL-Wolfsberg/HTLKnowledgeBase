@@ -1,4 +1,5 @@
 ﻿using API.ApplicationUser;
+using API.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;

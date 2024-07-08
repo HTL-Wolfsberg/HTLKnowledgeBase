@@ -15,6 +15,8 @@
         public DbSet<FileTagModel> FileTags { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<FileTagModel>()
                 .HasKey(ft => new { ft.FileId, ft.TagId });
 
