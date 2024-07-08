@@ -2,10 +2,11 @@
 {
     using API.FileTags;
     using API.Tags;
-    using Azure;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
-    public class FileContext : DbContext
+    public class FileContext : IdentityDbContext<ApplicationUser.ApplicationUser>
+
     {
         public FileContext(DbContextOptions<FileContext> options) : base(options) { }
 

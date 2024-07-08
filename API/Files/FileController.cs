@@ -1,6 +1,7 @@
 ﻿using API.Files;
 using API.FileTags;
 using API.Tags;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -25,6 +26,7 @@ public class FileController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> UploadFile([FromQuery] string[] tags, IFormFile file)
     {
         if (file == null || file.Length == 0)
