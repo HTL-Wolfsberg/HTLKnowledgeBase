@@ -1,16 +1,11 @@
-using API.ApplicationUser;
 using API.Files;
 using API.FileTags;
 using API.Tags;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using System.Text;
-using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,6 +33,8 @@ builder.Services.AddCors(options =>
 });
 
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
+var issuer = builder.Configuration["Jwt:Issuer"];
+var audience = builder.Configuration["Jwt:Audience"];
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -45,17 +42,17 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
-    options.RequireHttpsMetadata = false;
-    options.SaveToken = true;
+    options.RequireHttpsMetadata = true; //https
+    options.SaveToken = false; // Set to true if you want to access it directly in a endpoint
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = true, // Change to true
-        ValidIssuer = builder.Configuration["Jwt:Issuer"], // Add this
-        ValidateAudience = true, // Change to true
-        ValidAudience = builder.Configuration["Jwt:Audience"], // Add this
-        ValidateLifetime = true // Ensure token is not expired
+        ValidateIssuer = true,
+        ValidIssuer = issuer,
+        ValidateAudience = true,
+        ValidAudience = audience,
+        ValidateLifetime = true
     };
 });
 
