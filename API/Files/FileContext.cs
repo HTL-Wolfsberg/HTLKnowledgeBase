@@ -4,8 +4,9 @@
     using API.Tags;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+    using Microsoft.AspNetCore.Identity;
 
-    public class FileContext : IdentityDbContext<ApplicationUser.ApplicationUser>
+    public class FileContext : IdentityDbContext<IdentityUser>
 
     {
         public FileContext(DbContextOptions<FileContext> options) : base(options) { }

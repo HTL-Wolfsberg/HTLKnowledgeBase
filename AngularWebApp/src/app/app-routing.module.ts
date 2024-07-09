@@ -8,7 +8,7 @@ import { AuthGuard } from './auth/auth.guard';
 
 const routes: Routes = [
   { path: 'upload', component: FileUploadComponent, canActivate: [AuthGuard] },
-  { path: 'list', component: FileListComponent },
+  { path: 'list', component: FileListComponent, canActivate: [AuthGuard] },
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
   { path: '', redirectTo: '/list', pathMatch: 'full' }

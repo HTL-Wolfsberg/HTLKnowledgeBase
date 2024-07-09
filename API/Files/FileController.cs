@@ -68,10 +68,19 @@ public class FileController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetFiles([FromQuery] List<string>? tags)
     {
+        var token = HttpContext.Request.Headers.Authorization;
+        _logger.LogInformation($"Token: {token}");
         if (tags != null && tags.Count > 0)
             return Ok(await _fileService.GetFilesByTags(tags));
         else
             return Ok(await _fileService.GetAllFiles());
+    }
+
+    [HttpGet("test")]
+    [Authorize]
+    public OkResult GetTest()
+    {
+        return Ok();
     }
 
     [HttpGet("{id}")]

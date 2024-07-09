@@ -24,6 +24,8 @@ export class FileUploadComponent {
     if (this.file && this.tags.length > 0) {
       this.fileService.uploadFile(this.file, this.tags).subscribe(response => {
         console.log('File uploaded successfully', response);
+      }, error => {
+        console.error('Error uploading file', error);
       });
     }
   }
