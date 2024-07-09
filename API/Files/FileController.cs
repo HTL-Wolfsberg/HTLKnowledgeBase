@@ -117,6 +117,15 @@ public class FileController : ControllerBase
     //        return NotFound();
     //    }
 
+
+    //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    //    if (fileModel.UserId != userId)
+    //    {
+    //        _logger.LogWarning("User {UserId} attempted to access file {FileId} they do not own.", userId, id);
+    //        return Forbid();
+    //    }
+
+
     //    if (file != null)
     //    {
     //        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "HTLKnowledgeBase", "Files", file.FileName);
