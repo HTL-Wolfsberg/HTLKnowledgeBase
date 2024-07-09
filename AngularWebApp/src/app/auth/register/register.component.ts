@@ -10,11 +10,12 @@ import { AuthService } from '../../auth.service';
 export class RegisterComponent {
   email: string = '';
   password: string = '';
+  name: string = '';
 
   constructor(private authService: AuthService, private router: Router) { }
 
   register() {
-    this.authService.register(this.email, this.password).subscribe(() => {
+    this.authService.register(this.email, this.password, this.name).subscribe(() => {
       this.router.navigate(['/login']);
     });
   }

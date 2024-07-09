@@ -12,6 +12,8 @@ namespace API.Files
         public string Path { get; set; }
         public long Size { get; set; }
         public string Type { get; set; }
+        public string UserId { get; set; }
+
 
         [NotMapped]
         public ICollection<string> TagNameList { get; set; } = new List<string>();

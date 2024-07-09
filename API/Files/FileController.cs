@@ -3,6 +3,7 @@ using API.FileTags;
 using API.Tags;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 
 [ApiController]
@@ -35,6 +36,8 @@ public class FileController : ControllerBase
             return BadRequest("No file uploaded.");
         }
 
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
         var documentsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "HTLKnowledgeBase", "Files");
 
         if (!Directory.Exists(documentsFolderPath))
@@ -55,6 +58,7 @@ public class FileController : ControllerBase
             Path = filePath,
             Size = file.Length,
             Type = file.ContentType,
+            UserId = userId,
             FileTags = []
         };
 
