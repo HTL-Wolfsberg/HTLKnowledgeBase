@@ -3,11 +3,8 @@
     using API.FileTags;
     using API.Tags;
     using Microsoft.EntityFrameworkCore;
-    using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-    using Microsoft.AspNetCore.Identity;
 
-    public class FileContext : IdentityDbContext<IdentityUser>
-
+    public class FileContext : DbContext
     {
         public FileContext(DbContextOptions<FileContext> options) : base(options) { }
 

@@ -76,13 +76,6 @@ public class FileController : ControllerBase
             return Ok(await _fileService.GetAllFiles());
     }
 
-    [HttpGet("test")]
-    [Authorize]
-    public OkResult GetTest()
-    {
-        return Ok();
-    }
-
     [HttpGet("{id}")]
     public async Task<IActionResult> DownloadFile(int id)
     {

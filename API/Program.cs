@@ -1,3 +1,4 @@
+using API.ApplicationUser;
 using API.Files;
 using API.FileTags;
 using API.Tags;
@@ -11,9 +12,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<FileContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<ApplicationUserContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<FileContext>()
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationUserContext>()
     .AddDefaultTokenProviders();
 
 builder.Services.AddControllers();
