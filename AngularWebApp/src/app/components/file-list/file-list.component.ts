@@ -20,8 +20,8 @@ export class FileListComponent implements OnInit {
 
   ngOnInit() {
     this.fetchFiles();
-    this.tagService.getFilters().subscribe((data: string[]) => {
-      this.availaibleFilterTags = data;
+    this.tagService.getTags().subscribe((tags: string[]) => {
+      this.availaibleFilterTags = tags;
     });
   }
 
@@ -43,12 +43,6 @@ export class FileListComponent implements OnInit {
     }
   }
 
-  // getFiles() {
-  //   this.fileService.getFiles(this.selectedFilterTags).subscribe(response => {
-  //     this.fileModels = response;
-  //   });
-  // }
-
   fetchFiles(): void {
     this.fileService.getFiles(this.selectedFilterTags).subscribe((data: FileModel[]) => {
       this.fileModels = data;
@@ -56,10 +50,7 @@ export class FileListComponent implements OnInit {
     });
   }
 
-
   downloadFile(file: FileModel) {
-
-
     this.fileService.downloadFile(file.id).subscribe(blob => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -71,5 +62,4 @@ export class FileListComponent implements OnInit {
       document.body.removeChild(a);
     });
   }
-
 }

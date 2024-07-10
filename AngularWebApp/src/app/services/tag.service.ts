@@ -11,7 +11,7 @@ export class TagService {
 
   constructor(private http: HttpClient) { }
 
-  getFilters(): Observable<string[]> {
+  getTags(): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}`);
   }
 }

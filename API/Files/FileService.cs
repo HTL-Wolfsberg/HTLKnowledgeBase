@@ -2,8 +2,6 @@
 using API.Tags;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Immutable;
-using System.Security.Claims;
 
 namespace API.Files
 {
@@ -22,12 +20,11 @@ namespace API.Files
             _logger = logger;
         }
 
-        public async Task<IEnumerable<FileModel>> GetAllFiles()
+        public async Task<List<FileModel>> GetAllFiles()
         {
-            var files = await _context.Files
+            var files = _context.Files
                 .Include(file => file.FileTags)
-                .ThenInclude(fileTag => fileTag.Tag)
-                .ToListAsync();
+                .ThenInclude(fileTag => fileTag.Tag);
 
             foreach (var file in files)
             {
@@ -36,7 +33,7 @@ namespace API.Files
                     .ToList();
             }
 
-            return files;
+            return await files.ToListAsync();
         }
 
         public async Task<FileModel> GetFileById(int id)
@@ -44,7 +41,8 @@ namespace API.Files
             var file = await _context.Files
                 .Include(file => file.FileTags)
                 .ThenInclude(fileTag => fileTag.Tag)
-                .FirstAsync(file => file.Id == id);
+                .SingleAsync(file => file.Id == id);
+
 
             file.TagNameList = file.FileTags
                 .Select(fileTag => fileTag.Tag.TagName)
@@ -68,22 +66,17 @@ namespace API.Files
                             .Contains(ft.Tag.TagName)));
             }
 
-            var files = await filesQuery.ToListAsync();
-
-            foreach (var file in files)
+            foreach (var file in filesQuery)
             {
                 file.TagNameList = file.FileTags
                     .Select(fileTag => fileTag.Tag.TagName)
                     .ToList();
             }
 
-            _logger.LogInformation("Retrieved {FileCount} files", files.Count);
-
-            return files;
+            return await filesQuery.ToListAsync();
         }
 
-        [Authorize]
-        public IQueryable<FileModel> GetFilesFromUser(string userId)
+        public async Task<List<FileModel>> GetFilesFromUser(string userId)
         {
             var files = _context.Files
                 .Include(file => file.FileTags)
@@ -97,7 +90,7 @@ namespace API.Files
                     .ToList();
             }
 
-            return files;
+            return await files.ToListAsync();
         }
 
         public Task UpdateFile(int id, string[] tags, IFormFile file)

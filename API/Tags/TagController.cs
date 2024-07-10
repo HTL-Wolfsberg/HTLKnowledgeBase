@@ -1,5 +1,6 @@
 ﻿using API.Files;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Tags
 {
@@ -21,12 +22,5 @@ namespace API.Tags
         {
             return Ok(await _tagService.GetTags());
         }
-
-        [HttpGet("file/{fileId}/tags")]
-        public async Task<IActionResult> GetTagsForFile(int fileId)
-        {
-            return Ok(await _tagService.GetTagsForFile(fileId));
-        }
-
     }
 }

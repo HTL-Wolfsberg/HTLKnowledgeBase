@@ -73,16 +73,23 @@ public class FileController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetFiles([FromQuery] List<string>? tags)
     {
+        List<FileModel> files;
+
         if (tags != null && tags.Count > 0)
-            return Ok(await _fileService.GetFilesByTags(tags));
+            files = await _fileService.GetFilesByTags(tags);
         else
-            return Ok(await _fileService.GetAllFiles());
+            files = await _fileService.GetAllFiles();
+
+        _logger.LogInformation("Retrieved {FileCount} files", files.Count);
+
+        return Ok(files);
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> DownloadFile(int id)
     {
         var file = await _fileService.GetFileById(id);
+
         if (file == null)
         {
             _logger.LogWarning("File not found: {FileId}", id);
@@ -113,7 +120,7 @@ public class FileController : ControllerBase
             throw new UnauthorizedAccessException("User ID not found in token");
         }
 
-        return await _fileService.GetFilesFromUser(userId).ToListAsync();
+        return await _fileService.GetFilesFromUser(userId);
     }
 
 
