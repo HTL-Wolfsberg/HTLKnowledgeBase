@@ -15,7 +15,6 @@ export class EditorPageComponent implements OnInit {
   ngOnInit() {
     this.fileService.getFilesFromUser().subscribe(files => {
       this.files = files;
-      console.log(files)
     });
   }
 }
