@@ -17,6 +17,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth/auth.guard';
 import { AuthInterceptor } from './auth/auth.interceptor';
+import { EditorPageComponent } from './components/editor-page/editor-page.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { AuthInterceptor } from './auth/auth.interceptor';
     FileUploadComponent,
     FileListComponent,
     RegisterComponent,
-    LoginComponent
+    LoginComponent,
+    EditorPageComponent
   ],
   imports: [
     BrowserModule,
