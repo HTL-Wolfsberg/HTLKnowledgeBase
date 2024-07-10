@@ -27,7 +27,7 @@ public class FileController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize]
+    [Authorize(Roles = "Admin,Editor")]
     public async Task<IActionResult> UploadFile([FromQuery] string[] tags, IFormFile file)
     {
         if (file == null || file.Length == 0)

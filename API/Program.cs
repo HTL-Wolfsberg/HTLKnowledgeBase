@@ -1,6 +1,7 @@
 using API.ApplicationUser;
 using API.Files;
 using API.FileTags;
+using API.Roles;
 using API.Tags;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -62,8 +63,15 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IFileTagService, FileTagService>();
+builder.Services.AddScoped<RoleSeeder>();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var roleSeeder = scope.ServiceProvider.GetRequiredService<RoleSeeder>();
+    await roleSeeder.SeedRolesAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
