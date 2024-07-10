@@ -1,7 +1,9 @@
 ﻿
 using API.Tags;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Immutable;
+using System.Security.Claims;
 
 namespace API.Files
 {
@@ -59,6 +61,12 @@ namespace API.Files
             _logger.LogInformation("Retrieved {FileCount} files", files.Count);
 
             return files;
+        }
+
+        [Authorize]
+        public IQueryable<FileModel> GetFilesFromUser(string userId)
+        {
+            return _context.Files.Where(File => File.UserId == userId);
         }
 
         public Task UpdateFile(int id, string[] tags, IFormFile file)

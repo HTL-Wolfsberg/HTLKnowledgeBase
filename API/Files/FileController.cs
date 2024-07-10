@@ -3,6 +3,7 @@ using API.FileTags;
 using API.Tags;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 
@@ -103,7 +104,19 @@ public class FileController : ControllerBase
     }
 
 
+    [Authorize(Roles = "Admin,Editor")]
+    [HttpGet("GetFilesFromUser")]
+    public async Task<List<FileModel>> GetFilesFromUser()
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+        if (string.IsNullOrEmpty(userId))
+        {
+            throw new UnauthorizedAccessException("User ID not found in token");
+        }
+
+        return await _fileService.GetFilesFromUser(userId).ToListAsync();
+    }
 
 
 
