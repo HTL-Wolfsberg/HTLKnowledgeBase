@@ -2,3 +2,13 @@
 <app-file-upload></app-file-upload>
 
 <h2>my files:</h2>
+<div *ngFor="let file of files">
+    <p>File name: {{file.name}}</p>
+    <p>File size: {{file.size}}</p>
+    <p>File type: {{file.type}}</p>
+    <div *ngFor="let tag of file.tagNameList">
+        <p>Tags:</p>
+        <p>{{tag}}</p>
+    </div>
+    <p>-------------------------</p>
+</div>

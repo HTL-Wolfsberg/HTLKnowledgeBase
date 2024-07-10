@@ -28,6 +28,10 @@ export class FileService {
     return this.http.get<FileModel[]>(this.apiUrl, { params });
   }
 
+  getFilesFromUser(): Observable<FileModel[]> {
+    return this.http.get<FileModel[]>(this.apiUrl + "/getFilesFromUser");
+  }
+
   downloadFile(id: number): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/${id}`, { responseType: 'blob' });
   }

@@ -24,12 +24,16 @@ namespace API.Files
 
         public async Task<IEnumerable<FileModel>> GetAllFiles()
         {
-            var files = await _context.Files.ToListAsync();
+            var files = await _context.Files
+                .Include(file => file.FileTags)
+                .ThenInclude(fileTag => fileTag.Tag)
+                .ToListAsync();
 
             foreach (var file in files)
             {
-                var tags = await _tagService.GetTagsForFile(file.Id);
-                file.TagNameList = tags.Select(tag => tag.TagName).ToList();
+                file.TagNameList = file.FileTags
+                    .Select(fileTag => fileTag.Tag.TagName)
+                    .ToList();
             }
 
             return files;
@@ -37,26 +41,41 @@ namespace API.Files
 
         public async Task<FileModel> GetFileById(int id)
         {
-            return await _context.Files.FindAsync(id);
+            var file = await _context.Files
+                .Include(file => file.FileTags)
+                .ThenInclude(fileTag => fileTag.Tag)
+                .FirstAsync(file => file.Id == id);
+
+            file.TagNameList = file.FileTags
+                .Select(fileTag => fileTag.Tag.TagName)
+                .ToList();
+
+            return file;
         }
 
         public async Task<List<FileModel>> GetFilesByTags(List<string> tags)
         {
-            var filesQuery = _context.Files.Include(f => f.FileTags).ThenInclude(ft => ft.Tag).AsQueryable();
+            var filesQuery = _context.Files
+                .Include(file => file.FileTags)
+                .ThenInclude(fileTag => fileTag.Tag)
+                .AsQueryable();
 
             if (tags != null && tags.Count > 0)
             {
-                filesQuery = filesQuery.Where(f => f.FileTags.Any(ft => tags.Contains(ft.Tag.TagName)));
+                filesQuery = filesQuery
+                    .Where(f => f.FileTags
+                        .Any(ft => tags
+                            .Contains(ft.Tag.TagName)));
             }
 
             var files = await filesQuery.ToListAsync();
 
-            files.ForEach(async file =>
+            foreach (var file in files)
             {
-                file.TagNameList = (await _tagService.GetTagsForFile(file.Id))
-                    .Select(tag => tag.TagName)
+                file.TagNameList = file.FileTags
+                    .Select(fileTag => fileTag.Tag.TagName)
                     .ToList();
-            });
+            }
 
             _logger.LogInformation("Retrieved {FileCount} files", files.Count);
 
@@ -66,7 +85,19 @@ namespace API.Files
         [Authorize]
         public IQueryable<FileModel> GetFilesFromUser(string userId)
         {
-            return _context.Files.Where(File => File.UserId == userId);
+            var files = _context.Files
+                .Include(file => file.FileTags)
+                .ThenInclude(fileTag => fileTag.Tag)
+                .Where(File => File.UserId == userId);
+
+            foreach (var file in files)
+            {
+                file.TagNameList = file.FileTags
+                    .Select(fileTag => fileTag.Tag.TagName)
+                    .ToList();
+            }
+
+            return files;
         }
 
         public Task UpdateFile(int id, string[] tags, IFormFile file)

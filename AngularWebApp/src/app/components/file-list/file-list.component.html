@@ -6,6 +6,13 @@
 </div>
 <br>
 <div *ngFor="let file of filteredFileModels">
-    {{ file.name }}
+    <p>File name: {{file.name}}</p>
+    <p>File size: {{file.size}}</p>
+    <p>File type: {{file.type}}</p>
+    <div *ngFor="let tag of file.tagNameList">
+        <p>Tags:</p>
+        <p>{{tag}}</p>
+    </div>
+    <p>-------------------------</p>
     <button mat-raised-button (click)="downloadFile(file)">Download</button>
 </div>
