@@ -20,6 +20,18 @@ export class AuthService {
     return this.http.post<any>(`${this.apiUrl}/login`, { email, password }).pipe(
       map(response => {
         localStorage.setItem('token', response.token);
+        localStorage.setItem('refreshToken', response.refreshToken);
+        return response;
+      })
+    );
+  }
+
+  refreshToken(): Observable<any> {
+    const refreshToken = localStorage.getItem('refreshToken');
+    return this.http.post<any>(`${this.apiUrl}/refresh-token`, { refreshToken }).pipe(
+      map(response => {
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('refreshToken', response.refreshToken);
         return response;
       })
     );
@@ -27,8 +39,10 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     this.router.navigate(['/login']);
   }
+
 
   getToken() {
     return localStorage.getItem('token');
