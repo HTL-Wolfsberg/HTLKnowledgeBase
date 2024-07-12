@@ -81,9 +81,6 @@ public class AuthenticationController : ControllerBase
         var newRefreshToken = GenerateRefreshToken();
 
         user.RefreshTokens.Add(newRefreshToken);
-
-        refreshToken.Token = newRefreshToken.Token;
-        refreshToken.Expires = newRefreshToken.Expires;
         await _userManager.UpdateAsync(user);
 
         return Ok(new { Token = newJwtToken, RefreshToken = newRefreshToken.Token });
