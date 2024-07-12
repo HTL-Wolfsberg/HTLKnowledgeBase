@@ -75,8 +75,12 @@ public class AuthenticationController : ControllerBase
         if (refreshToken.IsExpired)
             return Unauthorized();
 
+        user.RefreshTokens.Remove(refreshToken);
+
         var newJwtToken = GenerateJwtToken(user, roles);
         var newRefreshToken = GenerateRefreshToken();
+
+        user.RefreshTokens.Add(newRefreshToken);
 
         refreshToken.Token = newRefreshToken.Token;
         refreshToken.Expires = newRefreshToken.Expires;
@@ -120,7 +124,7 @@ public class AuthenticationController : ControllerBase
         return new RefreshTokenModel
         {
             Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-            Expires = DateTime.UtcNow.AddDays(7),
+            Expires = DateTime.UtcNow.AddDays(1),
             Created = DateTime.UtcNow
         };
     }
