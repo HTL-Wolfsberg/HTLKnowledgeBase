@@ -12,6 +12,6 @@ namespace API.Files
         public Task<FileModel> GetFileById(int id);
 
         public Task UpdateFile(int id, string[] tags, IFormFile file);
-
+        public Task DeleteFile(int id);
     }
 }

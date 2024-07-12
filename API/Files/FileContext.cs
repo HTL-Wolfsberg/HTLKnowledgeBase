@@ -21,7 +21,8 @@
             modelBuilder.Entity<FileTagModel>()
                 .HasOne(ft => ft.File)
                 .WithMany(f => f.FileTags)
-                .HasForeignKey(ft => ft.FileId);
+                .HasForeignKey(ft => ft.FileId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<FileTagModel>()
                 .HasOne(ft => ft.Tag)

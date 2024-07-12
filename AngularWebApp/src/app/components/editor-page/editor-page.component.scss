@@ -1,0 +1,37 @@
+h2 {
+    font-family: 'Roboto', sans-serif;
+    color: #333;
+}
+
+.file-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+}
+
+.file-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.file-details {
+    font-family: 'Roboto', sans-serif;
+    color: #555;
+}
+
+.file-tags {
+    margin-top: 8px;
+}
+
+mat-chip-list {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+mat-chip {
+    margin: 4px;
+}

@@ -123,6 +123,36 @@ public class FileController : ControllerBase
         return await _fileService.GetFilesFromUser(userId);
     }
 
+    [HttpDelete("{id}")]
+    [Authorize]
+    public async Task<IActionResult> RemoveFile(int id)
+    {
+        var file = await _fileService.GetFileById(id);
+        if (file == null)
+        {
+            _logger.LogWarning("File not found: {FileId}", id);
+            return NotFound();
+        }
+
+        try
+        {
+            if (System.IO.File.Exists(file.Path))
+            {
+                System.IO.File.Delete(file.Path);
+            }
+
+            await _fileService.DeleteFile(id);
+
+            _logger.LogInformation("File removed: {FileName}", file.Name);
+
+            return Ok(new { Message = "File removed successfully" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error removing file: {FileName}", file.Name);
+            return StatusCode(500, "Internal server error");
+        }
+    }
 
 
     //[HttpPut("{id}")]

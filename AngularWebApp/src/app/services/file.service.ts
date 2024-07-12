@@ -43,4 +43,9 @@ export class FileService {
 
     return this.http.put<any>(`${this.apiUrl}/${id}`, formData);
   }
+
+  deleteFile(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
 }

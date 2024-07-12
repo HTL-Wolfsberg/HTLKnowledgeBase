@@ -97,5 +97,15 @@ namespace API.Files
         {
             throw new NotImplementedException();
         }
+
+        public async Task DeleteFile(int id)
+        {
+            var file = await _context.Files.FindAsync(id);
+            if (file != null)
+            {
+                _context.Files.Remove(file);
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 }
