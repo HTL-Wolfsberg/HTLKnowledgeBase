@@ -1,30 +1,42 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FileService } from '../../../services/file.service';
+import { TagService } from '../../../services/tag.service';
+import { TagModel } from '../../../tag-model';
 
 @Component({
   selector: 'app-upload-file',
   templateUrl: './upload-file.component.html',
-  styleUrl: './upload-file.component.scss'
+  styleUrls: ['./upload-file.component.scss']
 })
-export class UploadFileComponent {
+export class UploadFileComponent implements OnInit {
   file: File | null = null;
-  tags: string[] = [];
+  selectedTags: TagModel[] = [];
+  availableTags: TagModel[] = [];
 
-  constructor(private fileService: FileService,
-    private snackBar: MatSnackBar) { }
+  constructor(
+    private fileService: FileService,
+    private tagService: TagService,
+    private snackBar: MatSnackBar
+  ) { }
+
+  ngOnInit() {
+    this.fetchTags();
+  }
+
+  fetchTags() {
+    this.tagService.getTags().subscribe(tags => {
+      this.availableTags = tags;
+    });
+  }
 
   onFileChange(event: any) {
     this.file = event.target.files[0];
   }
 
-  onTagsChange(event: any) {
-    this.tags = event.target.value.split(',').map((tag: string) => tag.trim());
-  }
-
   uploadFile() {
-    if (this.file && this.tags.length > 0) {
-      this.fileService.uploadFile(this.file, this.tags).subscribe(response => {
+    if (this.file && this.selectedTags.length > 0) {
+      this.fileService.uploadFile(this.file, this.selectedTags).subscribe(response => {
         this.snackBar.open('File uploaded successfully', 'Close', {
           duration: 3000,
           panelClass: ['success-snackbar']

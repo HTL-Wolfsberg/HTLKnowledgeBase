@@ -14,17 +14,15 @@ namespace API.FileTags
             _context = fileContext;
         }
 
-        public async Task AddFileTag(string[] tags, FileModel fileModel)
+        public async Task AddFileTag(List<TagModel> tags, FileModel fileModel)
         {
-            foreach (var tagName in tags)
-            {
-                var tag = await _context.Tags.FirstOrDefaultAsync(t => t.Name == tagName.Trim());
-                if (tag == null)
-                {
-                    tag = new TagModel { Name = tagName.Trim() };
-                    _context.Tags.Add(tag);
-                }
+            var tagIds = tags.Select(t => t.Id).ToList();
+            var existingTags = await _context.Tags
+                .Where(t => tagIds.Contains(t.Id))
+                .ToListAsync();
 
+            foreach (var tag in existingTags)
+            {
                 fileModel.FileTags.Add(new FileTagModel { Tag = tag, File = fileModel });
             }
 

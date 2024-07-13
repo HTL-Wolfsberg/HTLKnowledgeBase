@@ -4,6 +4,7 @@ using API.Tags;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Security.Claims;
 
 
@@ -29,13 +30,15 @@ public class FileController : ControllerBase
 
     [HttpPost]
     [Authorize(Roles = "Admin,Editor")]
-    public async Task<IActionResult> UploadFile([FromQuery] string[] tags, IFormFile file)
+    public async Task<IActionResult> UploadFile(IFormFile file, [FromForm] string tags)
     {
         if (file == null || file.Length == 0)
         {
             _logger.LogWarning("No file uploaded.");
             return BadRequest("No file uploaded.");
         }
+
+        var tagList = JsonConvert.DeserializeObject<List<TagModel>>(tags);
 
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -63,7 +66,7 @@ public class FileController : ControllerBase
             FileTags = []
         };
 
-        await _fileTagService.AddFileTag(tags, fileModel);
+        await _fileTagService.AddFileTag(tagList, fileModel);
 
         _logger.LogInformation("File uploaded successfully: {FileName}", fileModel.Name);
 

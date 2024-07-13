@@ -13,13 +13,12 @@ export class FileService {
 
   constructor(private http: HttpClient) { }
 
-  uploadFile(file: File, tags: string[]): Observable<any> {
+  uploadFile(file: File, tags: TagModel[]): Observable<any> {
     const formData: FormData = new FormData();
     formData.append('file', file);
+    formData.append("tags", JSON.stringify(tags));
 
-    const params = new HttpParams().set('tags', tags.join(','));
-
-    return this.http.post<any>(this.apiUrl, formData, { params });
+    return this.http.post<any>(this.apiUrl, formData);
   }
 
   getFiles(tags: TagModel[]): Observable<FileModel[]> {
@@ -37,10 +36,10 @@ export class FileService {
     return this.http.get(`${this.apiUrl}/${id}`, { responseType: 'blob' });
   }
 
-  updateFile(id: string, file: File, tags: string[]): Observable<any> {
+  updateFile(id: string, file: File, tags: TagModel[]): Observable<any> {
     const formData: FormData = new FormData();
     formData.append('file', file);
-    tags.forEach(tag => formData.append('tags', tag));
+    formData.append("tags", JSON.stringify(tags));
 
     return this.http.put<any>(`${this.apiUrl}/${id}`, formData);
   }

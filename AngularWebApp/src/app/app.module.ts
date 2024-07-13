@@ -25,6 +25,9 @@ import { ConfirmDialogComponent } from './misc/confirm-dialog/confirm-dialog.com
 import { EditFileComponent } from './components/editor-page/edit-file/edit-file.component';
 import { UploadFileComponent } from './components/editor-page/upload-file/upload-file.component';
 import { ManageTagsComponent } from './components/editor-page/manage-tags/manage-tags.component';
+import { MatOptionModule } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+
 
 @NgModule({
   declarations: [
@@ -51,7 +54,9 @@ import { ManageTagsComponent } from './components/editor-page/manage-tags/manage
     MatSnackBarModule,
     MatChipsModule,
     MatIconModule,
-    MatDialogModule
+    MatDialogModule,
+    MatOptionModule,
+    MatSelectModule
   ],
   providers: [
     provideAnimationsAsync(),
