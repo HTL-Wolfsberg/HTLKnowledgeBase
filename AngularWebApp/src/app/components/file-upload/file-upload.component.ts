@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { FileService } from '../../services/file.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
@@ -10,6 +10,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class FileUploadComponent {
   file: File | null = null;
   tags: string[] = [];
+
+  @Output()
+  onFileUploadSuccess: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(private fileService: FileService,
     private snackBar: MatSnackBar) { }
@@ -29,7 +32,7 @@ export class FileUploadComponent {
           duration: 3000,
           panelClass: ['success-snackbar']
         });
-
+        this.onFileUploadSuccess.emit();
       }, error => {
         console.error('Error uploading file', error);
         this.snackBar.open('Error uploading file', 'Close', {

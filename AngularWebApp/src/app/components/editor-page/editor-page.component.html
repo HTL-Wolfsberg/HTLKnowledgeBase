@@ -1,5 +1,5 @@
 <h2>Upload new file:</h2>
-<app-file-upload></app-file-upload>
+<app-file-upload (onFileUploadSuccess)="fetchFiles()"></app-file-upload>
 
 <h2>My Files:</h2>
 <div *ngFor="let file of files" class="file-card">

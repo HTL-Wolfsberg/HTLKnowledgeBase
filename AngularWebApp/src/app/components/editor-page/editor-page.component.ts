@@ -15,6 +15,10 @@ export class EditorPageComponent implements OnInit {
     private snackBar: MatSnackBar) { }
 
   ngOnInit() {
+    this.fetchFiles();
+  }
+
+  fetchFiles() {
     this.fileService.getFilesFromUser().subscribe(files => {
       this.files = files;
     });
