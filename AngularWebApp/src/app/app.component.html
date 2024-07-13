@@ -1,7 +1,8 @@
 <nav class="navbar">
-  <a routerLink="/list" routerLinkActive="active">File List</a>
-  <a routerLink="/register" routerLinkActive="active">Register</a>
-  <a routerLink="/login" routerLinkActive="active">Login</a>
+  <a routerLink="/list" routerLinkActive="active">Files</a>
   <a routerLink="/editor" routerLinkActive="active">Edit</a>
+  <a *ngIf="!isAuthenticated" routerLink="/register" routerLinkActive="active">Register</a>
+  <a *ngIf="!isAuthenticated" routerLink="/login" routerLinkActive="active">Login</a>
+  <a *ngIf="isAuthenticated" (click)="logout()">Logout</a>
 </nav>
 <router-outlet></router-outlet>
