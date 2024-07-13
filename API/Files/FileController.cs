@@ -49,7 +49,8 @@ public class FileController : ControllerBase
             Directory.CreateDirectory(documentsFolderPath);
         }
 
-        var filePath = Path.Combine(documentsFolderPath, file.FileName);
+        var uniqueFileName = $"{Path.GetFileNameWithoutExtension(file.FileName)}_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+        var filePath = Path.Combine(documentsFolderPath, uniqueFileName);
 
         using (var stream = new FileStream(filePath, FileMode.Create))
         {
