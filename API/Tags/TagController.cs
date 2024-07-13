@@ -28,7 +28,7 @@ namespace API.Tags
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<TagModel>> GetTag(int id)
+        public async Task<ActionResult<TagModel>> GetTag(Guid id)
         {
             var tag = await _tagService.GetTagAsync(id);
 
@@ -41,7 +41,7 @@ namespace API.Tags
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> ModifyTag(int id, TagModel tag)
+        public async Task<IActionResult> ModifyTag(Guid id, TagModel tag)
         {
             var result = await _tagService.UpdateTagAsync(id, tag);
 
@@ -54,7 +54,7 @@ namespace API.Tags
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTag(int id)
+        public async Task<IActionResult> DeleteTag(Guid id)
         {
             var result = await _tagService.DeleteTagAsync(id);
 
@@ -67,7 +67,7 @@ namespace API.Tags
         }
 
         [HttpGet("{id}/fileCount")]
-        public async Task<ActionResult<int>> GetFileCountForTag(int id)
+        public async Task<ActionResult<int>> GetFileCountForTag(Guid id)
         {
             var count = await _tagService.GetFileCountForTagAsync(id);
             return Ok(count);

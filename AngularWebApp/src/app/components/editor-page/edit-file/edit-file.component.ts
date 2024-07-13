@@ -27,7 +27,7 @@ export class EditFileComponent {
     });
   }
 
-  onRemoveFileClicked(id: number) {
+  onRemoveFileClicked(id: string) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '250px',
       data: { message: 'Are you sure you want to delete this file?' }
@@ -40,7 +40,7 @@ export class EditFileComponent {
     })
   }
 
-  removeFile(id: number) {
+  removeFile(id: string) {
     this.fileService.deleteFile(id).subscribe(response => {
       this.snackBar.open('File removed successfully', 'Close', {
         duration: 3000,

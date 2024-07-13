@@ -1,7 +1,7 @@
 import { TagModel } from "./tag-model";
 
 export interface FileModel {
-    id: number;
+    id: string;
     name: string;
     size: number;
     type: string;

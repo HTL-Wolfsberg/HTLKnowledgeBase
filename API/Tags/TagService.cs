@@ -25,12 +25,12 @@ namespace API.Tags
             return tag;
         }
 
-        public async Task<TagModel?> GetTagAsync(int id)
+        public async Task<TagModel?> GetTagAsync(Guid id)
         {
             return await _context.Tags.FindAsync(id);
         }
 
-        public async Task<bool> UpdateTagAsync(int id, TagModel tag)
+        public async Task<bool> UpdateTagAsync(Guid id, TagModel tag)
         {
             if (id != tag.Id)
             {
@@ -57,7 +57,7 @@ namespace API.Tags
             }
         }
 
-        public async Task<bool> DeleteTagAsync(int id)
+        public async Task<bool> DeleteTagAsync(Guid id)
         {
             var tag = await _context.Tags.FindAsync(id);
             if (tag == null)
@@ -71,12 +71,12 @@ namespace API.Tags
             return true;
         }
 
-        public async Task<int> GetFileCountForTagAsync(int tagId)
+        public async Task<int> GetFileCountForTagAsync(Guid tagId)
         {
             return await _context.FileTags.CountAsync(ft => ft.TagId == tagId);
         }
 
-        private bool TagExists(int id)
+        private bool TagExists(Guid id)
         {
             return _context.Tags.Any(e => e.Id == id);
         }

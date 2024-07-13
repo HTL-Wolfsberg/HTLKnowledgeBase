@@ -31,7 +31,7 @@ export class ManageTagsComponent implements OnInit {
 
   onAddTagClicked(tagName: string) {
     tagName = tagName.trim();
-    this.tagService.addTag({ name: tagName, id: -1 }).subscribe(response => {
+    this.tagService.addTag({ name: tagName, id: "" }).subscribe(response => {
       this.snackBar.open('Tag added successfully', 'Close', {
         duration: 3000,
         panelClass: ['success-snackbar']

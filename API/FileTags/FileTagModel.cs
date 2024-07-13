@@ -8,10 +8,10 @@ namespace API.FileTags
 {
     public class FileTagModel
     {
-        public int FileId { get; set; }
+        public Guid FileId { get; set; }
         public FileModel File { get; set; }
 
-        public int TagId { get; set; }
+        public Guid TagId { get; set; }
         public TagModel Tag { get; set; }
 
     }

@@ -86,7 +86,7 @@ public class FileController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> DownloadFile(int id)
+    public async Task<IActionResult> DownloadFile(Guid id)
     {
         var file = await _fileService.GetFileById(id);
 
@@ -125,7 +125,7 @@ public class FileController : ControllerBase
 
     [HttpDelete("{id}")]
     [Authorize]
-    public async Task<IActionResult> RemoveFile(int id)
+    public async Task<IActionResult> RemoveFile(Guid id)
     {
         var file = await _fileService.GetFileById(id);
         if (file == null)

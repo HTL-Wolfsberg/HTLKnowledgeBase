@@ -9,9 +9,9 @@ namespace API.Files
         public Task<List<FileModel>> GetFilesByTags(List<string> tags);
         public Task<List<FileModel>> GetFilesFromUser(string userId);
 
-        public Task<FileModel> GetFileById(int id);
+        public Task<FileModel> GetFileById(Guid id);
 
-        public Task UpdateFile(int id, string[] tags, IFormFile file);
-        public Task DeleteFile(int id);
+        public Task UpdateFile(Guid id, string[] tags, IFormFile file);
+        public Task DeleteFile(Guid id);
     }
 }

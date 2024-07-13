@@ -17,6 +17,7 @@ export class TagService {
   }
 
   addTag(tag: TagModel): Observable<TagModel> {
+    tag.id = undefined as unknown as string;
     return this.http.post<TagModel>(this.apiUrl, tag);
   }
 

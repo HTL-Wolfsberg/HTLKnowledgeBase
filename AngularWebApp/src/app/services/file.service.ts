@@ -33,11 +33,11 @@ export class FileService {
     return this.http.get<FileModel[]>(this.apiUrl + "/getFilesFromUser");
   }
 
-  downloadFile(id: number): Observable<Blob> {
+  downloadFile(id: string): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/${id}`, { responseType: 'blob' });
   }
 
-  updateFile(id: number, file: File, tags: string[]): Observable<any> {
+  updateFile(id: string, file: File, tags: string[]): Observable<any> {
     const formData: FormData = new FormData();
     formData.append('file', file);
     tags.forEach(tag => formData.append('tags', tag));
@@ -45,8 +45,7 @@ export class FileService {
     return this.http.put<any>(`${this.apiUrl}/${id}`, formData);
   }
 
-  deleteFile(id: number): Observable<any> {
+  deleteFile(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
-
 }

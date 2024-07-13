@@ -36,7 +36,7 @@ namespace API.Files
             return await files.ToListAsync();
         }
 
-        public async Task<FileModel> GetFileById(int id)
+        public async Task<FileModel> GetFileById(Guid id)
         {
             var file = await _context.Files
                 .Include(file => file.FileTags)
@@ -93,12 +93,12 @@ namespace API.Files
             return await files.ToListAsync();
         }
 
-        public Task UpdateFile(int id, string[] tags, IFormFile file)
+        public Task UpdateFile(Guid id, string[] tags, IFormFile file)
         {
             throw new NotImplementedException();
         }
 
-        public async Task DeleteFile(int id)
+        public async Task DeleteFile(Guid id)
         {
             var file = await _context.Files.FindAsync(id);
             if (file != null)
