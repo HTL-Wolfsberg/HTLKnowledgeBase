@@ -67,27 +67,29 @@ export class ManageTagsComponent implements OnInit {
   }
 
   onDeleteTagClicked(tag: TagModel) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '250px',
-      data: { message: 'Are you sure you want to delete this tag?' }
-    });
+    this.tagService.getTagFileCount(tag).subscribe(fileCount => {
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        width: '250px',
+        data: { message: `Are you sure you want to delete this tag? ${fileCount} files will be affected.` }
+      });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.tagService.deleteTag(tag).subscribe(response => {
-          this.snackBar.open('Tag deleted successfully', 'Close', {
-            duration: 3000,
-            panelClass: ['success-snackbar']
+      dialogRef.afterClosed().subscribe(result => {
+        if (result) {
+          this.tagService.deleteTag(tag).subscribe(response => {
+            this.snackBar.open('Tag deleted successfully', 'Close', {
+              duration: 3000,
+              panelClass: ['success-snackbar']
+            });
+            this.fetchTags();
+          }, error => {
+            console.error('Error deleting tag', error);
+            this.snackBar.open('Error deleting tag', 'Close', {
+              duration: 3000,
+              panelClass: ['error-snackbar']
+            });
           });
-          this.fetchTags();
-        }, error => {
-          console.error('Error deleting tag', error);
-          this.snackBar.open('Error deleting tag', 'Close', {
-            duration: 3000,
-            panelClass: ['error-snackbar']
-          });
-        });
-      }
-    });
+        }
+      });
+    })
   }
 }

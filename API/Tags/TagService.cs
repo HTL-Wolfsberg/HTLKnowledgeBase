@@ -1,7 +1,5 @@
 ﻿using API.Files;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace API.Tags
 {
@@ -71,6 +69,11 @@ namespace API.Tags
             await _context.SaveChangesAsync();
 
             return true;
+        }
+
+        public async Task<int> GetFileCountForTagAsync(int tagId)
+        {
+            return await _context.FileTags.CountAsync(ft => ft.TagId == tagId);
         }
 
         private bool TagExists(int id)

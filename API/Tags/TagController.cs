@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace API.Tags
 {
@@ -66,6 +64,13 @@ namespace API.Tags
             }
 
             return NoContent();
+        }
+
+        [HttpGet("{id}/fileCount")]
+        public async Task<ActionResult<int>> GetFileCountForTag(int id)
+        {
+            var count = await _tagService.GetFileCountForTagAsync(id);
+            return Ok(count);
         }
     }
 }

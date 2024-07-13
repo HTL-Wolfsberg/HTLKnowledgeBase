@@ -27,4 +27,9 @@ export class TagService {
   deleteTag(tag: TagModel): Observable<TagModel> {
     return this.http.delete<TagModel>(`${this.apiUrl}/${tag.id}`);
   }
+
+  getTagFileCount(tag: TagModel): Observable<number> {
+    return this.http.get<number>(`${this.apiUrl}/${tag.id}/fileCount`);
+  }
+
 }

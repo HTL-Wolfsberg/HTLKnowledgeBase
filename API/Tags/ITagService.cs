@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace API.Tags
+﻿namespace API.Tags
 {
     public interface ITagService
     {
@@ -9,5 +7,6 @@ namespace API.Tags
         public Task<TagModel> AddTagAsync(TagModel tag);
         public Task<bool> UpdateTagAsync(int id, TagModel tag);
         public Task<bool> DeleteTagAsync(int id);
+        public Task<int> GetFileCountForTagAsync(int tagId);
     }
 }
