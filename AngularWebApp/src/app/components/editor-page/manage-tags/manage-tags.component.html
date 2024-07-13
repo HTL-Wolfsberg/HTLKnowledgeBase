@@ -1,0 +1,18 @@
+<div class="tag-list">
+    <div class="tag-item" *ngFor="let tag of tags">
+        <p>{{ tag }}</p>
+        <button mat-icon-button color="primary" (click)="onModifyTagClicked(tag)">
+            <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn">
+            <mat-icon>delete</mat-icon>
+        </button>
+    </div>
+</div>
+
+<div class="add-tag">
+    <mat-form-field>
+        <input matInput placeholder="New tag name" [(ngModel)]="newTagName">
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="onAddTagClicked()">Add Tag</button>
+</div>

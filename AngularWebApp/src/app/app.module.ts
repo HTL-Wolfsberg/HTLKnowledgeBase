@@ -22,6 +22,9 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from './misc/confirm-dialog/confirm-dialog.component';
+import { EditFileComponent } from './components/editor-page/edit-file/edit-file.component';
+import { UploadFileComponent } from './components/editor-page/upload-file/upload-file.component';
+import { ManageTagsComponent } from './components/editor-page/manage-tags/manage-tags.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +34,10 @@ import { ConfirmDialogComponent } from './misc/confirm-dialog/confirm-dialog.com
     RegisterComponent,
     LoginComponent,
     EditorPageComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    EditFileComponent,
+    UploadFileComponent,
+    ManageTagsComponent
   ],
   imports: [
     BrowserModule,

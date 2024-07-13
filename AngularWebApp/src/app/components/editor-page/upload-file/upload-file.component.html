@@ -1,0 +1,7 @@
+<form (ngSubmit)="uploadFile()">
+    <mat-form-field>
+        <input matInput placeholder="Tags (comma-separated)" (change)="onTagsChange($event)" name="tags">
+    </mat-form-field>
+    <input type="file" (change)="onFileChange($event)">
+    <button mat-raised-button type="submit">Upload</button>
+</form>

@@ -1,22 +1,8 @@
-<h2>Upload new file:</h2>
-<app-file-upload (onFileUploadSuccess)="fetchFiles()"></app-file-upload>
-
-<h2>My Files:</h2>
-<div *ngFor="let file of files" class="file-card">
-    <div class="file-header">
-        <div class="file-details">
-            <h3>{{file.name}}</h3>
-            <p>Size: {{file.size}} bytes</p>
-            <p>Type: {{file.type}}</p>
-            <div *ngIf="file.tagNameList.length > 0" class="file-tags">
-                <p>Tags:</p>
-                <mat-chip-set>
-                    <mat-chip *ngFor="let tag of file.tagNameList">{{tag}}</mat-chip>
-                </mat-chip-set>
-            </div>
-        </div>
-        <button mat-icon-button color="warn" (click)="onRemoveFileClicked(file.id)">
-            <mat-icon>delete</mat-icon>
-        </button>
-    </div>
-</div>
+<nav>
+    <ul>
+        <li><a routerLink="edit" routerLinkActive="active">Edit File</a></li>
+        <li><a routerLink="upload" routerLinkActive="active">Upload File</a></li>
+        <li><a routerLink="tags" routerLinkActive="active">Manage Tags</a></li>
+    </ul>
+</nav>
+<router-outlet></router-outlet>

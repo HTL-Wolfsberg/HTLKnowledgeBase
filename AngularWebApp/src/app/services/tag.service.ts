@@ -14,4 +14,16 @@ export class TagService {
   getTags(): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}`);
   }
+
+  addTag(tag: any): Observable<any> {
+    return this.http.post<any>(this.apiUrl, tag);
+  }
+
+  modifyTag(tagId: number, tag: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${tagId}`, tag);
+  }
+
+  deleteTag(tagId: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${tagId}`);
+  }
 }
