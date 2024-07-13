@@ -1,0 +1,80 @@
+// Styles for the filter container
+.filter-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+
+    label {
+        font-size: 1.2rem;
+        margin-bottom: 8px;
+        color: #555;
+    }
+
+    select {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1rem;
+        background-color: #fff;
+        color: #333;
+        outline: none;
+
+        &:focus {
+            border-color: #007bff;
+        }
+    }
+}
+
+// Styles for the file list
+.file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+// Styles for each file item
+.file-item {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #fafafa;
+
+    .file-info {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 10px;
+
+        .file-name,
+        .file-size,
+        .file-type {
+            font-size: 1rem;
+            color: #333;
+        }
+
+        .file-tags {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+
+            p {
+                font-size: 1rem;
+                color: #555;
+                margin: 0;
+            }
+
+            mat-chip-listbox {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+        }
+    }
+
+    button {
+        align-self: flex-start;
+    }
+}

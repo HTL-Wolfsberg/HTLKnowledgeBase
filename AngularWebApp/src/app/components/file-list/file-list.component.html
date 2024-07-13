@@ -1,18 +1,23 @@
-<div>
+<div class="filter-container">
     <label for="filter">Filter by:</label>
     <select id="filter" multiple (change)="onFilterChange($event)">
         <option *ngFor="let filter of availaibleFilterTags" [value]="filter">{{ filter }}</option>
     </select>
 </div>
 <br>
-<div *ngFor="let file of filteredFileModels">
-    <p>File name: {{file.name}}</p>
-    <p>File size: {{file.size}}</p>
-    <p>File type: {{file.type}}</p>
-    <div *ngFor="let tag of file.tagNameList">
-        <p>Tags:</p>
-        <p>{{tag}}</p>
+<div class="file-list">
+    <div class="file-item" *ngFor="let file of filteredFileModels">
+        <div class="file-info">
+            <p class="file-name">File name: {{file.name}}</p>
+            <p class="file-size">File size: {{file.size}}</p>
+            <p class="file-type">File type: {{file.type}}</p>
+            <div class="file-tags">
+                <p>Tags:</p>
+                <mat-chip-listbox>
+                    <mat-chip *ngFor="let tag of file.tagNameList">{{ tag }}</mat-chip>
+                </mat-chip-listbox>
+            </div>
+        </div>
+        <button mat-raised-button color="primary" (click)="downloadFile(file)">Download</button>
     </div>
-    <p>-------------------------</p>
-    <button mat-raised-button (click)="downloadFile(file)">Download</button>
 </div>
