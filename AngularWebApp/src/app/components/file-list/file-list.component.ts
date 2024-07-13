@@ -9,14 +9,15 @@ import { FileModel } from '../../file-model';
   styleUrls: ['./file-list.component.scss']
 })
 export class FileListComponent implements OnInit {
+  fileNameFilter: string = '';
+  fileTypeFilter: string = '';
   selectedFilterTags: string[] = [];
   availaibleFilterTags: string[] = [];
 
-  fileModels: FileModel[] = [];  // Replace `any` with your file type
-  filteredFileModels: FileModel[] = [];  // Replace `any` with your file type
+  fileModels: FileModel[] = [];
+  filteredFileModels: FileModel[] = [];
 
-  constructor(private fileService: FileService,
-    private tagService: TagService) { }
+  constructor(private fileService: FileService, private tagService: TagService) { }
 
   ngOnInit() {
     this.fetchFiles();
@@ -24,7 +25,6 @@ export class FileListComponent implements OnInit {
       this.availaibleFilterTags = tags;
     });
   }
-
 
   onFilterChange(event: Event): void {
     const target = event.target as HTMLSelectElement;
@@ -34,19 +34,20 @@ export class FileListComponent implements OnInit {
   }
 
   filterFiles(): void {
-    if (this.selectedFilterTags.length > 0) {
-      this.filteredFileModels = this.fileModels.filter(fileModel =>
-        this.selectedFilterTags.every(filter => fileModel.tagNameList.includes(filter))
-      );
-    } else {
-      this.filteredFileModels = [...this.fileModels];
-    }
+    this.filteredFileModels = this.fileModels.filter(fileModel => {
+      const matchesName = this.fileNameFilter ? fileModel.name.toLowerCase().includes(this.fileNameFilter.toLowerCase()) : true;
+      const matchesType = this.fileTypeFilter ? fileModel.type.toLowerCase().includes(this.fileTypeFilter.toLowerCase()) : true;
+      const matchesTags = this.selectedFilterTags.length > 0 ? this.selectedFilterTags.every(tag => fileModel.tagNameList.includes(tag)) : true;
+
+      return matchesName && matchesType && matchesTags;
+    });
   }
 
   fetchFiles(): void {
     this.fileService.getFiles(this.selectedFilterTags).subscribe((data: FileModel[]) => {
       this.fileModels = data;
       this.filteredFileModels = [...this.fileModels];
+      this.filterFiles();
     });
   }
 

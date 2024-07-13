@@ -1,6 +1,9 @@
 <div class="filter-container">
-    <label for="filter">Filter by:</label>
-    <select id="filter" multiple (change)="onFilterChange($event)">
+    <h2>Filter by:</h2>
+    <input type="text" placeholder="File name" [(ngModel)]="fileNameFilter" (input)="filterFiles()">
+    <input type="text" placeholder="File type" [(ngModel)]="fileTypeFilter" (input)="filterFiles()">
+    <label for="tags">Tags:</label>
+    <select id="tags" multiple (change)="onFilterChange($event)">
         <option *ngFor="let filter of availaibleFilterTags" [value]="filter">{{ filter }}</option>
     </select>
 </div>

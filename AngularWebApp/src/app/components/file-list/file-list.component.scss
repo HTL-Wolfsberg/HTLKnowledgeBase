@@ -10,6 +10,7 @@
         color: #555;
     }
 
+    input,
     select {
         padding: 10px;
         border: 1px solid #ccc;
@@ -18,6 +19,7 @@
         background-color: #fff;
         color: #333;
         outline: none;
+        margin-bottom: 10px;
 
         &:focus {
             border-color: #007bff;
