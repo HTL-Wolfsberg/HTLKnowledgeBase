@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FileService } from '../../services/file.service';
 import { FileModel } from '../../file-model';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../misc/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-editor-page',
@@ -12,7 +14,8 @@ export class EditorPageComponent implements OnInit {
   files: FileModel[] = [];
 
   constructor(private fileService: FileService,
-    private snackBar: MatSnackBar) { }
+    private snackBar: MatSnackBar,
+    public dialog: MatDialog) { }
 
   ngOnInit() {
     this.fetchFiles();
@@ -22,6 +25,19 @@ export class EditorPageComponent implements OnInit {
     this.fileService.getFilesFromUser().subscribe(files => {
       this.files = files;
     });
+  }
+
+  onRemoveFileClicked(id: number) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '250px',
+      data: { message: 'Are you sure you want to delete this file?' }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.removeFile(id);
+      }
+    })
   }
 
   removeFile(id: number) {
@@ -41,5 +57,6 @@ export class EditorPageComponent implements OnInit {
       });
     });
   }
+
 
 }

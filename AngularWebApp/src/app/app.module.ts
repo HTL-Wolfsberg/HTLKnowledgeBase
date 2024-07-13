@@ -20,6 +20,8 @@ import { EditorPageComponent } from './components/editor-page/editor-page.compon
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialogModule } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from './misc/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +30,8 @@ import { MatIconModule } from '@angular/material/icon';
     FileListComponent,
     RegisterComponent,
     LoginComponent,
-    EditorPageComponent
+    EditorPageComponent,
+    ConfirmDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -41,7 +44,8 @@ import { MatIconModule } from '@angular/material/icon';
     BrowserAnimationsModule,
     MatSnackBarModule,
     MatChipsModule,
-    MatIconModule
+    MatIconModule,
+    MatDialogModule
   ],
   providers: [
     provideAnimationsAsync(),
