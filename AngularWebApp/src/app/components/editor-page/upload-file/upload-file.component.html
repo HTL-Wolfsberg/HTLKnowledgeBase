@@ -1,18 +1,20 @@
-<form (ngSubmit)="uploadFile()">
+<form (ngSubmit)="uploadFile()" class="upload-form">
     <mat-form-field>
         <mat-select placeholder="Tags" [(ngModel)]="selectedTags" [compareWith]="compareTags" multiple
             [ngModelOptions]="{standalone: true}" (openedChange)="onDropdownOpen()" (closedChange)="onDropdownClose()">
             <mat-select-trigger>
                 {{ getSelectedTagNames() }}
             </mat-select-trigger>
-            <mat-option>
-                <ngx-mat-select-search [formControl]="tagFilterCtrl"></ngx-mat-select-search>
-            </mat-option>
+            <ngx-mat-select-search [formControl]="tagFilterCtrl"></ngx-mat-select-search>
             <mat-option *ngFor="let tag of filteredTags | async" [value]="tag">
                 {{ tag.name }}
             </mat-option>
         </mat-select>
     </mat-form-field>
-    <input type="file" (change)="onFileChange($event)">
-    <button mat-raised-button type="submit">Upload</button>
+    <div class="file-input-container">
+        <input type="file" id="fileInput" (change)="onFileChange($event)" hidden>
+        <button mat-raised-button color="primary" type="button" (click)="triggerFileInput()">Select File</button>
+        <span *ngIf="file">{{ file.name }}</span>
+    </div>
+    <button mat-raised-button color="accent" type="submit">Upload</button>
 </form>

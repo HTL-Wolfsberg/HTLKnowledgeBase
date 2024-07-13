@@ -87,4 +87,9 @@ export class UploadFileComponent implements OnInit {
   onDropdownClose() {
     this._filterTags$.next(this.selectedTags);
   }
+
+  triggerFileInput() {
+    const fileInput = document.getElementById('fileInput');
+    fileInput?.click();
+  }
 }
