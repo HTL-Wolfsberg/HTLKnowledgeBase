@@ -42,7 +42,6 @@ export class EditFileComponent {
 
   removeFile(id: number) {
     this.fileService.deleteFile(id).subscribe(response => {
-      console.log('File removed successfully', response);
       this.snackBar.open('File removed successfully', 'Close', {
         duration: 3000,
         panelClass: ['success-snackbar']
