@@ -16,6 +16,10 @@ export class AppComponent {
     return this.authService.isAuthenticated();
   }
 
+  get canEdit(): boolean {
+    return this.authService.hasRole('Editor') || this.authService.hasRole('Admin');
+  }
+
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);

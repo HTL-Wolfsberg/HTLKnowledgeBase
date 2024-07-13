@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { environment } from '../environments/environment';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -43,12 +44,22 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
-
   getToken() {
     return localStorage.getItem('token');
   }
 
   isAuthenticated(): boolean {
     return !!this.getToken();
+  }
+
+  hasRole(role: string): boolean {
+    const token = this.getToken();
+    if (!token) {
+      return false;
+    }
+
+    const decodedToken: any = jwtDecode(token);
+    const jwtRole = decodedToken['role'];
+    return jwtRole && jwtRole.includes(role);
   }
 }
