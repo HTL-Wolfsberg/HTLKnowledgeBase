@@ -1,7 +1,13 @@
-﻿namespace API.Tags
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace API.Tags
 {
     public interface ITagService
     {
-        Task<List<string>> GetTags();
+        public Task<IEnumerable<TagModel>> GetTagsAsync();
+        public Task<TagModel?> GetTagAsync(int id);
+        public Task<TagModel> AddTagAsync(TagModel tag);
+        public Task<bool> UpdateTagAsync(int id, TagModel tag);
+        public Task<bool> DeleteTagAsync(int id);
     }
 }

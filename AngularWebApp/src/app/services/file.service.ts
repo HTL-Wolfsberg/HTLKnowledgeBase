@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { FileModel } from '../file-model';
+import { TagModel } from '../tag-model';
 
 @Injectable({
   providedIn: 'root'
@@ -21,9 +22,9 @@ export class FileService {
     return this.http.post<any>(this.apiUrl, formData, { params });
   }
 
-  getFiles(tags: string[]): Observable<FileModel[]> {
+  getFiles(tags: TagModel[]): Observable<FileModel[]> {
     let params = new HttpParams();
-    tags.forEach(tag => params = params.append('tags', tag));
+    tags.forEach(tag => params = params.append('tags', tag.name));
 
     return this.http.get<FileModel[]>(this.apiUrl, { params });
   }

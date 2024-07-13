@@ -4,7 +4,7 @@
     <input type="text" placeholder="File type" [(ngModel)]="fileTypeFilter" (input)="filterFiles()">
     <label for="tags">Tags:</label>
     <select id="tags" multiple (change)="onFilterChange($event)">
-        <option *ngFor="let filter of availaibleFilterTags" [value]="filter">{{ filter }}</option>
+        <option *ngFor="let filter of availaibleFilterTags" [ngValue]="filter">{{ filter.name }}</option>
     </select>
 </div>
 <br>
@@ -17,7 +17,7 @@
             <div class="file-tags">
                 <p>Tags:</p>
                 <mat-chip-listbox>
-                    <mat-chip *ngFor="let tag of file.tagNameList">{{ tag }}</mat-chip>
+                    <mat-chip *ngFor="let tag of file.tagList">{{ tag.name }}</mat-chip>
                 </mat-chip-listbox>
             </div>
         </div>

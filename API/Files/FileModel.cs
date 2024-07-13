@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using API.FileTags;
+using API.Tags;
 
 namespace API.Files
 {
@@ -14,9 +15,8 @@ namespace API.Files
         public string Type { get; set; }
         public string UserId { get; set; }
 
-
         [NotMapped]
-        public ICollection<string> TagNameList { get; set; } = new List<string>();
+        public ICollection<TagModel> TagList { get; set; } = new List<TagModel>();
 
         [JsonIgnore]
         public ICollection<FileTagModel> FileTags { get; set; } = new List<FileTagModel>();

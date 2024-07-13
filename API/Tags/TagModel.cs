@@ -10,7 +10,7 @@
     public class TagModel
     {
         public int Id { get; set; }
-        public string TagName { get; set; }
+        public string Name { get; set; }
 
         [JsonIgnore]
         public ICollection<FileTagModel> FileTags { get; set; } = new List<FileTagModel>();

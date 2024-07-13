@@ -1,5 +1,7 @@
 ﻿using API.Files;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace API.Tags
 {
@@ -12,11 +14,68 @@ namespace API.Tags
             _context = context;
         }
 
-        public async Task<List<string>> GetTags()
+        public async Task<IEnumerable<TagModel>> GetTagsAsync()
         {
-            return await _context.Tags
-                .Select(tag => tag.TagName)
-                .ToListAsync();
+            return await _context.Tags.ToListAsync();
+        }
+
+        public async Task<TagModel> AddTagAsync(TagModel tag)
+        {
+            _context.Tags.Add(tag);
+            await _context.SaveChangesAsync();
+
+            return tag;
+        }
+
+        public async Task<TagModel?> GetTagAsync(int id)
+        {
+            return await _context.Tags.FindAsync(id);
+        }
+
+        public async Task<bool> UpdateTagAsync(int id, TagModel tag)
+        {
+            if (id != tag.Id)
+            {
+                return false;
+            }
+
+            _context.Entry(tag).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!TagExists(id))
+                {
+                    return false;
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        public async Task<bool> DeleteTagAsync(int id)
+        {
+            var tag = await _context.Tags.FindAsync(id);
+            if (tag == null)
+            {
+                return false;
+            }
+
+            _context.Tags.Remove(tag);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+
+        private bool TagExists(int id)
+        {
+            return _context.Tags.Any(e => e.Id == id);
         }
     }
 }

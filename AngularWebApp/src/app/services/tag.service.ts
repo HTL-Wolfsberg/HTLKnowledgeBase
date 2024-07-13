@@ -2,28 +2,29 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { TagModel } from '../tag-model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TagService {
-  private apiUrl = `${environment.apiUrl}/api/tag`;
+  private apiUrl = `${environment.apiUrl}/api/tags`;
 
   constructor(private http: HttpClient) { }
 
-  getTags(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}`);
+  getTags(): Observable<TagModel[]> {
+    return this.http.get<TagModel[]>(`${this.apiUrl}`);
   }
 
-  addTag(tag: any): Observable<any> {
-    return this.http.post<any>(this.apiUrl, tag);
+  addTag(tag: TagModel): Observable<TagModel> {
+    return this.http.post<TagModel>(this.apiUrl, tag);
   }
 
-  modifyTag(tagId: number, tag: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/${tagId}`, tag);
+  modifyTag(tag: TagModel): Observable<TagModel> {
+    return this.http.put<TagModel>(`${this.apiUrl}/${tag.id}`, tag);
   }
 
-  deleteTag(tagId: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/${tagId}`);
+  deleteTag(tag: TagModel): Observable<TagModel> {
+    return this.http.delete<TagModel>(`${this.apiUrl}/${tag.id}`);
   }
 }

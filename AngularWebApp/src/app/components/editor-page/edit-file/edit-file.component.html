@@ -5,10 +5,10 @@
             <h3>{{file.name}}</h3>
             <p>Size: {{file.size}} bytes</p>
             <p>Type: {{file.type}}</p>
-            <div *ngIf="file.tagNameList.length > 0" class="file-tags">
+            <div *ngIf="file.tagList.length > 0" class="file-tags">
                 <p>Tags:</p>
                 <mat-chip-set>
-                    <mat-chip *ngFor="let tag of file.tagNameList">{{tag}}</mat-chip>
+                    <mat-chip *ngFor="let tag of file.tagList">{{tag.name}}</mat-chip>
                 </mat-chip-set>
             </div>
         </div>

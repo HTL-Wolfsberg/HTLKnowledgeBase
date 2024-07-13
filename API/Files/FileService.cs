@@ -28,8 +28,8 @@ namespace API.Files
 
             foreach (var file in files)
             {
-                file.TagNameList = file.FileTags
-                    .Select(fileTag => fileTag.Tag.TagName)
+                file.TagList = file.FileTags
+                    .Select(fileTag => fileTag.Tag)
                     .ToList();
             }
 
@@ -44,8 +44,8 @@ namespace API.Files
                 .SingleAsync(file => file.Id == id);
 
 
-            file.TagNameList = file.FileTags
-                .Select(fileTag => fileTag.Tag.TagName)
+            file.TagList = file.FileTags
+                .Select(fileTag => fileTag.Tag)
                 .ToList();
 
             return file;
@@ -63,13 +63,13 @@ namespace API.Files
                 filesQuery = filesQuery
                     .Where(f => f.FileTags
                         .Any(ft => tags
-                            .Contains(ft.Tag.TagName)));
+                            .Contains(ft.Tag.Name)));
             }
 
             foreach (var file in filesQuery)
             {
-                file.TagNameList = file.FileTags
-                    .Select(fileTag => fileTag.Tag.TagName)
+                file.TagList = file.FileTags
+                    .Select(fileTag => fileTag.Tag)
                     .ToList();
             }
 
@@ -85,8 +85,8 @@ namespace API.Files
 
             foreach (var file in files)
             {
-                file.TagNameList = file.FileTags
-                    .Select(fileTag => fileTag.Tag.TagName)
+                file.TagList = file.FileTags
+                    .Select(fileTag => fileTag.Tag)
                     .ToList();
             }
 

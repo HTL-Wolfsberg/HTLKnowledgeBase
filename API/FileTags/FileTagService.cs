@@ -18,10 +18,10 @@ namespace API.FileTags
         {
             foreach (var tagName in tags)
             {
-                var tag = await _context.Tags.FirstOrDefaultAsync(t => t.TagName == tagName.Trim());
+                var tag = await _context.Tags.FirstOrDefaultAsync(t => t.Name == tagName.Trim());
                 if (tag == null)
                 {
-                    tag = new TagModel { TagName = tagName.Trim() };
+                    tag = new TagModel { Name = tagName.Trim() };
                     _context.Tags.Add(tag);
                 }
 

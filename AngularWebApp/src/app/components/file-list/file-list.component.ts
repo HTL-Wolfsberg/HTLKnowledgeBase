@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FileService } from '../../services/file.service';
 import { TagService } from '../../services/tag.service';
 import { FileModel } from '../../file-model';
+import { TagModel } from '../../tag-model';
 
 @Component({
   selector: 'app-file-list',
@@ -11,8 +12,8 @@ import { FileModel } from '../../file-model';
 export class FileListComponent implements OnInit {
   fileNameFilter: string = '';
   fileTypeFilter: string = '';
-  selectedFilterTags: string[] = [];
-  availaibleFilterTags: string[] = [];
+  selectedFilterTags: TagModel[] = [];
+  availaibleFilterTags: TagModel[] = [];
 
   fileModels: FileModel[] = [];
   filteredFileModels: FileModel[] = [];
@@ -21,7 +22,7 @@ export class FileListComponent implements OnInit {
 
   ngOnInit() {
     this.fetchFiles();
-    this.tagService.getTags().subscribe((tags: string[]) => {
+    this.tagService.getTags().subscribe((tags: TagModel[]) => {
       this.availaibleFilterTags = tags;
     });
   }
@@ -29,7 +30,7 @@ export class FileListComponent implements OnInit {
   onFilterChange(event: Event): void {
     const target = event.target as HTMLSelectElement;
     const selectedOptions = Array.from(target.selectedOptions).map(option => option.value);
-    this.selectedFilterTags = selectedOptions;
+    this.selectedFilterTags = this.availaibleFilterTags.filter(tag => selectedOptions.includes(tag.name));
     this.filterFiles();
   }
 
@@ -37,7 +38,7 @@ export class FileListComponent implements OnInit {
     this.filteredFileModels = this.fileModels.filter(fileModel => {
       const matchesName = this.fileNameFilter ? fileModel.name.toLowerCase().includes(this.fileNameFilter.toLowerCase()) : true;
       const matchesType = this.fileTypeFilter ? fileModel.type.toLowerCase().includes(this.fileTypeFilter.toLowerCase()) : true;
-      const matchesTags = this.selectedFilterTags.length > 0 ? this.selectedFilterTags.every(tag => fileModel.tagNameList.includes(tag)) : true;
+      const matchesTags = this.selectedFilterTags.length > 0 ? this.selectedFilterTags.every(tag => fileModel.tagList.some(ft => ft.id === tag.id)) : true;
 
       return matchesName && matchesType && matchesTags;
     });

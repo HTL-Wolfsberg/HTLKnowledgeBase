@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../misc/confirm-dialog/confirm-dialog.component';
 import { TagService } from '../../../services/tag.service';
+import { TagModel } from '../../../tag-model';
 
 
 @Component({
@@ -12,8 +13,7 @@ import { TagService } from '../../../services/tag.service';
   styleUrls: ['./manage-tags.component.scss']
 })
 export class ManageTagsComponent implements OnInit {
-  tags: string[] = []; // Replace `any` with your Tag type
-  newTagName: string = '';
+  tags: TagModel[] = [];
 
   constructor(private tagService: TagService,
     private snackBar: MatSnackBar,
@@ -29,29 +29,28 @@ export class ManageTagsComponent implements OnInit {
     });
   }
 
-  onAddTagClicked() {
-    if (this.newTagName.trim() !== '') {
-      this.tagService.addTag({ name: this.newTagName }).subscribe(response => {
-        this.snackBar.open('Tag added successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
-        this.fetchTags();
-        this.newTagName = '';
-      }, error => {
-        console.error('Error adding tag', error);
-        this.snackBar.open('Error adding tag', 'Close', {
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
+  onAddTagClicked(tagName: string) {
+    tagName = tagName.trim();
+    this.tagService.addTag({ name: tagName, id: -1 }).subscribe(response => {
+      this.snackBar.open('Tag added successfully', 'Close', {
+        duration: 3000,
+        panelClass: ['success-snackbar']
       });
-    }
+      this.fetchTags();
+    }, error => {
+      console.error('Error adding tag', error);
+      this.snackBar.open('Error adding tag', 'Close', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+    });
   }
 
-  onModifyTagClicked(tag: any) {
+  onModifyTagClicked(tag: TagModel) {
     const newTagName = prompt('Enter new name for the tag:', tag.name);
     if (newTagName && newTagName.trim() !== '') {
-      this.tagService.modifyTag(tag.id, { name: newTagName }).subscribe(response => {
+      tag.name = newTagName;
+      this.tagService.modifyTag(tag).subscribe(response => {
         this.snackBar.open('Tag modified successfully', 'Close', {
           duration: 3000,
           panelClass: ['success-snackbar']
@@ -67,7 +66,7 @@ export class ManageTagsComponent implements OnInit {
     }
   }
 
-  onDeleteTagClicked(tagId: number) {
+  onDeleteTagClicked(tag: TagModel) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '250px',
       data: { message: 'Are you sure you want to delete this tag?' }
@@ -75,7 +74,7 @@ export class ManageTagsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.tagService.deleteTag(tagId).subscribe(response => {
+        this.tagService.deleteTag(tag).subscribe(response => {
           this.snackBar.open('Tag deleted successfully', 'Close', {
             duration: 3000,
             panelClass: ['success-snackbar']
