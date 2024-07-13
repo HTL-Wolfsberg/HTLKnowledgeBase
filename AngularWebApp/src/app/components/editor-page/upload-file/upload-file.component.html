@@ -1,7 +1,16 @@
 <form (ngSubmit)="uploadFile()">
     <mat-form-field>
-        <mat-select placeholder="Tags" [(value)]="selectedTags" multiple>
-            <mat-option *ngFor="let tag of availableTags" [value]="tag">{{tag.name}}</mat-option>
+        <mat-select placeholder="Tags" [(ngModel)]="selectedTags" [compareWith]="compareTags" multiple
+            [ngModelOptions]="{standalone: true}" (openedChange)="onDropdownOpen()" (closedChange)="onDropdownClose()">
+            <mat-select-trigger>
+                {{ getSelectedTagNames() }}
+            </mat-select-trigger>
+            <mat-option>
+                <ngx-mat-select-search [formControl]="tagFilterCtrl"></ngx-mat-select-search>
+            </mat-option>
+            <mat-option *ngFor="let tag of filteredTags | async" [value]="tag">
+                {{ tag.name }}
+            </mat-option>
         </mat-select>
     </mat-form-field>
     <input type="file" (change)="onFileChange($event)">

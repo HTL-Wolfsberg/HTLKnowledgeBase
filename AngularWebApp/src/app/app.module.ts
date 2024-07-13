@@ -6,7 +6,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { FileUploadComponent } from './components/file-upload/file-upload.component';
 import { FileListComponent } from './components/file-list/file-list.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { MatInputModule } from '@angular/material/input';
 import { RegisterComponent } from './auth/register/register.component';
@@ -27,6 +27,7 @@ import { UploadFileComponent } from './components/editor-page/upload-file/upload
 import { ManageTagsComponent } from './components/editor-page/manage-tags/manage-tags.component';
 import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 
 
 @NgModule({
@@ -56,7 +57,9 @@ import { MatSelectModule } from '@angular/material/select';
     MatIconModule,
     MatDialogModule,
     MatOptionModule,
-    MatSelectModule
+    MatSelectModule,
+    NgxMatSelectSearchModule,
+    ReactiveFormsModule
   ],
   providers: [
     provideAnimationsAsync(),
