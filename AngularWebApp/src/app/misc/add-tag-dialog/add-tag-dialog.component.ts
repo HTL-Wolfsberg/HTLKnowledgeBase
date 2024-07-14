@@ -32,13 +32,16 @@ export class AddTagDialogComponent implements OnInit {
     this.tagService.getTags().subscribe((tags: TagModel[]) => {
       this.availableTags = tags;
       this._filterTags$.next(tags);
-      this.selectedTags = (this.data.file as FileModel).tagList
+      this.selectedTags = (this.data.file as FileModel).tagList;
       this.tagFilterCtrl.valueChanges
         .pipe(
           startWith(''),
           map(value => this._filterTags(value))
         )
         .subscribe(tags => this._filterTags$.next(tags));
+    }, error => {
+      console.error('Error fetching tags', error);
+      this._filterTags$.next([]);
     });
   }
 
