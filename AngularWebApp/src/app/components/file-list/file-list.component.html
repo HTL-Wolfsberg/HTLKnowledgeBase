@@ -15,7 +15,7 @@
         </mat-select>
     </mat-form-field>
 </div>
-<div class="table-container" *ngIf="filteredFiles.length > 0">
+<div class="table-container">
     <table mat-table [dataSource]="filteredFiles" matSort (matSortChange)="sortData($event)" class="mat-elevation-z8">
         <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> File Name </th>
@@ -53,7 +53,4 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
-</div>
-<div *ngIf="filteredFiles.length === 0">
-    <p>No files available</p>
 </div>
