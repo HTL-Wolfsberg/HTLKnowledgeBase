@@ -10,46 +10,32 @@ import { TagModel } from '../../tag-model';
   styleUrls: ['./file-list.component.scss']
 })
 export class FileListComponent implements OnInit {
-  fileNameFilter: string = '';
-  fileTypeFilter: string = '';
-  selectedFilterTags: TagModel[] = [];
-  availaibleFilterTags: TagModel[] = [];
+  filterText: string = '';
+  files: FileModel[] = [];
+  filteredFiles: FileModel[] = [];
 
-  fileModels: FileModel[] = [];
-  filteredFileModels: FileModel[] = [];
+  displayedColumns: string[] = ['name', 'size', 'type', 'tags', 'actions'];
 
   constructor(private fileService: FileService, private tagService: TagService) { }
 
   ngOnInit() {
     this.fetchFiles();
-    this.tagService.getTags().subscribe((tags: TagModel[]) => {
-      this.availaibleFilterTags = tags;
-    });
   }
 
-  onFilterChange(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-    const selectedOptions = Array.from(target.selectedOptions).map(option => option.value);
-    this.selectedFilterTags = this.availaibleFilterTags.filter(tag => selectedOptions.includes(tag.name));
-    this.filterFiles();
-  }
-
-  filterFiles(): void {
-    this.filteredFileModels = this.fileModels.filter(fileModel => {
-      const matchesName = this.fileNameFilter ? fileModel.name.toLowerCase().includes(this.fileNameFilter.toLowerCase()) : true;
-      const matchesType = this.fileTypeFilter ? fileModel.type.toLowerCase().includes(this.fileTypeFilter.toLowerCase()) : true;
-      const matchesTags = this.selectedFilterTags.length > 0 ? this.selectedFilterTags.every(tag => fileModel.tagList.some(ft => ft.id === tag.id)) : true;
-
-      return matchesName && matchesType && matchesTags;
-    });
-  }
-
-  fetchFiles(): void {
-    this.fileService.getFiles(this.selectedFilterTags).subscribe((data: FileModel[]) => {
-      this.fileModels = data;
-      this.filteredFileModels = [...this.fileModels];
+  fetchFiles() {
+    this.fileService.getFiles([]).subscribe(files => {
+      this.files = files;
       this.filterFiles();
     });
+  }
+
+  filterFiles() {
+    const filterTextLower = this.filterText.toLowerCase();
+    this.filteredFiles = this.files.filter(file =>
+      file.name.toLowerCase().includes(filterTextLower) ||
+      file.type.toLowerCase().includes(filterTextLower) ||
+      file.tagList.some(tag => tag.name.toLowerCase().includes(filterTextLower))
+    );
   }
 
   downloadFile(file: FileModel) {

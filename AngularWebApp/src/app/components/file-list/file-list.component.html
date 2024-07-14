@@ -1,26 +1,48 @@
-<div class="filter-container">
-    <h2>Filter by:</h2>
-    <input type="text" placeholder="File name" [(ngModel)]="fileNameFilter" (input)="filterFiles()">
-    <input type="text" placeholder="File type" [(ngModel)]="fileTypeFilter" (input)="filterFiles()">
-    <label for="tags">Tags:</label>
-    <select id="tags" multiple (change)="onFilterChange($event)">
-        <option *ngFor="let filter of availaibleFilterTags" [ngValue]="filter">{{ filter.name }}</option>
-    </select>
+<h2>File List</h2>
+<div class="filter-files">
+    <mat-form-field>
+        <input matInput placeholder="Filter files" [(ngModel)]="filterText" (input)="filterFiles()">
+    </mat-form-field>
 </div>
-<br>
-<div class="file-list">
-    <div class="file-item" *ngFor="let file of filteredFileModels">
-        <div class="file-info">
-            <p class="file-name">File name: {{file.name}}</p>
-            <p class="file-size">File size: {{file.size}}</p>
-            <p class="file-type">File type: {{file.type}}</p>
-            <div class="file-tags">
-                <p>Tags:</p>
-                <mat-chip-listbox>
-                    <mat-chip *ngFor="let tag of file.tagList">{{ tag.name }}</mat-chip>
-                </mat-chip-listbox>
-            </div>
-        </div>
-        <button mat-raised-button color="primary" (click)="downloadFile(file)">Download</button>
-    </div>
+<div class="table-container" *ngIf="filteredFiles.length > 0">
+    <table mat-table [dataSource]="filteredFiles" class="mat-elevation-z8">
+        <ng-container matColumnDef="name">
+            <th mat-header-cell *matHeaderCellDef> File Name </th>
+            <td mat-cell *matCellDef="let file"> {{file.name}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="size">
+            <th mat-header-cell *matHeaderCellDef> Size </th>
+            <td mat-cell *matCellDef="let file"> {{file.size}} bytes </td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef> Type </th>
+            <td mat-cell *matCellDef="let file"> {{file.type}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="tags">
+            <th mat-header-cell *matHeaderCellDef> Tags </th>
+            <td mat-cell *matCellDef="let file">
+                <mat-chip-set *ngIf="file.tagList.length > 0">
+                    <mat-chip *ngFor="let tag of file.tagList">{{tag.name}}</mat-chip>
+                </mat-chip-set>
+            </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef> Actions </th>
+            <td mat-cell *matCellDef="let file">
+                <button mat-raised-button color="primary" (click)="downloadFile(file)">
+                    Download
+                </button>
+            </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+</div>
+<div *ngIf="filteredFiles.length === 0">
+    <p>No files available</p>
 </div>
