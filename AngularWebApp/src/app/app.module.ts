@@ -29,6 +29,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MatTableModule } from '@angular/material/table';
 import { AddTagDialogComponent } from './misc/add-tag-dialog/add-tag-dialog.component';
+import { MatSortModule } from '@angular/material/sort';
 
 
 @NgModule({
@@ -61,7 +62,8 @@ import { AddTagDialogComponent } from './misc/add-tag-dialog/add-tag-dialog.comp
     MatSelectModule,
     NgxMatSelectSearchModule,
     ReactiveFormsModule,
-    MatTableModule
+    MatTableModule,
+    MatSortModule
   ],
   providers: [
     provideAnimationsAsync(),

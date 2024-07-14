@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Sort } from '@angular/material/sort';
 import { FileService } from '../../services/file.service';
 import { TagService } from '../../services/tag.service';
 import { FileModel } from '../../file-model';
@@ -20,7 +21,7 @@ export class FileListComponent implements OnInit {
   filteredTags: Observable<TagModel[]>;
 
   files: FileModel[] = [];
-  filteredFiles: FileModel[] = [];
+  sortedFiles: FileModel[] = [];
 
   displayedColumns: string[] = ['name', 'size', 'type', 'tags', 'actions'];
 
@@ -49,7 +50,7 @@ export class FileListComponent implements OnInit {
     const filterName = this.fileNameFilter.toLowerCase();
     const filterType = this.fileTypeFilter.toLowerCase();
 
-    this.filteredFiles = this.files.filter(file => {
+    this.sortedFiles = this.files.filter(file => {
       const matchesName = filterName ? file.name.toLowerCase().includes(filterName) : true;
       const matchesType = filterType ? file.type.toLowerCase().includes(filterType) : true;
       const matchesTags = this.selectedFilterTags.length > 0 ? this.selectedFilterTags.every(tag => file.tagList.some(ft => ft.id === tag.id)) : true;
@@ -61,6 +62,7 @@ export class FileListComponent implements OnInit {
   fetchFiles() {
     this.fileService.getFiles([]).subscribe(files => {
       this.files = files;
+      this.sortedFiles = this.files.slice();
       this.filterFiles();
     });
   }
@@ -78,8 +80,34 @@ export class FileListComponent implements OnInit {
     });
   }
 
+  sortData(sort: Sort) {
+    const data = this.files.slice();
+    if (!sort.active || sort.direction === '') {
+      this.sortedFiles = data;
+      return;
+    }
+
+    this.sortedFiles = data.sort((a, b) => {
+      const isAsc = sort.direction === 'asc';
+      switch (sort.active) {
+        case 'name':
+          return compare(a.name, b.name, isAsc);
+        case 'size':
+          return compare(a.size, b.size, isAsc);
+        case 'type':
+          return compare(a.type, b.type, isAsc);
+        default:
+          return 0;
+      }
+    });
+  }
+
   private _filterTags(value: string): TagModel[] {
     const filterValue = value.toLowerCase();
     return this.availableFilterTags.filter(tag => tag.name.toLowerCase().includes(filterValue));
   }
+}
+
+function compare(a: number | string, b: number | string, isAsc: boolean) {
+  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }
