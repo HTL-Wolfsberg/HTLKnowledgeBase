@@ -28,6 +28,7 @@ import { ManageTagsComponent } from './components/editor-page/manage-tags/manage
 import { MatOptionModule } from '@angular/material/core';
 import { MatSelectModule } from '@angular/material/select';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { MatTableModule } from '@angular/material/table';
 
 
 @NgModule({
@@ -59,7 +60,8 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
     MatOptionModule,
     MatSelectModule,
     NgxMatSelectSearchModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatTableModule
   ],
   providers: [
     provideAnimationsAsync(),
