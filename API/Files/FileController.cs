@@ -174,10 +174,17 @@ public class FileController : ControllerBase
 
         bool success = await _fileService.UpdateFile(file);
 
-        _logger.LogInformation("File updated successfully: {FileName}", file.Name);
-
-        return Ok(file);
+        if (success)
+        {
+            _logger.LogInformation("File updated successfully: {FileName}", file.Name);
+            return Ok(file);
+        }
+        else
+        {
+            return NotFound();
+        }
     }
+
 
 
 

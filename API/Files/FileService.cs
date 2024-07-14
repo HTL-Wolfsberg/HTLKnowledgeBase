@@ -111,7 +111,11 @@ namespace API.Files
 
         public async Task<bool> UpdateFile(FileModel newFile)
         {
-            var existingFile = await GetFileById(newFile.Id);
+            var existingFile = await _context.Files
+                .Include(f => f.FileTags)
+                .ThenInclude(ft => ft.Tag)
+                .FirstOrDefaultAsync(f => f.Id == newFile.Id);
+
             if (existingFile == null)
             {
                 return false;
@@ -119,8 +123,10 @@ namespace API.Files
 
             existingFile.Name = newFile.Name;
 
-            existingFile.FileTags.Clear();
-            existingFile.TagList.Clear();
+            // Clear existing tags
+            _context.FileTags.RemoveRange(existingFile.FileTags);
+
+            // Add new tags
             foreach (var tag in newFile.TagList)
             {
                 existingFile.FileTags.Add(new FileTagModel { FileId = existingFile.Id, TagId = tag.Id });
