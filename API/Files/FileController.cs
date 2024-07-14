@@ -172,26 +172,11 @@ public class FileController : ControllerBase
             return Forbid();
         }
 
-        var existingFile = await _fileService.GetFileById(id);
-        if (existingFile == null)
-        {
-            return NotFound();
-        }
-
-        existingFile.Name = file.Name;
-
-        // Update tags
-        existingFile.FileTags.Clear();
-        foreach (var tag in file.TagList)
-        {
-            existingFile.FileTags.Add(new FileTagModel { FileId = existingFile.Id, TagId = tag.Id });
-        }
-
-        await _fileService.UpdateFile(existingFile);
+        bool success = await _fileService.UpdateFile(file);
 
         _logger.LogInformation("File updated successfully: {FileName}", file.Name);
 
-        return Ok(existingFile);
+        return Ok(file);
     }
 
 

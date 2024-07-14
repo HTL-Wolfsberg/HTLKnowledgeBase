@@ -14,7 +14,7 @@ export class EditFileComponent implements OnInit {
   files: FileModel[] = [];
   filteredFiles: FileModel[] = [];
   filterText: string = '';
-  editingFileId: string | null = null;  // Track the currently edited file
+  editingFile: FileModel | null = null;  // Track the currently edited file
 
   displayedColumns: string[] = ['name', 'size', 'type', 'tags', 'actions'];
 
@@ -73,27 +73,29 @@ export class EditFileComponent implements OnInit {
     });
   }
 
-  toggleEdit(fileId: string) {
-    if (this.editingFileId === fileId) {
-      this.editingFileId = null;
+  toggleEdit(file: FileModel) {
+    if (this.isEditing(file.id)) {
+      this.saveChanges(file);
+      this.editingFile = null;
     } else {
-      this.editingFileId = fileId;
+      this.editingFile = { ...file };
     }
   }
 
   isEditing(fileId: string): boolean {
-    return this.editingFileId === fileId;
+    return this.editingFile !== null && this.editingFile.id === fileId;
   }
 
-  onFileNameChange(file: FileModel) {
+  saveChanges(file: FileModel) {
     this.fileService.updateFile(file).subscribe(response => {
-      this.snackBar.open('File name updated successfully', 'Close', {
+      this.snackBar.open('File updated successfully', 'Close', {
         duration: 3000,
         panelClass: ['success-snackbar']
       });
+      this.fetchFiles(); // Refresh the file list
     }, error => {
-      console.error('Error updating file name', error);
-      this.snackBar.open('Error updating file name', 'Close', {
+      console.error('Error updating file', error);
+      this.snackBar.open('Error updating file', 'Close', {
         duration: 3000,
         panelClass: ['error-snackbar']
       });
@@ -104,19 +106,8 @@ export class EditFileComponent implements OnInit {
     const index = file.tagList.indexOf(tag);
     if (index >= 0) {
       file.tagList.splice(index, 1);
-      this.fileService.updateFile(file).subscribe(response => {
-        this.snackBar.open('Tag removed successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
-      }, error => {
-        console.error('Error removing tag', error);
-        this.snackBar.open('Error removing tag', 'Close', {
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
-      });
     }
+    console.log(file)
   }
 
   addTag(file: FileModel) {

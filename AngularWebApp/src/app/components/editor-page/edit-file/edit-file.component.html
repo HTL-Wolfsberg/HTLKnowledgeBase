@@ -8,10 +8,9 @@
     <table mat-table [dataSource]="filteredFiles" class="mat-elevation-z8">
         <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef> File Name </th>
-
             <td mat-cell *matCellDef="let file">
                 <div *ngIf="!isEditing(file.id)">{{file.name}}</div>
-                <input [(ngModel)]="file.name" *ngIf="isEditing(file.id)" (change)="onFileNameChange(file)">
+                <input [(ngModel)]="file.name" *ngIf="isEditing(file.id)">
             </td>
         </ng-container>
 
@@ -45,7 +44,7 @@
         <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef> Actions </th>
             <td mat-cell *matCellDef="let file">
-                <button mat-icon-button color="primary" (click)="toggleEdit(file.id)">
+                <button mat-icon-button color="primary" (click)="toggleEdit(file)">
                     <mat-icon>{{ isEditing(file.id) ? 'save' : 'edit' }}</mat-icon>
                 </button>
                 <button mat-icon-button color="warn" (click)="onRemoveFileClicked(file.id)">

@@ -109,28 +109,26 @@ namespace API.Files
             }
         }
 
-        public async Task UpdateFile(FileModel file)
+        public async Task<bool> UpdateFile(FileModel newFile)
         {
-            var existingFile = await _context.Files
-                .Include(f => f.FileTags)
-                .FirstOrDefaultAsync(f => f.Id == file.Id);
-
-            if (existingFile != null)
+            var existingFile = await GetFileById(newFile.Id);
+            if (existingFile == null)
             {
-                existingFile.Name = file.Name;
-                existingFile.FileTags.Clear();
-
-                foreach (var tag in file.TagList)
-                {
-                    var tagModel = await _context.Tags.FindAsync(tag.Id);
-                    if (tagModel != null)
-                    {
-                        existingFile.FileTags.Add(new FileTagModel { FileId = existingFile.Id, TagId = tagModel.Id });
-                    }
-                }
-
-                await _context.SaveChangesAsync();
+                return false;
             }
+
+            existingFile.Name = newFile.Name;
+
+            existingFile.FileTags.Clear();
+            existingFile.TagList.Clear();
+            foreach (var tag in newFile.TagList)
+            {
+                existingFile.FileTags.Add(new FileTagModel { FileId = existingFile.Id, TagId = tag.Id });
+            }
+
+            await _context.SaveChangesAsync();
+
+            return true;
         }
 
     }
