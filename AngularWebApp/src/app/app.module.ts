@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { FileUploadComponent } from './components/file-upload/file-upload.component';
 import { FileListComponent } from './components/file-list/file-list.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -34,7 +33,6 @@ import { MatTableModule } from '@angular/material/table';
 @NgModule({
   declarations: [
     AppComponent,
-    FileUploadComponent,
     FileListComponent,
     RegisterComponent,
     LoginComponent,
