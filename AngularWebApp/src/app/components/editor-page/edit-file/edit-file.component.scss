@@ -13,3 +13,12 @@
 .mat-table {
     width: 100%;
 }
+
+.mat-chip {
+    display: flex;
+    align-items: center;
+}
+
+mat-chip button {
+    margin-left: 8px;
+}

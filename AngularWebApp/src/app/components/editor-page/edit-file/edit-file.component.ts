@@ -14,6 +14,7 @@ export class EditFileComponent implements OnInit {
   files: FileModel[] = [];
   filteredFiles: FileModel[] = [];
   filterText: string = '';
+  editingFileId: string | null = null;  // Track the currently edited file
 
   displayedColumns: string[] = ['name', 'size', 'type', 'tags', 'actions'];
 
@@ -70,5 +71,55 @@ export class EditFileComponent implements OnInit {
         panelClass: ['error-snackbar']
       });
     });
+  }
+
+  toggleEdit(fileId: string) {
+    if (this.editingFileId === fileId) {
+      this.editingFileId = null;
+    } else {
+      this.editingFileId = fileId;
+    }
+  }
+
+  isEditing(fileId: string): boolean {
+    return this.editingFileId === fileId;
+  }
+
+  onFileNameChange(file: FileModel) {
+    this.fileService.updateFile(file).subscribe(response => {
+      this.snackBar.open('File name updated successfully', 'Close', {
+        duration: 3000,
+        panelClass: ['success-snackbar']
+      });
+    }, error => {
+      console.error('Error updating file name', error);
+      this.snackBar.open('Error updating file name', 'Close', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+    });
+  }
+
+  removeTag(file: FileModel, tag: any) {
+    const index = file.tagList.indexOf(tag);
+    if (index >= 0) {
+      file.tagList.splice(index, 1);
+      this.fileService.updateFile(file).subscribe(response => {
+        this.snackBar.open('Tag removed successfully', 'Close', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+      }, error => {
+        console.error('Error removing tag', error);
+        this.snackBar.open('Error removing tag', 'Close', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+      });
+    }
+  }
+
+  addTag(file: FileModel) {
+    // Implement modal window here to add a new tag
   }
 }

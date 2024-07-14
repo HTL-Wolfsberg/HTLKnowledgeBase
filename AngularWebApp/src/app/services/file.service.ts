@@ -36,13 +36,10 @@ export class FileService {
     return this.http.get(`${this.apiUrl}/${id}`, { responseType: 'blob' });
   }
 
-  updateFile(id: string, file: File, tags: TagModel[]): Observable<any> {
-    const formData: FormData = new FormData();
-    formData.append('file', file);
-    formData.append("tags", JSON.stringify(tags));
-
-    return this.http.put<any>(`${this.apiUrl}/${id}`, formData);
+  updateFile(file: FileModel): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${file.id}`, file);
   }
+
 
   deleteFile(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);

@@ -3,7 +3,6 @@ using API.FileTags;
 using API.Tags;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Security.Claims;
 
@@ -158,61 +157,43 @@ public class FileController : ControllerBase
         }
     }
 
+    [HttpPut("{id}")]
+    [Authorize(Roles = "Admin,Editor")]
+    public async Task<IActionResult> UpdateFile(Guid id, [FromBody] FileModel file)
+    {
+        if (id != file.Id)
+        {
+            return BadRequest("File ID mismatch.");
+        }
 
-    //[HttpPut("{id}")]
-    //public async Task<IActionResult> UpdateFile(int id, [FromQuery] string[] tags, IFormFile file)
-    //{
-    //    var fileModel = await _context.Files.Include(f => f.FileTags).ThenInclude(ft => ft.Tag).FirstOrDefaultAsync(f => f.Id == id);
-    //    if (fileModel == null)
-    //    {
-    //        _logger.LogWarning("File not found: {FileId}", id);
-    //        return NotFound();
-    //    }
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (file.UserId != userId)
+        {
+            return Forbid();
+        }
+
+        var existingFile = await _fileService.GetFileById(id);
+        if (existingFile == null)
+        {
+            return NotFound();
+        }
+
+        existingFile.Name = file.Name;
+
+        // Update tags
+        existingFile.FileTags.Clear();
+        foreach (var tag in file.TagList)
+        {
+            existingFile.FileTags.Add(new FileTagModel { FileId = existingFile.Id, TagId = tag.Id });
+        }
+
+        await _fileService.UpdateFile(existingFile);
+
+        _logger.LogInformation("File updated successfully: {FileName}", file.Name);
+
+        return Ok(existingFile);
+    }
 
 
-    //    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-    //    if (fileModel.UserId != userId)
-    //    {
-    //        _logger.LogWarning("User {UserId} attempted to access file {FileId} they do not own.", userId, id);
-    //        return Forbid();
-    //    }
 
-
-    //    if (file != null)
-    //    {
-    //        var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "HTLKnowledgeBase", "Files", file.FileName);
-    //        using (var stream = new FileStream(filePath, FileMode.Create))
-    //        {
-    //            await file.CopyToAsync(stream);
-    //        }
-
-    //        fileModel.FileName = file.FileName;
-    //        fileModel.FilePath = filePath;
-    //        fileModel.FileSize = file.Length;
-    //        fileModel.FileType = file.ContentType;
-    //    }
-
-    //    if (tags != null && tags.Length > 0)
-    //    {
-    //        fileModel.FileTags.Clear();
-    //        foreach (var tagName in tags)
-    //        {
-    //            var tag = await _context.Tags.FirstOrDefaultAsync(t => t.TagName == tagName.Trim());
-    //            if (tag == null)
-    //            {
-    //                tag = new TagModel { TagName = tagName.Trim() };
-    //                _context.Tags.Add(tag);
-    //            }
-
-    //            fileModel.FileTags.Add(new FileTagModel { Tag = tag, File = fileModel });
-    //        }
-    //    }
-
-    //    _context.Files.Update(fileModel);
-    //    await _context.SaveChangesAsync();
-
-    //    _logger.LogInformation("File updated: {FileName}", fileModel.FileName);
-
-    //    return Ok(fileModel);
-    //}
 }

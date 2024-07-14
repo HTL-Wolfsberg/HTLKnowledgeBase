@@ -1,4 +1,5 @@
 ﻿
+using API.FileTags;
 using API.Tags;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -107,5 +108,30 @@ namespace API.Files
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task UpdateFile(FileModel file)
+        {
+            var existingFile = await _context.Files
+                .Include(f => f.FileTags)
+                .FirstOrDefaultAsync(f => f.Id == file.Id);
+
+            if (existingFile != null)
+            {
+                existingFile.Name = file.Name;
+                existingFile.FileTags.Clear();
+
+                foreach (var tag in file.TagList)
+                {
+                    var tagModel = await _context.Tags.FindAsync(tag.Id);
+                    if (tagModel != null)
+                    {
+                        existingFile.FileTags.Add(new FileTagModel { FileId = existingFile.Id, TagId = tagModel.Id });
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+            }
+        }
+
     }
 }
