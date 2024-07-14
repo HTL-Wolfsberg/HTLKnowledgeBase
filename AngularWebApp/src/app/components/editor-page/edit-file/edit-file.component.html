@@ -47,6 +47,9 @@
                 <button mat-icon-button color="primary" (click)="toggleEdit(file)">
                     <mat-icon>{{ isEditing(file.id) ? 'save' : 'edit' }}</mat-icon>
                 </button>
+                <button mat-icon-button color="warn" *ngIf="isEditing(file.id)" (click)="cancelEdit()">
+                    <mat-icon>close</mat-icon>
+                </button>
                 <button mat-icon-button color="warn" (click)="onRemoveFileClicked(file.id)">
                     <mat-icon>delete</mat-icon>
                 </button>

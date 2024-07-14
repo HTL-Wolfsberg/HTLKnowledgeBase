@@ -6,7 +6,6 @@ import { ConfirmDialogComponent } from '../../../misc/confirm-dialog/confirm-dia
 import { FileService } from '../../../services/file.service';
 import { AddTagDialogComponent } from '../../../misc/add-tag-dialog/add-tag-dialog.component';
 
-
 @Component({
   selector: 'app-edit-file',
   templateUrl: './edit-file.component.html',
@@ -17,6 +16,7 @@ export class EditFileComponent implements OnInit {
   filteredFiles: FileModel[] = [];
   filterText: string = '';
   editingFile: FileModel | null = null;  // Track the currently edited file
+  backupFile: FileModel | null = null; // Backup of the file before editing
 
   displayedColumns: string[] = ['name', 'size', 'type', 'tags', 'actions'];
 
@@ -78,8 +78,22 @@ export class EditFileComponent implements OnInit {
     if (this.isEditing(file.id)) {
       this.saveChanges(file);
       this.editingFile = null;
+      this.backupFile = null; // Clear the backup file after saving
     } else {
+      this.backupFile = JSON.parse(JSON.stringify(file)); // Create a deep copy as a backup before editing
       this.editingFile = { ...file };
+    }
+  }
+
+  cancelEdit() {
+    if (this.editingFile && this.backupFile) {
+      const index = this.files.findIndex(f => f.id === this.editingFile!.id);
+      if (index !== -1) {
+        this.files[index] = this.backupFile; // Revert changes
+        this.filterFiles(); // Reapply filters
+      }
+      this.editingFile = null;
+      this.backupFile = null;
     }
   }
 
