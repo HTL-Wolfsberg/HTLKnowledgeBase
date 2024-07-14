@@ -4,6 +4,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { FileModel } from '../../../file-model';
 import { ConfirmDialogComponent } from '../../../misc/confirm-dialog/confirm-dialog.component';
 import { FileService } from '../../../services/file.service';
+import { AddTagDialogComponent } from '../../../misc/add-tag-dialog/add-tag-dialog.component';
+
 
 @Component({
   selector: 'app-edit-file',
@@ -52,7 +54,7 @@ export class EditFileComponent implements OnInit {
       if (result) {
         this.removeFile(id);
       }
-    })
+    });
   }
 
   removeFile(id: string) {
@@ -63,7 +65,6 @@ export class EditFileComponent implements OnInit {
       });
       this.files = this.files.filter(file => file.id !== id);
       this.filterFiles();
-
     }, error => {
       console.error('Error removing file', error);
       this.snackBar.open('Error removing file', 'Close', {
@@ -107,10 +108,18 @@ export class EditFileComponent implements OnInit {
     if (index >= 0) {
       file.tagList.splice(index, 1);
     }
-    console.log(file)
   }
 
-  addTag(file: FileModel) {
-    // Implement modal window here to add a new tag
+  openAddTagDialog(file: FileModel) {
+    const dialogRef = this.dialog.open(AddTagDialogComponent, {
+      width: '400px',
+      data: { file: file }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        file.tagList = result;
+      }
+    });
   }
 }

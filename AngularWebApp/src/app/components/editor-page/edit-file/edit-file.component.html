@@ -34,7 +34,7 @@
                             <mat-icon>close</mat-icon>
                         </button>
                     </mat-chip>
-                    <button mat-icon-button *ngIf="isEditing(file.id)" (click)="addTag(file)">
+                    <button mat-icon-button *ngIf="isEditing(file.id)" (click)="openAddTagDialog(file)">
                         <mat-icon>add</mat-icon>
                     </button>
                 </mat-chip-set>

@@ -1,0 +1,20 @@
+<h1 mat-dialog-title>Select Tags</h1>
+<div mat-dialog-content>
+    <mat-form-field>
+        <mat-select placeholder="Tags" [(ngModel)]="selectedTags" [compareWith]="compareTags" multiple>
+            <mat-select-trigger>
+                {{ getSelectedTagNames() }}
+            </mat-select-trigger>
+            <mat-option>
+                <ngx-mat-select-search [formControl]="tagFilterCtrl"></ngx-mat-select-search>
+            </mat-option>
+            <mat-option *ngFor="let tag of filteredTags | async" [value]="tag">
+                {{ tag.name }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-button (click)="onAddTags()">Add Tags</button>
+</div>
