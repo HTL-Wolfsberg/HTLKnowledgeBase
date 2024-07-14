@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { Sort } from '@angular/material/sort';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatSort, Sort } from '@angular/material/sort';
+import { FormControl } from '@angular/forms';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 import { FileService } from '../../services/file.service';
 import { TagService } from '../../services/tag.service';
 import { FileModel } from '../../file-model';
 import { TagModel } from '../../tag-model';
-import { FormControl } from '@angular/forms';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-file-list',
@@ -19,14 +19,14 @@ export class FileListComponent implements OnInit {
   selectedFilterTags: TagModel[] = [];
   availableFilterTags: TagModel[] = [];
   filteredTags: Observable<TagModel[]>;
+  sortedData: FileModel[] = [];
 
   files: FileModel[] = [];
-  sortedFiles: FileModel[] = [];
-
+  filteredFiles: FileModel[] = [];
   displayedColumns: string[] = ['name', 'size', 'type', 'tags', 'actions'];
-
   tagFilterCtrl = new FormControl();
   private _filterTags$ = new BehaviorSubject<TagModel[]>([]);
+  @ViewChild(MatSort) sort!: MatSort; // Definite assignment assertion
 
   constructor(private fileService: FileService, private tagService: TagService) {
     this.filteredTags = this._filterTags$.asObservable();
@@ -50,19 +50,23 @@ export class FileListComponent implements OnInit {
     const filterName = this.fileNameFilter.toLowerCase();
     const filterType = this.fileTypeFilter.toLowerCase();
 
-    this.sortedFiles = this.files.filter(file => {
+    this.filteredFiles = this.files.filter(file => {
       const matchesName = filterName ? file.name.toLowerCase().includes(filterName) : true;
       const matchesType = filterType ? file.type.toLowerCase().includes(filterType) : true;
       const matchesTags = this.selectedFilterTags.length > 0 ? this.selectedFilterTags.every(tag => file.tagList.some(ft => ft.id === tag.id)) : true;
 
       return matchesName && matchesType && matchesTags;
     });
+
+    if (this.sort) {
+      this.applySort(this.sort);
+    }
   }
 
   fetchFiles() {
     this.fileService.getFiles([]).subscribe(files => {
       this.files = files;
-      this.sortedFiles = this.files.slice();
+      this.filteredFiles = [...this.files];
       this.filterFiles();
     });
   }
@@ -80,14 +84,25 @@ export class FileListComponent implements OnInit {
     });
   }
 
+  private _filterTags(value: string): TagModel[] {
+    const filterValue = value.toLowerCase();
+    return this.availableFilterTags.filter(tag => tag.name.toLowerCase().includes(filterValue));
+  }
+
   sortData(sort: Sort) {
-    const data = this.files.slice();
+    this.applySort(sort);
+  }
+
+  applySort(sort: Sort) {
+    if (!sort) return;
+
+    const data = this.filteredFiles.slice();
     if (!sort.active || sort.direction === '') {
-      this.sortedFiles = data;
+      this.sortedData = data;
       return;
     }
 
-    this.sortedFiles = data.sort((a, b) => {
+    this.sortedData = data.sort((a, b) => {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
         case 'name':
@@ -100,11 +115,8 @@ export class FileListComponent implements OnInit {
           return 0;
       }
     });
-  }
 
-  private _filterTags(value: string): TagModel[] {
-    const filterValue = value.toLowerCase();
-    return this.availableFilterTags.filter(tag => tag.name.toLowerCase().includes(filterValue));
+    this.filteredFiles = [...this.sortedData];
   }
 }
 
