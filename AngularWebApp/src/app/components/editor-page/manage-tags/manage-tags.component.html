@@ -1,5 +1,11 @@
+<div class="filter-tags">
+    <mat-form-field>
+        <input matInput placeholder="Filter tags" [(ngModel)]="filterText" (input)="filterTags()">
+    </mat-form-field>
+</div>
+
 <div class="tag-list">
-    <div class="tag-item" *ngFor="let tag of tags">
+    <div class="tag-item" *ngFor="let tag of filteredTags">
         <p>{{ tag.name }}</p>
         <button mat-icon-button color="primary" (click)="onModifyTagClicked(tag)">
             <mat-icon>edit</mat-icon>

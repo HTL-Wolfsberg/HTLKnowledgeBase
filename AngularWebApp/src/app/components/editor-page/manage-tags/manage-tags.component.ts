@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../misc/confirm-dialog/confirm-dialog.component';
 import { TagService } from '../../../services/tag.service';
 import { TagModel } from '../../../tag-model';
-
 
 @Component({
   selector: 'app-manage-tags',
@@ -14,6 +12,8 @@ import { TagModel } from '../../../tag-model';
 })
 export class ManageTagsComponent implements OnInit {
   tags: TagModel[] = [];
+  filteredTags: TagModel[] = [];
+  filterText: string = '';
 
   constructor(private tagService: TagService,
     private snackBar: MatSnackBar,
@@ -26,7 +26,13 @@ export class ManageTagsComponent implements OnInit {
   fetchTags() {
     this.tagService.getTags().subscribe(tags => {
       this.tags = tags;
+      this.filterTags(); // Initialize the filtered tags
     });
+  }
+
+  filterTags() {
+    const filterTextLower = this.filterText.toLowerCase();
+    this.filteredTags = this.tags.filter(tag => tag.name.toLowerCase().includes(filterTextLower));
   }
 
   onAddTagClicked(tagName: string) {
@@ -90,6 +96,6 @@ export class ManageTagsComponent implements OnInit {
           });
         }
       });
-    })
+    });
   }
 }
