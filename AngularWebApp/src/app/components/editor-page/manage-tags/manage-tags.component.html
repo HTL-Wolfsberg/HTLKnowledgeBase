@@ -18,7 +18,8 @@
 
 <div class="add-tag">
     <mat-form-field>
-        <input matInput placeholder="New tag name" #tagName>
+        <input #addTagInput matInput placeholder="New tag name" #tagName>
     </mat-form-field>
-    <button mat-raised-button color="primary" (click)="onAddTagClicked(tagName.value)">Add Tag</button>
+    <button mat-raised-button color="primary" (click)="onAddTagClicked(tagName.value); addTagInput.value = ''">Add
+        Tag</button>
 </div>

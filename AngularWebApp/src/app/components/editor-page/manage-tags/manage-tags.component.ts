@@ -37,6 +37,10 @@ export class ManageTagsComponent implements OnInit {
 
   onAddTagClicked(tagName: string) {
     tagName = tagName.trim();
+    if (tagName.length <= 0) {
+      this.showError("Tag Name empty");
+      return;
+    }
     this.tagService.addTag({ name: tagName, id: "" }).subscribe(response => {
       this.snackBar.open('Tag added successfully', 'Close', {
         duration: 3000,
@@ -44,11 +48,15 @@ export class ManageTagsComponent implements OnInit {
       });
       this.fetchTags();
     }, error => {
-      console.error('Error adding tag', error);
-      this.snackBar.open('Error adding tag', 'Close', {
-        duration: 3000,
-        panelClass: ['error-snackbar']
-      });
+      this.showError(error, 'Error adding tag')
+    });
+  }
+
+  showError(msg: string, error?: any) {
+    console.error('Error adding tag', error);
+    this.snackBar.open(msg, 'Close', {
+      duration: 3000,
+      panelClass: ['error-snackbar']
     });
   }
 
