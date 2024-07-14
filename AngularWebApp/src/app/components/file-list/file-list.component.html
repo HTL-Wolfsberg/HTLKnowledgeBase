@@ -1,7 +1,15 @@
 <h2>File List</h2>
-<div class="filter-files">
+<div class="filter-container">
     <mat-form-field>
-        <input matInput placeholder="Filter files" [(ngModel)]="filterText" (input)="filterFiles()">
+        <input matInput placeholder="File name" [(ngModel)]="fileNameFilter" (input)="filterFiles()">
+    </mat-form-field>
+    <mat-form-field>
+        <input matInput placeholder="File type" [(ngModel)]="fileTypeFilter" (input)="filterFiles()">
+    </mat-form-field>
+    <mat-form-field>
+        <mat-select placeholder="Tags" [(ngModel)]="selectedFilterTags" (selectionChange)="filterFiles()" multiple>
+            <mat-option *ngFor="let tag of availableFilterTags" [value]="tag">{{ tag.name }}</mat-option>
+        </mat-select>
     </mat-form-field>
 </div>
 <div class="table-container" *ngIf="filteredFiles.length > 0">

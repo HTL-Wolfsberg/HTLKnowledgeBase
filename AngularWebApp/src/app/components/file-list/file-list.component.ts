@@ -10,7 +10,11 @@ import { TagModel } from '../../tag-model';
   styleUrls: ['./file-list.component.scss']
 })
 export class FileListComponent implements OnInit {
-  filterText: string = '';
+  fileNameFilter: string = '';
+  fileTypeFilter: string = '';
+  selectedFilterTags: TagModel[] = [];
+  availableFilterTags: TagModel[] = [];
+
   files: FileModel[] = [];
   filteredFiles: FileModel[] = [];
 
@@ -20,6 +24,22 @@ export class FileListComponent implements OnInit {
 
   ngOnInit() {
     this.fetchFiles();
+    this.tagService.getTags().subscribe((tags: TagModel[]) => {
+      this.availableFilterTags = tags;
+    });
+  }
+
+  filterFiles() {
+    const filterName = this.fileNameFilter.toLowerCase();
+    const filterType = this.fileTypeFilter.toLowerCase();
+
+    this.filteredFiles = this.files.filter(file => {
+      const matchesName = filterName ? file.name.toLowerCase().includes(filterName) : true;
+      const matchesType = filterType ? file.type.toLowerCase().includes(filterType) : true;
+      const matchesTags = this.selectedFilterTags.length > 0 ? this.selectedFilterTags.every(tag => file.tagList.some(ft => ft.id === tag.id)) : true;
+
+      return matchesName && matchesType && matchesTags;
+    });
   }
 
   fetchFiles() {
@@ -27,15 +47,6 @@ export class FileListComponent implements OnInit {
       this.files = files;
       this.filterFiles();
     });
-  }
-
-  filterFiles() {
-    const filterTextLower = this.filterText.toLowerCase();
-    this.filteredFiles = this.files.filter(file =>
-      file.name.toLowerCase().includes(filterTextLower) ||
-      file.type.toLowerCase().includes(filterTextLower) ||
-      file.tagList.some(tag => tag.name.toLowerCase().includes(filterTextLower))
-    );
   }
 
   downloadFile(file: FileModel) {
