@@ -1,4 +1,4 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpInterceptorFn, HttpRequest } from '@angular/common/http';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../auth.service';
@@ -11,7 +11,7 @@ export class AuthInterceptor implements HttpInterceptor {
     const authToken = this.authService.getToken();
     let authReq = req;
 
-    if (authToken) {
+    if (authToken && !this.authService.isAccessTokenExpired()) {
       authReq = req.clone({
         setHeaders: {
           Authorization: `Bearer ${authToken}`
@@ -21,10 +21,10 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(authReq).pipe(
       catchError(error => {
-        console.log(error)
-        if (error.status === 401) {
+        if (error.status === 401 && !this.authService.isRefreshTokenExpired()) {
           return this.handle401Error(authReq, next);
         } else {
+          this.authService.logout();
           return throwError(() => error);
         }
       })
