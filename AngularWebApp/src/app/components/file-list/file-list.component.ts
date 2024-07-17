@@ -51,8 +51,8 @@ export class FileListComponent implements OnInit {
     const filterType = this.fileTypeFilter.toLowerCase();
 
     this.filteredFiles = this.files.filter(file => {
-      const matchesName = filterName ? file.name.toLowerCase().includes(filterName) : true;
-      const matchesType = filterType ? file.type.toLowerCase().includes(filterType) : true;
+      const matchesName = filterName ? file.getFileNameWithoutExtension().toLowerCase().includes(filterName) : true;
+      const matchesType = filterType ? file.getFileExtension().toLowerCase().includes(filterType) : true;
       const matchesTags = this.selectedFilterTags.length > 0 ? this.selectedFilterTags.every(tag => file.tagList.some(ft => ft.id === tag.id)) : true;
 
       return matchesName && matchesType && matchesTags;

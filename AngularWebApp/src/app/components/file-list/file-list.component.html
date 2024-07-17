@@ -19,7 +19,7 @@
     <table mat-table [dataSource]="filteredFiles" matSort (matSortChange)="sortData($event)" class="mat-elevation-z8">
         <ng-container matColumnDef="name">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> File Name </th>
-            <td mat-cell *matCellDef="let file"> {{file.name}} </td>
+            <td mat-cell *matCellDef="let file"> {{file.getFileNameWithoutExtension()}} </td>
         </ng-container>
 
         <ng-container matColumnDef="size">
@@ -29,7 +29,7 @@
 
         <ng-container matColumnDef="type">
             <th mat-header-cell *matHeaderCellDef mat-sort-header> Type </th>
-            <td mat-cell *matCellDef="let file"> {{file.type}} </td>
+            <td mat-cell *matCellDef="let file"> {{file.getFileExtension()}} </td>
         </ng-container>
 
         <ng-container matColumnDef="tags">

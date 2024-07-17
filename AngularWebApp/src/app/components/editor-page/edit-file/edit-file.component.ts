@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { FileModel } from '../../../file-model';
+import { FileModel, FileModelImpl } from '../../../file-model';
 import { ConfirmDialogComponent } from '../../../misc/confirm-dialog/confirm-dialog.component';
 import { FileService } from '../../../services/file.service';
 import { AddTagDialogComponent } from '../../../misc/add-tag-dialog/add-tag-dialog.component';
@@ -38,8 +38,8 @@ export class EditFileComponent implements OnInit {
   filterFiles() {
     const filterTextLower = this.filterText.toLowerCase();
     this.filteredFiles = this.files.filter(file =>
-      file.name.toLowerCase().includes(filterTextLower) ||
-      file.type.toLowerCase().includes(filterTextLower) ||
+      file.getFileNameWithoutExtension().toLowerCase().includes(filterTextLower) ||
+      file.getFileExtension().toLowerCase().includes(filterTextLower) ||
       file.tagList.some(tag => tag.name.toLowerCase().includes(filterTextLower))
     );
   }
@@ -80,7 +80,7 @@ export class EditFileComponent implements OnInit {
       this.editingFile = null;
       this.backupFile = null; // Clear the backup file after saving
     } else {
-      this.backupFile = JSON.parse(JSON.stringify(file)); // Create a deep copy as a backup before editing
+      this.backupFile = new FileModelImpl(JSON.parse(JSON.stringify(file))); // Create a deep copy as a backup before editing
       this.editingFile = { ...file };
     }
   }
