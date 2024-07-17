@@ -1,12 +1,14 @@
-<form (ngSubmit)="register()">
-    <mat-form-field>
+<h2>Register</h2>
+
+<form (ngSubmit)="register()" class="auth-form">
+    <mat-form-field class="full-width">
         <input matInput placeholder="Email" [(ngModel)]="email" name="email">
     </mat-form-field>
-    <mat-form-field>
+    <mat-form-field class="full-width">
         <input matInput placeholder="Name" [(ngModel)]="name" name="name">
     </mat-form-field>
-    <mat-form-field>
+    <mat-form-field class="full-width">
         <input matInput type="password" placeholder="Password" [(ngModel)]="password" name="password">
     </mat-form-field>
-    <button mat-raised-button type="submit">Register</button>
+    <button mat-raised-button color="primary" type="submit" class="submit-button">Register</button>
 </form>
