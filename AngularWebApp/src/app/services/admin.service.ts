@@ -15,6 +15,10 @@ export class AdminService {
     var request: AssignRolesRequest = { roles: roles, userId: userId };
     return this.http.post(`${this.apiUrl}/assign-roles`, request);
   }
+
+  getUserRoles(userId: string): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/get-roles/${userId}`);
+  }
 }
 
 export interface AssignRolesRequest {

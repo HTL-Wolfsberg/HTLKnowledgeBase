@@ -53,6 +53,12 @@ export class AdminPageComponent implements OnInit {
       .subscribe(filtered => {
         this._filteredUsers$.next(filtered);
       });
+
+    this.assignRoleForm.get('user')!.valueChanges.subscribe(user => {
+      if (user) {
+        this.loadUserRoles(user.id);
+      }
+    });
   }
 
   private _filterUsers(value: string): UserModel[] {
@@ -83,5 +89,16 @@ export class AdminPageComponent implements OnInit {
         }
       );
     }
+  }
+
+  private loadUserRoles(userId: string): void {
+    this.adminService.getUserRoles(userId).subscribe(
+      roles => {
+        this.assignRoleForm.patchValue({ roles });
+      },
+      error => {
+        console.error('Error loading user roles', error);
+      }
+    );
   }
 }

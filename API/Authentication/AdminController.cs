@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace API.Authentication
 {
@@ -38,6 +40,20 @@ namespace API.Authentication
             }
 
             return Ok();
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpGet("get-roles/{userId}")]
+        public async Task<IActionResult> GetUserRoles(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+            return Ok(roles.ToList());
         }
     }
 
