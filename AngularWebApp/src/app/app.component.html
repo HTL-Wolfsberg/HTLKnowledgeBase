@@ -1,9 +1,15 @@
 <nav class="navbar">
-  <a routerLink="/list" routerLinkActive="active">Files</a>
-  <a *ngIf="!isAuthenticated" routerLink="/register" routerLinkActive="active">Register</a>
-  <a *ngIf="!isAuthenticated" routerLink="/login" routerLinkActive="active">Login</a>
-  <a *ngIf="canEdit" routerLink="/editor" routerLinkActive="active">Edit</a>
-  <a *ngIf="isAdmin" routerLink="/admin" routerLinkActive="active">Admin</a>
-  <a *ngIf="isAuthenticated" (click)="logout()">Logout</a>
+  <div class="brand" routerLink="/list">
+    <img src="/assets/logo.png" alt="App Logo" class="logo">
+    <span class="app-name">Knowledge Base</span>
+  </div>
+  <div class="nav-links">
+    <a routerLink="/list" routerLinkActive="active">Files</a>
+    <a *ngIf="!isAuthenticated" routerLink="/register" routerLinkActive="active">Register</a>
+    <a *ngIf="!isAuthenticated" routerLink="/login" routerLinkActive="active">Login</a>
+    <a *ngIf="canEdit" routerLink="/editor" routerLinkActive="active">Edit</a>
+    <a *ngIf="isAdmin" routerLink="/admin" routerLinkActive="active">Admin</a>
+    <a *ngIf="isAuthenticated" (click)="logout()">Logout</a>
+  </div>
 </nav>
 <router-outlet></router-outlet>
