@@ -1,8 +1,8 @@
 <h2>Admin Page</h2>
 <p>Change the roles from users:</p>
 
-<form [formGroup]="assignRoleForm" (ngSubmit)="onSubmit()">
-    <mat-form-field>
+<form [formGroup]="assignRoleForm" (ngSubmit)="onSubmit()" class="admin-form">
+    <mat-form-field class="full-width">
         <mat-label>User</mat-label>
         <mat-select formControlName="user" [compareWith]="compareFn">
             <mat-option>
@@ -12,12 +12,12 @@
         </mat-select>
     </mat-form-field>
 
-    <mat-form-field>
+    <mat-form-field class="full-width">
         <mat-label>Roles</mat-label>
         <mat-select formControlName="roles" multiple>
             <mat-option *ngFor="let role of roles" [value]="role">{{role}}</mat-option>
         </mat-select>
     </mat-form-field>
 
-    <button mat-raised-button color="primary" type="submit">Update Roles</button>
+    <button mat-raised-button color="primary" type="submit" class="submit-button">Update Roles</button>
 </form>
