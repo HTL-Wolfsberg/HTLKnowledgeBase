@@ -106,11 +106,11 @@ export class FileListComponent implements OnInit {
       const isAsc = sort.direction === 'asc';
       switch (sort.active) {
         case 'name':
-          return compare(a.name, b.name, isAsc);
+          return compare(a.getFileNameWithoutExtension(), b.getFileNameWithoutExtension(), isAsc);
         case 'size':
           return compare(a.size, b.size, isAsc);
         case 'type':
-          return compare(a.type, b.type, isAsc);
+          return compare(a.getFileExtension(), b.getFileExtension(), isAsc);
         default:
           return 0;
       }
