@@ -21,19 +21,17 @@ export class AuthService {
   login(email: string, password: string): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login`, { email, password }).pipe(
       map(response => {
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('refreshToken', response.refreshToken);
+        this.setSession(response.token, response.refreshToken);
         return response;
       })
     );
   }
 
   refreshToken(): Observable<any> {
-    const refreshToken = localStorage.getItem('refreshToken');
+    const refreshToken = this.getRefreshToken();
     return this.http.post<any>(`${this.apiUrl}/refresh-token`, { refreshToken }).pipe(
       map(response => {
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('refreshToken', response.refreshToken);
+        this.setSession(response.token, response.refreshToken);
         return response;
       })
     );
@@ -66,6 +64,11 @@ export class AuthService {
     const decodedToken: any = jwtDecode(token);
     const jwtRole = decodedToken['role'];
     return jwtRole && jwtRole.includes(role);
+  }
+
+  private setSession(token: string, refreshToken: string) {
+    localStorage.setItem('token', token);
+    localStorage.setItem('refreshToken', refreshToken);
   }
 
   private isTokenExpired(token: string): boolean {
