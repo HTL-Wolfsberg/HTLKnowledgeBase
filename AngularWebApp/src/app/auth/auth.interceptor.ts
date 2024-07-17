@@ -23,8 +23,11 @@ export class AuthInterceptor implements HttpInterceptor {
       catchError(error => {
         if (error.status === 401 && !this.authService.isRefreshTokenExpired()) {
           return this.handle401Error(authReq, next);
-        } else {
+        } else if (error.status === 401) {
+          // Only logout if the error is due to authentication issues
           this.authService.logout();
+          return throwError(() => error);
+        } else {
           return throwError(() => error);
         }
       })

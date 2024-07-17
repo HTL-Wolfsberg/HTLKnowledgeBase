@@ -6,9 +6,10 @@ export interface FileModel {
     size: number;
     type: string;
     tagList: TagModel[];
-    Path: string;
+    path: string;
     createdDate: Date;
     modifiedDate: Date;
+    userId: string;
 
     getFileNameWithoutExtension(): string;
     getFileExtension(): string;
@@ -20,9 +21,10 @@ export class FileModelImpl implements FileModel {
     size: number;
     type: string;
     tagList: TagModel[];
-    Path: string;
+    path: string;
     createdDate: Date;
     modifiedDate: Date;
+    userId: string;
 
     constructor(file: FileModel) {
         this.id = file.id;
@@ -30,9 +32,10 @@ export class FileModelImpl implements FileModel {
         this.size = file.size;
         this.type = file.type;
         this.tagList = file.tagList;
-        this.Path = file.Path;
+        this.path = file.path;
         this.createdDate = file.createdDate;
         this.modifiedDate = file.modifiedDate;
+        this.userId = file.userId;
     }
 
     getFileNameWithoutExtension(): string {

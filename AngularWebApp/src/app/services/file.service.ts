@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
-import { FileModelImpl } from '../file-model';
+import { FileModel, FileModelImpl } from '../file-model';
 import { TagModel } from '../tag-model';
 
 @Injectable({
@@ -22,17 +22,17 @@ export class FileService {
     return this.http.post<any>(this.apiUrl, formData);
   }
 
-  getFiles(tags: TagModel[]): Observable<FileModelImpl[]> {
+  getFiles(tags: TagModel[]): Observable<FileModel[]> {
     let params = new HttpParams();
     tags.forEach(tag => params = params.append('tags', tag.name));
 
-    return this.http.get<FileModelImpl[]>(this.apiUrl, { params }).pipe(
+    return this.http.get<FileModel[]>(this.apiUrl, { params }).pipe(
       map(files => files.map(file => new FileModelImpl(file)))
     );
   }
 
-  getFilesFromUser(): Observable<FileModelImpl[]> {
-    return this.http.get<FileModelImpl[]>(this.apiUrl + "/getFilesFromUser").pipe(
+  getFilesFromUser(): Observable<FileModel[]> {
+    return this.http.get<FileModel[]>(this.apiUrl + "/getFilesFromUser").pipe(
       map(files => files.map(file => new FileModelImpl(file)))
     );
   }
@@ -41,7 +41,7 @@ export class FileService {
     return this.http.get(`${this.apiUrl}/${id}`, { responseType: 'blob' });
   }
 
-  updateFile(file: FileModelImpl): Observable<any> {
+  updateFile(file: FileModel): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/${file.id}`, file);
   }
 

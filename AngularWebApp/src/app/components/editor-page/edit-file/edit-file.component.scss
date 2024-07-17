@@ -14,11 +14,36 @@
     width: 100%;
 }
 
-.mat-chip {
+.chip-content {
     display: flex;
     align-items: center;
+    width: 100%;
+}
+
+.chip-content span {
+    flex-grow: 1;
+    text-align: left;
+}
+
+mat-chip {
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    /* Prevent interaction */
+    cursor: default;
+    /* Change cursor to default */
+    background-color: #f1f1f1;
+    /* Light gray background */
+    color: #000;
+    /* Black text color */
 }
 
 mat-chip button {
+    pointer-events: auto;
     margin-left: 8px;
+}
+
+mat-chip:hover {
+    background-color: #f1f1f1;
+    /* Ensure hover state does not change background color */
 }

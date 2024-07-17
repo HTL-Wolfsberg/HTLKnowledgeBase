@@ -117,12 +117,14 @@ export class EditFileComponent implements OnInit {
     });
   }
 
+
   removeTag(file: FileModel, tag: any) {
     const index = file.tagList.indexOf(tag);
     if (index >= 0) {
       file.tagList.splice(index, 1);
     }
   }
+
 
   openAddTagDialog(file: FileModel) {
     const dialogRef = this.dialog.open(AddTagDialogComponent, {

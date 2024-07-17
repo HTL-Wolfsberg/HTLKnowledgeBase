@@ -29,10 +29,12 @@
             <td mat-cell *matCellDef="let file">
                 <mat-chip-set>
                     <mat-chip *ngFor="let tag of file.tagList">
-                        {{tag.name}}
-                        <button mat-icon-button *ngIf="isEditing(file.id)" (click)="removeTag(file, tag)">
-                            <mat-icon>close</mat-icon>
-                        </button>
+                        <div class="chip-content">
+                            <span>{{tag.name}}</span>
+                            <button mat-icon-button *ngIf="isEditing(file.id)" (click)="removeTag(file, tag)">
+                                <mat-icon>close</mat-icon>
+                            </button>
+                        </div>
                     </mat-chip>
                     <button mat-icon-button *ngIf="isEditing(file.id)" (click)="openAddTagDialog(file)">
                         <mat-icon>add</mat-icon>
