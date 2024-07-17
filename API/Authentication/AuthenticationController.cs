@@ -1,5 +1,6 @@
 ﻿using API.ApplicationUser;
 using API.Authentication;
+using Azure.Core;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -51,11 +52,12 @@ public class AuthenticationController : ControllerBase
             var tokenString = GenerateJwtToken(user, roles);
 
             var refreshToken = GenerateRefreshJwtToken(user);
-            user.RefreshTokens.Add(new RefreshTokenModel { Token = refreshToken, Created = DateTime.UtcNow });
+            user.RefreshTokens.Add(new RefreshTokenModel { Token = refreshToken.Token, Created = DateTime.UtcNow, Expires = refreshToken.Expires });
 
+            user.RefreshTokens.RemoveAll(r => r.IsExpired);
             await _userManager.UpdateAsync(user);
 
-            return Ok(new { Token = tokenString, RefreshToken = refreshToken });
+            return Ok(new { Token = tokenString, RefreshToken = refreshToken.Token });
         }
         return Unauthorized();
     }
@@ -83,11 +85,11 @@ public class AuthenticationController : ControllerBase
         var newJwtToken = GenerateJwtToken(user, roles);
         var newRefreshToken = GenerateRefreshJwtToken(user);
 
-        user.RefreshTokens.RemoveAll(r => r.Token == request.RefreshToken);
-        user.RefreshTokens.Add(new RefreshTokenModel { Token = newRefreshToken, Created = DateTime.UtcNow });
+        user.RefreshTokens.RemoveAll(r => r.Token == request.RefreshToken || r.IsExpired);
+        user.RefreshTokens.Add(newRefreshToken);
         await _userManager.UpdateAsync(user);
 
-        return Ok(new { Token = newJwtToken, RefreshToken = newRefreshToken });
+        return Ok(new { Token = newJwtToken, RefreshToken = newRefreshToken.Token });
     }
 
     private string GenerateJwtToken(ApplicationUser user, IList<string> roles)
@@ -106,7 +108,7 @@ public class AuthenticationController : ControllerBase
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddSeconds(int.Parse(_configuration["Jwt:ExpireMinutes"])),
+            Expires = DateTime.UtcNow.AddMinutes(int.Parse(_configuration["Jwt:ExpireMinutes"])),
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
             Issuer = _configuration["Jwt:Issuer"],
             Audience = _configuration["Jwt:Audience"],
@@ -118,7 +120,7 @@ public class AuthenticationController : ControllerBase
         return tokenString;
     }
 
-    private string GenerateRefreshJwtToken(ApplicationUser user)
+    private RefreshTokenModel GenerateRefreshJwtToken(ApplicationUser user)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Key"]);
@@ -128,19 +130,24 @@ public class AuthenticationController : ControllerBase
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
         };
 
+        var expires = DateTime.UtcNow.AddMinutes(int.Parse(_configuration["Jwt:RefreshTokenExpireMinutes"]));
+        var issuer = _configuration["Jwt:Issuer"];
+        var audience = _configuration["Jwt:Audience"];
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(int.Parse(_configuration["Jwt:RefreshTokenExpireMinutes"])),
+            Expires = expires,
             SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-            Issuer = _configuration["Jwt:Issuer"],
-            Audience = _configuration["Jwt:Audience"],
+            Issuer = issuer,
+            Audience = audience,
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
         var tokenString = tokenHandler.WriteToken(token);
 
-        return tokenString;
+        var refreshToken = new RefreshTokenModel { Token = tokenString, Created = DateTime.UtcNow, Expires = expires };
+
+        return refreshToken;
     }
 
     private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
@@ -152,18 +159,22 @@ public class AuthenticationController : ControllerBase
             var tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
-                ValidateAudience = true,
+                ValidateAudience = false,
                 ValidateLifetime = false,
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = _configuration["Jwt:Issuer"],
                 ValidAudience = _configuration["Jwt:Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(key)
+                IssuerSigningKey = new SymmetricSecurityKey(key),
             };
+
 
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
             var jwtSecurityToken = securityToken as JwtSecurityToken;
-            if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256Signature, StringComparison.InvariantCultureIgnoreCase))
+            if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals("HS256", StringComparison.InvariantCultureIgnoreCase))
+            {
                 throw new SecurityTokenException("Invalid token");
+            }
+
 
             return principal;
         }

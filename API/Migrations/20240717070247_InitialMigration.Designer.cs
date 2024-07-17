@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations
 {
     [DbContext(typeof(ApplicationUserContext))]
-    [Migration("20240713140702_InitialMigration")]
+    [Migration("20240717070247_InitialMigration")]
     partial class InitialMigration
     {
         /// <inheritdoc />
@@ -91,11 +91,9 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Authentication.RefreshTokenModel", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("timestamp with time zone");

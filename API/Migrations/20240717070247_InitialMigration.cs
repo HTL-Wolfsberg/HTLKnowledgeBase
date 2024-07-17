@@ -161,8 +161,7 @@ namespace API.Migrations
                 name: "RefreshTokens",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Token = table.Column<string>(type: "text", nullable: false),
                     Expires = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Created = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
