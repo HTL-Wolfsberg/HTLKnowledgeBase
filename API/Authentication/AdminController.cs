@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,22 +15,35 @@ namespace API.Authentication
             _userManager = userManager;
         }
 
-        [HttpPost("assign-role")]
-        public async Task<IActionResult> AssignRole(string userId, string role)
+        [Authorize(Roles = "Admin")]
+        [HttpPost("assign-roles")]
+        public async Task<IActionResult> AssignRoles([FromBody] AssignRolesRequest request)
         {
-            var user = await _userManager.FindByIdAsync(userId);
+            var user = await _userManager.FindByIdAsync(request.UserId);
             if (user == null)
             {
                 return NotFound("User not found");
             }
 
-            var result = await _userManager.AddToRoleAsync(user, role);
-            if (!result.Succeeded)
+            foreach (var role in request.Roles)
             {
-                return BadRequest(result.Errors);
+                if (!await _userManager.IsInRoleAsync(user, role))
+                {
+                    var result = await _userManager.AddToRoleAsync(user, role);
+                    if (!result.Succeeded)
+                    {
+                        return BadRequest(result.Errors);
+                    }
+                }
             }
 
-            return Ok("Role assigned successfully");
+            return Ok();
         }
+    }
+
+    public class AssignRolesRequest
+    {
+        public string UserId { get; set; }
+        public List<string> Roles { get; set; }
     }
 }

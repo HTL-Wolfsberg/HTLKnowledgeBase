@@ -1,2 +1,23 @@
 <h2>Admin Page</h2>
-<p>Welcome to the Admin page. Only users with the Admin role can see this page.</p>
+<p>Assign roles to users:</p>
+
+<form [formGroup]="assignRoleForm" (ngSubmit)="onSubmit()">
+    <mat-form-field>
+        <mat-label>User</mat-label>
+        <mat-select formControlName="user" [compareWith]="compareFn">
+            <mat-option>
+                <ngx-mat-select-search [formControl]="userFilterCtrl"></ngx-mat-select-search>
+            </mat-option>
+            <mat-option *ngFor="let user of filteredUsers | async" [value]="user">{{user.email}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Roles</mat-label>
+        <mat-select formControlName="roles" multiple>
+            <mat-option *ngFor="let role of roles" [value]="role">{{role}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit">Assign Roles</button>
+</form>
