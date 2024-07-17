@@ -74,7 +74,7 @@ export class AdminPageComponent implements OnInit {
     if (this.assignRoleForm.valid) {
       const { user, roles } = this.assignRoleForm.value;
       this.adminService.assignRoles(user.id, roles).subscribe(
-        next => {
+        () => {
           this.snackBar.open('Roles assigned successfully', 'Close', {
             duration: 3000,
             panelClass: ['success-snackbar']

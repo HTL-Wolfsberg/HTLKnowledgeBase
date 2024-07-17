@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -27,16 +28,20 @@ namespace API.Authentication
                 return NotFound("User not found");
             }
 
-            foreach (var role in request.Roles)
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            var rolesToRemove = currentRoles.Except(request.Roles).ToList();
+            var rolesToAdd = request.Roles.Except(currentRoles).ToList();
+
+            var removeResult = await _userManager.RemoveFromRolesAsync(user, rolesToRemove);
+            if (!removeResult.Succeeded)
             {
-                if (!await _userManager.IsInRoleAsync(user, role))
-                {
-                    var result = await _userManager.AddToRoleAsync(user, role);
-                    if (!result.Succeeded)
-                    {
-                        return BadRequest(result.Errors);
-                    }
-                }
+                return BadRequest(removeResult.Errors);
+            }
+
+            var addResult = await _userManager.AddToRolesAsync(user, rolesToAdd);
+            if (!addResult.Succeeded)
+            {
+                return BadRequest(addResult.Errors);
             }
 
             return Ok();
