@@ -1,6 +1,5 @@
 ﻿using API.ApplicationUser;
 using API.Authentication;
-using Azure.Core;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,19 +16,27 @@ public class AuthenticationController : ControllerBase
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IConfiguration _configuration;
+    private readonly ILogger<AuthenticationController> _logger;
 
     public AuthenticationController(UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        ILogger<AuthenticationController> logger)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _configuration = configuration;
+        _logger = logger;
     }
 
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         var user = new ApplicationUser { UserName = model.Name, Email = model.Email };
         var result = await _userManager.CreateAsync(user, model.Password);
 
@@ -44,6 +51,11 @@ public class AuthenticationController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginModel model)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         var user = await _userManager.FindByEmailAsync(model.Email);
 
         if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
@@ -54,7 +66,9 @@ public class AuthenticationController : ControllerBase
             var refreshToken = GenerateRefreshJwtToken(user);
             user.RefreshTokens.Add(new RefreshTokenModel { Token = refreshToken.Token, Created = DateTime.UtcNow, Expires = refreshToken.Expires });
 
+            // Remove expired tokens
             user.RefreshTokens.RemoveAll(r => r.IsExpired);
+
             await _userManager.UpdateAsync(user);
 
             return Ok(new { Token = tokenString, RefreshToken = refreshToken.Token });
@@ -65,6 +79,11 @@ public class AuthenticationController : ControllerBase
     [HttpPost("refresh-token")]
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         var principal = GetPrincipalFromExpiredToken(request.RefreshToken);
         if (principal == null)
         {
@@ -85,6 +104,7 @@ public class AuthenticationController : ControllerBase
         var newJwtToken = GenerateJwtToken(user, roles);
         var newRefreshToken = GenerateRefreshJwtToken(user);
 
+        // Remove the used and expired refresh tokens
         user.RefreshTokens.RemoveAll(r => r.Token == request.RefreshToken || r.IsExpired);
         user.RefreshTokens.Add(newRefreshToken);
         await _userManager.UpdateAsync(user);
@@ -167,19 +187,18 @@ public class AuthenticationController : ControllerBase
                 IssuerSigningKey = new SymmetricSecurityKey(key),
             };
 
-
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
             var jwtSecurityToken = securityToken as JwtSecurityToken;
-            if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals("HS256", StringComparison.InvariantCultureIgnoreCase))
+            if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
             {
                 throw new SecurityTokenException("Invalid token");
             }
 
-
             return principal;
         }
-        catch
+        catch (Exception ex)
         {
+            _logger.LogError($"Token validation failed: {ex.Message}");
             return null;
         }
     }
