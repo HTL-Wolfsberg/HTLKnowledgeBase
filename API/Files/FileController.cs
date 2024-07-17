@@ -27,6 +27,7 @@ public class FileController : ControllerBase
         _fileTagService = fileTagService;
     }
 
+    [RequestSizeLimit(104857600)] // 100 MB 
     [HttpPost]
     [Authorize(Roles = "Admin,Editor")]
     public async Task<IActionResult> UploadFile(IFormFile file, [FromForm] string tags)
@@ -88,6 +89,7 @@ public class FileController : ControllerBase
         return Ok(files);
     }
 
+    [RequestSizeLimit(104857600)] // 100 MB
     [HttpGet("{id}")]
     public async Task<IActionResult> DownloadFile(Guid id)
     {
