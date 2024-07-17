@@ -20,6 +20,10 @@ export class AppComponent {
     return this.authService.hasRole('Editor') || this.authService.hasRole('Admin');
   }
 
+  get isAdmin(): boolean {
+    return this.authService.hasRole('Admin');
+  }
+
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);

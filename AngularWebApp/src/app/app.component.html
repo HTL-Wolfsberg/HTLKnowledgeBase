@@ -3,6 +3,7 @@
   <a *ngIf="!isAuthenticated" routerLink="/register" routerLinkActive="active">Register</a>
   <a *ngIf="!isAuthenticated" routerLink="/login" routerLinkActive="active">Login</a>
   <a *ngIf="canEdit" routerLink="/editor" routerLinkActive="active">Edit</a>
+  <a *ngIf="isAdmin" routerLink="/admin" routerLinkActive="active">Admin</a>
   <a *ngIf="isAuthenticated" (click)="logout()">Logout</a>
 </nav>
 <router-outlet></router-outlet>

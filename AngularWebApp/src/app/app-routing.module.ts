@@ -8,6 +8,7 @@ import { EditorPageComponent } from './components/editor-page/editor-page.compon
 import { EditFileComponent } from './components/editor-page/edit-file/edit-file.component';
 import { ManageTagsComponent } from './components/editor-page/manage-tags/manage-tags.component';
 import { UploadFileComponent } from './components/editor-page/upload-file/upload-file.component';
+import { AdminPageComponent } from './components/admin-page/admin-page.component';
 
 const routes: Routes = [
   { path: 'list', component: FileListComponent },
@@ -21,6 +22,7 @@ const routes: Routes = [
       { path: 'tags', component: ManageTagsComponent },
     ]
   },
+  { path: 'admin', component: AdminPageComponent, canActivate: [AuthGuard], data: { roles: ['Admin'] } },
   { path: '', redirectTo: '/list', pathMatch: 'full' }
 ];
 

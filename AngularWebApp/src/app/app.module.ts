@@ -30,6 +30,7 @@ import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { MatTableModule } from '@angular/material/table';
 import { AddTagDialogComponent } from './misc/add-tag-dialog/add-tag-dialog.component';
 import { MatSortModule } from '@angular/material/sort';
+import { AdminPageComponent } from './components/admin-page/admin-page.component';
 
 
 @NgModule({
@@ -43,7 +44,8 @@ import { MatSortModule } from '@angular/material/sort';
     EditFileComponent,
     UploadFileComponent,
     ManageTagsComponent,
-    AddTagDialogComponent
+    AddTagDialogComponent,
+    AdminPageComponent
   ],
   imports: [
     BrowserModule,
