@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { FileModel, FileModelImpl } from '../file-model';
 import { TagModel } from '../tag-model';
@@ -14,12 +14,15 @@ export class FileService {
 
   constructor(private http: HttpClient) { }
 
-  uploadFile(file: File, tags: TagModel[]): Observable<any> {
+  uploadFile(file: File, tags: TagModel[]): Observable<HttpEvent<any>> {
     const formData: FormData = new FormData();
     formData.append('file', file);
     formData.append("tags", JSON.stringify(tags));
 
-    return this.http.post<any>(this.apiUrl, formData);
+    return this.http.post<any>(this.apiUrl, formData, {
+      reportProgress: true,
+      observe: 'events'
+    });
   }
 
   getFiles(tags: TagModel[]): Observable<FileModel[]> {

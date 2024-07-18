@@ -31,7 +31,8 @@ import { MatTableModule } from '@angular/material/table';
 import { AddTagDialogComponent } from './misc/add-tag-dialog/add-tag-dialog.component';
 import { MatSortModule } from '@angular/material/sort';
 import { AdminPageComponent } from './components/admin-page/admin-page.component';
-
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @NgModule({
   declarations: [
@@ -65,7 +66,9 @@ import { AdminPageComponent } from './components/admin-page/admin-page.component
     NgxMatSelectSearchModule,
     ReactiveFormsModule,
     MatTableModule,
-    MatSortModule
+    MatSortModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule
   ],
   providers: [
     provideAnimationsAsync(),

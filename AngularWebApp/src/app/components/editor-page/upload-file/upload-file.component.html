@@ -18,5 +18,9 @@
         <button mat-raised-button color="primary" type="button" (click)="triggerFileInput()">Select File</button>
         <span *ngIf="file">{{ file.name }}</span>
     </div>
-    <button mat-raised-button color="accent" type="submit">Upload</button>
+    <button mat-raised-button color="accent" type="submit" [disabled]="loading">
+        Upload
+        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+    </button>
+    <mat-progress-bar *ngIf="progress > 0" mode="determinate" [value]="progress"></mat-progress-bar>
 </form>

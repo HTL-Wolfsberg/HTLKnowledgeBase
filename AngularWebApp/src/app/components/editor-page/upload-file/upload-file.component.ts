@@ -6,6 +6,7 @@ import { TagModel } from '../../../tag-model';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { startWith, map } from 'rxjs/operators';
+import { HttpEventType } from '@angular/common/http';
 
 @Component({
   selector: 'app-upload-file',
@@ -18,6 +19,8 @@ export class UploadFileComponent implements OnInit {
   availableTags: TagModel[] = [];
   filteredTags: Observable<TagModel[]>;
   searchText: string = '';
+  loading: boolean = false;
+  progress: number = 0;
 
   tagFilterCtrl = new FormControl();
 
@@ -50,19 +53,32 @@ export class UploadFileComponent implements OnInit {
 
   uploadFile() {
     if (this.file && this.selectedTags.length > 0) {
-
-      this.fileService.uploadFile(this.file, this.selectedTags).subscribe(response => {
-        this.snackBar.open('File uploaded successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
-      }, error => {
-        console.error('Error uploading file', error);
-        this.snackBar.open('Error uploading file', 'Close', {
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
-      });
+      this.loading = true;
+      this.fileService.uploadFile(this.file, this.selectedTags).subscribe(
+        event => {
+          if (event.type === HttpEventType.UploadProgress) {
+            if (event.total) {
+              this.progress = Math.round((100 * event.loaded) / event.total);
+            }
+          } else if (event.type === HttpEventType.Response) {
+            this.loading = false;
+            this.progress = 0;
+            this.snackBar.open('File uploaded successfully', 'Close', {
+              duration: 3000,
+              panelClass: ['success-snackbar']
+            });
+          }
+        },
+        error => {
+          this.loading = false;
+          this.progress = 0;
+          console.error('Error uploading file', error);
+          this.snackBar.open('Error uploading file', 'Close', {
+            duration: 3000,
+            panelClass: ['error-snackbar']
+          });
+        }
+      );
     }
   }
 
