@@ -3,6 +3,7 @@ using System;
 using API.Files;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations.File
 {
     [DbContext(typeof(FileContext))]
-    partial class FileContextModelSnapshot : ModelSnapshot
+    [Migration("20240718135438_AddedAuthor_Created_ModifiedToFileModel")]
+    partial class AddedAuthor_Created_ModifiedToFileModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,11 +46,7 @@ namespace API.Migrations.File
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("AuthorId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("AuthorName")
+                    b.Property<string>("Author")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -73,6 +72,10 @@ namespace API.Migrations.File
                         .HasColumnType("bigint");
 
                     b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("text");
 

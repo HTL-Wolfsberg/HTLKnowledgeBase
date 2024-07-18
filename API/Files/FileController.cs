@@ -1,11 +1,12 @@
-﻿using API.Files;
+﻿using API.ApplicationUser;
+using API.Files;
 using API.FileTags;
 using API.Tags;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Security.Claims;
-
 
 [ApiController]
 [Route("api/[controller]")]
@@ -15,16 +16,19 @@ public class FileController : ControllerBase
     private readonly ITagService _tagService;
     private readonly IFileService _fileService;
     private readonly IFileTagService _fileTagService;
+    private readonly UserManager<ApplicationUser> _userManager;
 
     public FileController(ILogger<FileController> logger,
         ITagService tagService,
         IFileService fileService,
-        IFileTagService fileTagService)
+        IFileTagService fileTagService,
+        UserManager<ApplicationUser> userManager)
     {
         _logger = logger;
         _tagService = tagService;
         _fileService = fileService;
         _fileTagService = fileTagService;
+        _userManager = userManager;
     }
 
     [RequestSizeLimit(104857600)] // 100 MB 
@@ -39,8 +43,9 @@ public class FileController : ControllerBase
         }
 
         var tagList = JsonConvert.DeserializeObject<List<TagModel>>(tags);
-
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);     
+        var user = await _userManager.FindByIdAsync(userId);
+        var currentDateTime = DateTime.UtcNow;
 
         var documentsFolderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "HTLKnowledgeBase", "Files");
 
@@ -63,8 +68,11 @@ public class FileController : ControllerBase
             Path = filePath,
             Size = file.Length,
             Type = file.ContentType,
-            UserId = userId,
-            FileTags = []
+            AuthorId = user.Id,
+            AuthorName = user.UserName,
+            Created = currentDateTime,
+            LastChanged = currentDateTime,
+            FileTags = new List<FileTagModel>()
         };
 
         await _fileTagService.AddFileTag(tagList, fileModel);
@@ -73,6 +81,7 @@ public class FileController : ControllerBase
 
         return Ok(new { fileModel.Id, fileModel.Name, fileModel.FileTags });
     }
+
 
     [HttpGet]
     public async Task<IActionResult> GetFiles([FromQuery] List<string>? tags)
@@ -112,7 +121,6 @@ public class FileController : ControllerBase
 
         return File(memory, file.Type);
     }
-
 
     [Authorize(Roles = "Admin,Editor")]
     [HttpGet("GetFilesFromUser")]
@@ -169,11 +177,12 @@ public class FileController : ControllerBase
         }
 
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (file.UserId != userId)
+        if (file.AuthorId != userId)
         {
             return Forbid();
         }
 
+        file.LastChanged = DateTime.UtcNow;
         bool success = await _fileService.UpdateFile(file);
 
         if (success)

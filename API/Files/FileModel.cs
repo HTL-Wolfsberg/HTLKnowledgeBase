@@ -15,8 +15,8 @@ namespace API.Files
         public string Path { get; set; }
         public long Size { get; set; }
         public string Type { get; set; }
-        public string UserId { get; set; }
-        public Guid Author {  get; set; }
+        public string AuthorId { get; set; }
+        public string AuthorName { get; set; }
         public DateTime Created { get; set; }
         public DateTime LastChanged { get; set; }
 

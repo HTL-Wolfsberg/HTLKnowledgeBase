@@ -1,7 +1,5 @@
-﻿
-using API.FileTags;
+﻿using API.FileTags;
 using API.Tags;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Files
@@ -42,12 +40,14 @@ namespace API.Files
             var file = await _context.Files
                 .Include(file => file.FileTags)
                 .ThenInclude(fileTag => fileTag.Tag)
-                .SingleAsync(file => file.Id == id);
+                .SingleOrDefaultAsync(file => file.Id == id);
 
-
-            file.TagList = file.FileTags
-                .Select(fileTag => fileTag.Tag)
-                .ToList();
+            if (file != null)
+            {
+                file.TagList = file.FileTags
+                    .Select(fileTag => fileTag.Tag)
+                    .ToList();
+            }
 
             return file;
         }
@@ -82,7 +82,7 @@ namespace API.Files
             var files = _context.Files
                 .Include(file => file.FileTags)
                 .ThenInclude(fileTag => fileTag.Tag)
-                .Where(File => File.UserId == userId);
+                .Where(File => File.AuthorId == userId);
 
             foreach (var file in files)
             {
@@ -92,11 +92,6 @@ namespace API.Files
             }
 
             return await files.ToListAsync();
-        }
-
-        public Task UpdateFile(Guid id, string[] tags, IFormFile file)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task DeleteFile(Guid id)
@@ -122,6 +117,7 @@ namespace API.Files
             }
 
             existingFile.Name = newFile.Name;
+            existingFile.LastChanged = DateTime.UtcNow;
 
             // Clear existing tags
             _context.FileTags.RemoveRange(existingFile.FileTags);
@@ -136,6 +132,5 @@ namespace API.Files
 
             return true;
         }
-
     }
 }

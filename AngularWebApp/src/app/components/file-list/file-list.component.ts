@@ -23,7 +23,7 @@ export class FileListComponent implements OnInit {
 
   files: FileModel[] = [];
   filteredFiles: FileModel[] = [];
-  displayedColumns: string[] = ['name', 'size', 'type', 'tags', 'actions'];
+  displayedColumns: string[] = ['name', 'size', 'type', 'author', 'created', 'modified', 'tags', 'actions'];
   tagFilterCtrl = new FormControl();
   private _filterTags$ = new BehaviorSubject<TagModel[]>([]);
   @ViewChild(MatSort) sort!: MatSort; // Definite assignment assertion
@@ -111,6 +111,12 @@ export class FileListComponent implements OnInit {
           return compare(a.size, b.size, isAsc);
         case 'type':
           return compare(a.getFileExtension(), b.getFileExtension(), isAsc);
+        case 'author':
+          return compare(a.userId, b.userId, isAsc);
+        case 'created':
+          return compare(a.createdDate, b.createdDate, isAsc);
+        case 'modified':
+          return compare(a.modifiedDate, b.modifiedDate, isAsc);
         default:
           return 0;
       }
@@ -120,6 +126,6 @@ export class FileListComponent implements OnInit {
   }
 }
 
-function compare(a: number | string, b: number | string, isAsc: boolean) {
+function compare(a: number | string | Date, b: number | string | Date, isAsc: boolean) {
   return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }

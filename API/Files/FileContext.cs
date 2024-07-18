@@ -28,6 +28,13 @@
                 .HasOne(ft => ft.Tag)
                 .WithMany(t => t.FileTags)
                 .HasForeignKey(ft => ft.TagId);
+
+            modelBuilder.Entity<FileModel>()
+                .Property(f => f.Created)
+                .HasDefaultValueSql("(now() at time zone 'utc')");
+            modelBuilder.Entity<FileModel>()
+                .Property(f => f.LastChanged)
+                .HasDefaultValueSql("(now() at time zone 'utc')");
         }
     }
 }
