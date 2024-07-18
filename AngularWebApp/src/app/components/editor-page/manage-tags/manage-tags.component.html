@@ -1,25 +1,26 @@
-<div class="filter-tags">
-    <mat-form-field>
-        <input matInput placeholder="Filter tags" [(ngModel)]="filterText" (input)="filterTags()">
-    </mat-form-field>
-</div>
-
-<div class="tag-list">
-    <div class="tag-item" *ngFor="let tag of filteredTags">
-        <p>{{ tag.name }}</p>
-        <button mat-icon-button color="primary" (click)="onModifyTagClicked(tag)">
-            <mat-icon>edit</mat-icon>
-        </button>
-        <button mat-icon-button color="warn" (click)="onDeleteTagClicked(tag)">
-            <mat-icon>delete</mat-icon>
-        </button>
-    </div>
-</div>
-
+<h2>Manage Tags</h2>
 <div class="add-tag">
     <mat-form-field>
         <input #addTagInput matInput placeholder="New tag name" #tagName>
     </mat-form-field>
     <button mat-raised-button color="primary" (click)="onAddTagClicked(tagName.value); addTagInput.value = ''">Add
         Tag</button>
+</div>
+<div class="filter-tags">
+    <mat-form-field>
+        <input matInput placeholder="Filter tags" [(ngModel)]="filterText" (input)="filterTags()">
+    </mat-form-field>
+</div>
+<div class="tag-chip-list">
+    <mat-chip *ngFor="let tag of filteredTags" selectable="true">
+        <div class="chip-container">
+            <span>{{ tag.name }}</span>
+            <button mat-icon-button color="primary" (click)="onModifyTagClicked(tag)">
+                <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="onDeleteTagClicked(tag)">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </div>
+    </mat-chip>
 </div>
