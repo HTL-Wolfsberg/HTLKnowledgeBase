@@ -1,10 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { FileModel, FileModelImpl } from '../../../file-model';
 import { ConfirmDialogComponent } from '../../../misc/confirm-dialog/confirm-dialog.component';
 import { FileService } from '../../../services/file.service';
 import { AddTagDialogComponent } from '../../../misc/add-tag-dialog/add-tag-dialog.component';
+import { MatSort, Sort } from '@angular/material/sort';
+import { FormControl } from '@angular/forms';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
+import { TagModel } from '../../../tag-model';
+import { TagService } from '../../../services/tag.service';
 
 @Component({
   selector: 'app-edit-file',
@@ -14,34 +20,106 @@ import { AddTagDialogComponent } from '../../../misc/add-tag-dialog/add-tag-dial
 export class EditFileComponent implements OnInit {
   files: FileModel[] = [];
   filteredFiles: FileModel[] = [];
-  filterText: string = '';
+  fileNameFilter: string = '';
+  fileTypeFilter: string = '';
+  selectedFilterTags: TagModel[] = [];
+  availableFilterTags: TagModel[] = [];
+  filteredTags: Observable<TagModel[]>;
+  sortedData: FileModel[] = [];
   editingFile: FileModel | null = null;  // Track the currently edited file
   backupFile: FileModel | null = null; // Backup of the file before editing
 
-  displayedColumns: string[] = ['name', 'size', 'type', 'tags', 'actions'];
+  displayedColumns: string[] = ['name', 'type', 'author', 'tags', 'size', 'created', 'modified', 'actions'];
+  tagFilterCtrl = new FormControl();
+  private _filterTags$ = new BehaviorSubject<TagModel[]>([]);
+  @ViewChild(MatSort) sort!: MatSort; // Definite assignment assertion
 
   constructor(private fileService: FileService,
     private snackBar: MatSnackBar,
-    public dialog: MatDialog) { }
+    public dialog: MatDialog,
+    private tagService: TagService) {
+    this.filteredTags = this._filterTags$.asObservable();
+  }
 
   ngOnInit() {
     this.fetchFiles();
+    this.tagService.getTags().subscribe((tags: TagModel[]) => {
+      this.availableFilterTags = tags;
+      this._filterTags$.next(tags);
+      this.tagFilterCtrl.valueChanges
+        .pipe(
+          startWith(''),
+          map(value => this._filterTags(value))
+        )
+        .subscribe(tags => this._filterTags$.next(tags));
+    });
+  }
+
+  filterFiles() {
+    const filterName = this.fileNameFilter.toLowerCase();
+    const filterType = this.fileTypeFilter.toLowerCase();
+
+    this.filteredFiles = this.files.filter(file => {
+      const matchesName = filterName ? file.getFileNameWithoutExtension().toLowerCase().includes(filterName) : true;
+      const matchesType = filterType ? file.getFileExtension().toLowerCase().includes(filterType) : true;
+      const matchesTags = this.selectedFilterTags.length > 0 ? this.selectedFilterTags.every(tag => file.tagList.some(ft => ft.id === tag.id)) : true;
+
+      return matchesName && matchesType && matchesTags;
+    });
+
+    if (this.sort) {
+      this.applySort(this.sort);
+    }
   }
 
   fetchFiles() {
     this.fileService.getFilesFromUser().subscribe(files => {
       this.files = files;
+      this.filteredFiles = [...this.files];
       this.filterFiles();
     });
   }
 
-  filterFiles() {
-    const filterTextLower = this.filterText.toLowerCase();
-    this.filteredFiles = this.files.filter(file =>
-      file.getFileNameWithoutExtension().toLowerCase().includes(filterTextLower) ||
-      file.getFileExtension().toLowerCase().includes(filterTextLower) ||
-      file.tagList.some(tag => tag.name.toLowerCase().includes(filterTextLower))
-    );
+
+  private _filterTags(value: string): TagModel[] {
+    const filterValue = value.toLowerCase();
+    return this.availableFilterTags.filter(tag => tag.name.toLowerCase().includes(filterValue));
+  }
+
+  sortData(sort: Sort) {
+    this.applySort(sort);
+  }
+
+  applySort(sort: Sort) {
+    if (!sort) return;
+
+    const data = this.filteredFiles.slice();
+    if (!sort.active || sort.direction === '') {
+      this.sortedData = data;
+      return;
+    }
+
+    this.sortedData = data.sort((a, b) => {
+      const isAsc = sort.direction === 'asc';
+      switch (sort.active) {
+        case 'name':
+          return compare(a.getFileNameWithoutExtension(), b.getFileNameWithoutExtension(), isAsc);
+        case 'size':
+          return compare(a.size, b.size, isAsc);
+        case 'type':
+          return compare(a.getFileExtension(), b.getFileExtension(), isAsc);
+        case 'author':
+          return compare(a.authorName, b.authorName, isAsc);
+        case 'created':
+          return compare(a.created, b.created, isAsc);
+        case 'modified':
+          return compare(a.lastChanged, b.lastChanged, isAsc);
+        default:
+          return 0;
+      }
+    });
+
+    this.filteredFiles = [...this.sortedData];
   }
 
   onRemoveFileClicked(id: string) {
@@ -117,14 +195,12 @@ export class EditFileComponent implements OnInit {
     });
   }
 
-
   removeTag(file: FileModel, tag: any) {
     const index = file.tagList.indexOf(tag);
     if (index >= 0) {
       file.tagList.splice(index, 1);
     }
   }
-
 
   openAddTagDialog(file: FileModel) {
     const dialogRef = this.dialog.open(AddTagDialogComponent, {
@@ -138,4 +214,8 @@ export class EditFileComponent implements OnInit {
       }
     });
   }
+}
+
+function compare(a: number | string | Date, b: number | string | Date, isAsc: boolean) {
+  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
 }
