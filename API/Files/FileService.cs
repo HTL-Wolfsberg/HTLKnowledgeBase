@@ -52,6 +52,7 @@ namespace API.Files
             return file;
         }
 
+
         public async Task<List<FileModel>> GetFilesByTags(List<string> tags)
         {
             var filesQuery = _context.Files
@@ -67,22 +68,7 @@ namespace API.Files
                             .Contains(ft.Tag.Name)));
             }
 
-            foreach (var file in filesQuery)
-            {
-                file.TagList = file.FileTags
-                    .Select(fileTag => fileTag.Tag)
-                    .ToList();
-            }
-
-            return await filesQuery.ToListAsync();
-        }
-
-        public async Task<List<FileModel>> GetFilesFromUser(string userId)
-        {
-            var files = _context.Files
-                .Include(file => file.FileTags)
-                .ThenInclude(fileTag => fileTag.Tag)
-                .Where(File => File.AuthorId == userId);
+            var files = await filesQuery.ToListAsync();
 
             foreach (var file in files)
             {
@@ -91,8 +77,28 @@ namespace API.Files
                     .ToList();
             }
 
-            return await files.ToListAsync();
+            return files;
         }
+
+
+        public async Task<List<FileModel>> GetFilesFromUser(string userId)
+        {
+            var files = await _context.Files
+                .Include(file => file.FileTags)
+                .ThenInclude(fileTag => fileTag.Tag)
+                .Where(File => File.AuthorId == userId)
+                .ToListAsync();
+
+            foreach (var file in files)
+            {
+                file.TagList = file.FileTags
+                    .Select(fileTag => fileTag.Tag)
+                    .ToList();
+            }
+
+            return files;
+        }
+
 
         public async Task DeleteFile(Guid id)
         {
@@ -132,5 +138,6 @@ namespace API.Files
 
             return true;
         }
+
     }
 }
