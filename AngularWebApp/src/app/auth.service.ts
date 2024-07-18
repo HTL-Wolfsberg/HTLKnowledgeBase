@@ -5,26 +5,41 @@ import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 import { jwtDecode } from 'jwt-decode';
+import * as CryptoJS from 'crypto-js';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/api/authentication`;
+  private encryptionKey = CryptoJS.enc.Utf8.parse(environment.encryptionKey); // Ensure this is 32 bytes for AES-256
+  private iv = CryptoJS.enc.Utf8.parse(environment.encryptionIv); // Ensure this is 16 bytes for AES
 
   constructor(private http: HttpClient, private router: Router) { }
 
   register(email: string, password: string, name: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/register`, { email, password, name });
+    const encryptedPassword = this.encryptPassword(password);
+    return this.http.post<any>(`${this.apiUrl}/register`, { email, password: encryptedPassword, name });
   }
 
   login(email: string, password: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/login`, { email, password }).pipe(
+    const encryptedPassword = this.encryptPassword(password);
+    return this.http.post<any>(`${this.apiUrl}/login`, { email, password: encryptedPassword }).pipe(
       map(response => {
         this.setSession(response.token, response.refreshToken);
         return response;
       })
     );
+  }
+
+  private encryptPassword(password: string): string {
+    const encrypted = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(password), this.encryptionKey, {
+      keySize: 128 / 8,
+      iv: this.iv,
+      mode: CryptoJS.mode.CBC,
+      padding: CryptoJS.pad.Pkcs7
+    });
+    return encrypted.toString();
   }
 
   refreshToken(): Observable<any> {

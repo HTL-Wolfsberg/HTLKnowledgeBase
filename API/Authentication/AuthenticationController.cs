@@ -1,5 +1,6 @@
 ﻿using API.ApplicationUser;
 using API.Authentication;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -37,8 +38,10 @@ public class AuthenticationController : ControllerBase
             return BadRequest(ModelState);
         }
 
+        var decryptedPassword = DecryptPassword(model.Password);
+
         var user = new ApplicationUser { UserName = model.Name, Email = model.Email };
-        var result = await _userManager.CreateAsync(user, model.Password);
+        var result = await _userManager.CreateAsync(user, decryptedPassword);
 
         if (result.Succeeded)
         {
@@ -56,9 +59,11 @@ public class AuthenticationController : ControllerBase
             return BadRequest(ModelState);
         }
 
+        var decryptedPassword = DecryptPassword(model.Password);
+
         var user = await _userManager.FindByEmailAsync(model.Email);
 
-        if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
+        if (user != null && await _userManager.CheckPasswordAsync(user, decryptedPassword))
         {
             var roles = await _userManager.GetRolesAsync(user);
             var tokenString = GenerateJwtToken(user, roles);
@@ -74,6 +79,28 @@ public class AuthenticationController : ControllerBase
             return Ok(new { Token = tokenString, RefreshToken = refreshToken.Token });
         }
         return Unauthorized();
+    }
+
+    private string DecryptPassword(string encryptedPassword)
+    {
+        using var aes = Aes.Create();
+        var key = Encoding.UTF8.GetBytes("your-encryption-key-32bytes12345");
+        var iv = Encoding.UTF8.GetBytes("yourIvKey16bytes");
+
+        aes.Key = key;
+        aes.IV = iv;
+        aes.Padding = PaddingMode.PKCS7;
+        aes.Mode = CipherMode.CBC;
+
+        var encryptedBytes = Convert.FromBase64String(encryptedPassword);
+
+        using var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
+        using var msDecrypt = new MemoryStream(encryptedBytes);
+        using var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
+        using var srDecrypt = new StreamReader(csDecrypt);
+        var decryptedPassword = srDecrypt.ReadToEnd();
+
+        return decryptedPassword;
     }
 
     [HttpPost("refresh-token")]
