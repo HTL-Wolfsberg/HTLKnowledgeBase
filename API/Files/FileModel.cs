@@ -16,6 +16,9 @@ namespace API.Files
         public long Size { get; set; }
         public string Type { get; set; }
         public string UserId { get; set; }
+        public Guid Author {  get; set; }
+        public DateTime Created { get; set; }
+        public DateTime LastChanged { get; set; }
 
         [NotMapped]
         public ICollection<TagModel> TagList { get; set; } = new List<TagModel>();
@@ -23,6 +26,4 @@ namespace API.Files
         [JsonIgnore]
         public ICollection<FileTagModel> FileTags { get; set; } = new List<FileTagModel>();
     }
-
-
 }
