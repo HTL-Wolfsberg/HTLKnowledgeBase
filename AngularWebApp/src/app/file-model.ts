@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { TagModel } from "./tag-model";
 
 export interface FileModel {
@@ -7,9 +8,10 @@ export interface FileModel {
     type: string;
     tagList: TagModel[];
     path: string;
-    createdDate: Date;
-    modifiedDate: Date;
-    userId: string;
+    created: string | Date;
+    lastChanged: string | Date;
+    authorId: string;
+    authorName: string;
 
     getFileNameWithoutExtension(): string;
     getFileExtension(): string;
@@ -22,9 +24,10 @@ export class FileModelImpl implements FileModel {
     type: string;
     tagList: TagModel[];
     path: string;
-    createdDate: Date;
-    modifiedDate: Date;
-    userId: string;
+    created: Date;
+    lastChanged: Date;
+    authorId: string;
+    authorName: string;
 
     constructor(file: FileModel) {
         this.id = file.id;
@@ -33,9 +36,10 @@ export class FileModelImpl implements FileModel {
         this.type = file.type;
         this.tagList = file.tagList;
         this.path = file.path;
-        this.createdDate = file.createdDate;
-        this.modifiedDate = file.modifiedDate;
-        this.userId = file.userId;
+        this.created = typeof file.created === 'string' ? DateTime.fromISO(file.created).toJSDate() : file.created;
+        this.lastChanged = typeof file.lastChanged === 'string' ? DateTime.fromISO(file.lastChanged).toJSDate() : file.lastChanged;
+        this.authorId = file.authorId;
+        this.authorName = file.authorName;
     }
 
     getFileNameWithoutExtension(): string {

@@ -23,7 +23,7 @@ export class FileListComponent implements OnInit {
 
   files: FileModel[] = [];
   filteredFiles: FileModel[] = [];
-  displayedColumns: string[] = ['name', 'size', 'type', 'author', 'created', 'modified', 'tags', 'actions'];
+  displayedColumns: string[] = ['name', 'type', 'author', 'tags', 'size', 'created', 'modified', 'actions'];
   tagFilterCtrl = new FormControl();
   private _filterTags$ = new BehaviorSubject<TagModel[]>([]);
   @ViewChild(MatSort) sort!: MatSort; // Definite assignment assertion
@@ -112,11 +112,11 @@ export class FileListComponent implements OnInit {
         case 'type':
           return compare(a.getFileExtension(), b.getFileExtension(), isAsc);
         case 'author':
-          return compare(a.userId, b.userId, isAsc);
+          return compare(a.authorName, b.authorName, isAsc);
         case 'created':
-          return compare(a.createdDate, b.createdDate, isAsc);
+          return compare(a.created, b.created, isAsc);
         case 'modified':
-          return compare(a.modifiedDate, b.modifiedDate, isAsc);
+          return compare(a.lastChanged, b.lastChanged, isAsc);
         default:
           return 0;
       }
