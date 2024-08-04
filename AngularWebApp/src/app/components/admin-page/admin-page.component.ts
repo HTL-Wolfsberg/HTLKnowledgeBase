@@ -1,10 +1,14 @@
+// admin-page.component.ts
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { AdminService } from '../../services/admin.service';
 import { UserService } from '../../services/user.service';
+import { ConfirmDialogComponent } from '../../misc/confirm-dialog/confirm-dialog.component';
+
 
 interface UserModel {
   id: string;
@@ -29,7 +33,8 @@ export class AdminPageComponent implements OnInit {
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private adminService: AdminService,
-    private userService: UserService
+    private userService: UserService,
+    public dialog: MatDialog
   ) {
     this.filteredUsers = this._filteredUsers$.asObservable();
   }
@@ -91,7 +96,20 @@ export class AdminPageComponent implements OnInit {
     }
   }
 
-  deleteUser(userId: string): void {
+  confirmDelete(user: UserModel): void {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '300px',
+      data: { message: `Are you sure you want to delete the user with email: ${user.email}?` }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.deleteUser(user.id);
+      }
+    });
+  }
+
+  private deleteUser(userId: string): void {
     this.adminService.deleteUser(userId).subscribe(
       () => {
         this._allUsers = this._allUsers.filter(user => user.id !== userId);
@@ -110,7 +128,6 @@ export class AdminPageComponent implements OnInit {
       }
     );
   }
-
 
   private loadUserRoles(userId: string): void {
     this.adminService.getUserRoles(userId).subscribe(
