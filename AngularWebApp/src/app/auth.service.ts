@@ -32,6 +32,10 @@ export class AuthService {
     );
   }
 
+  loginWithGoogle() {
+    window.location.href = `${this.apiUrl}/login-google`;
+  }
+
   private encryptPassword(password: string): string {
     const encrypted = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(password), this.encryptionKey, {
       keySize: 128 / 8,

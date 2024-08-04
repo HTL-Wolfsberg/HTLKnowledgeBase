@@ -1,5 +1,6 @@
 ﻿using API.ApplicationUser;
 using API.Authentication;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -79,6 +80,56 @@ public class AuthenticationController : ControllerBase
             return Ok(new { Token = tokenString, RefreshToken = refreshToken.Token });
         }
         return Unauthorized();
+    }
+
+    [HttpGet("login-google")]
+    public IActionResult GoogleLogin()
+    {
+        var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", "/api/authentication/google-response");
+        return Challenge(properties, "Google");
+    }
+
+    [HttpGet("google-response")]
+    public async Task<IActionResult> GoogleResponse()
+    {
+        var result = await HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
+        if (!result.Succeeded)
+        {
+            return BadRequest("External authentication error");
+        }
+
+        var externalClaims = result.Principal.Claims.ToList();
+        var emailClaim = externalClaims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+        if (emailClaim == null)
+        {
+            return BadRequest("Email claim not found");
+        }
+
+        var email = emailClaim.Value;
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            user = new ApplicationUser { UserName = email, Email = email };
+            var identityResult = await _userManager.CreateAsync(user);
+            if (!identityResult.Succeeded)
+            {
+                return BadRequest(identityResult.Errors);
+            }
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var tokenString = GenerateJwtToken(user, roles);
+
+        var refreshToken = GenerateRefreshJwtToken(user);
+        user.RefreshTokens.Add(new RefreshTokenModel { Token = refreshToken.Token, Created = DateTime.UtcNow, Expires = refreshToken.Expires });
+
+        user.RefreshTokens.RemoveAll(r => r.IsExpired);
+
+        await _userManager.UpdateAsync(user);
+
+        await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
+        return Ok(new { Token = tokenString, RefreshToken = refreshToken.Token });
     }
 
     private string DecryptPassword(string encryptedPassword)

@@ -18,5 +18,10 @@ export class LoginComponent {
       this.router.navigate(['/']);
     });
   }
+
+  loginWithGoogle() {
+    this.authService.loginWithGoogle();
+  }
+
 }
 
