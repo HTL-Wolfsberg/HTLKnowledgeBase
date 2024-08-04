@@ -1,3 +1,4 @@
+<!-- admin-page.component.html -->
 <h2>Admin Page</h2>
 <p>Change the roles from users:</p>
 
@@ -23,11 +24,16 @@
 </form>
 
 <h3>Delete Users</h3>
-<div class="user-list">
-    <div class="user-item" *ngFor="let user of filteredUsers | async">
-        <span>{{ user.email }}</span>
-        <button mat-icon-button color="warn" (click)="confirmDelete(user)">
-            <mat-icon>delete</mat-icon>
-        </button>
-    </div>
-</div>
+
+<form [formGroup]="deleteUserForm" (ngSubmit)="confirmDelete()" class="admin-form">
+    <mat-form-field class="full-width">
+        <mat-label>User</mat-label>
+        <mat-select formControlName="user" [compareWith]="compareFn">
+            <mat-option>
+                <ngx-mat-select-search [formControl]="deleteUserFilterCtrl"></ngx-mat-select-search>
+            </mat-option>
+            <mat-option *ngFor="let user of filteredDeleteUsers | async" [value]="user">{{user.email}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <button mat-raised-button color="warn" type="submit" class="submit-button">Delete User</button>
+</form>

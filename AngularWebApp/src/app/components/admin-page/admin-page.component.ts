@@ -9,7 +9,6 @@ import { AdminService } from '../../services/admin.service';
 import { UserService } from '../../services/user.service';
 import { ConfirmDialogComponent } from '../../misc/confirm-dialog/confirm-dialog.component';
 
-
 interface UserModel {
   id: string;
   email: string;
@@ -22,10 +21,14 @@ interface UserModel {
 })
 export class AdminPageComponent implements OnInit {
   assignRoleForm!: FormGroup;
+  deleteUserForm!: FormGroup;
   userFilterCtrl: FormControl = new FormControl();
+  deleteUserFilterCtrl: FormControl = new FormControl();
   filteredUsers: Observable<UserModel[]>;
+  filteredDeleteUsers: Observable<UserModel[]>;
   private _allUsers: UserModel[] = [];
   private _filteredUsers$ = new BehaviorSubject<UserModel[]>([]);
+  private _filteredDeleteUsers$ = new BehaviorSubject<UserModel[]>([]);
 
   roles: string[] = ['Admin', 'Editor'];
 
@@ -37,6 +40,7 @@ export class AdminPageComponent implements OnInit {
     public dialog: MatDialog
   ) {
     this.filteredUsers = this._filteredUsers$.asObservable();
+    this.filteredDeleteUsers = this._filteredDeleteUsers$.asObservable();
   }
 
   ngOnInit(): void {
@@ -45,9 +49,14 @@ export class AdminPageComponent implements OnInit {
       roles: [[], []]
     });
 
+    this.deleteUserForm = this.fb.group({
+      user: ['', []] as (UserModel | never[])[],
+    });
+
     this.userService.getUsers().subscribe(users => {
       this._allUsers = users;
       this._filteredUsers$.next(users);
+      this._filteredDeleteUsers$.next(users);
     });
 
     this.userFilterCtrl.valueChanges
@@ -57,6 +66,15 @@ export class AdminPageComponent implements OnInit {
       )
       .subscribe(filtered => {
         this._filteredUsers$.next(filtered);
+      });
+
+    this.deleteUserFilterCtrl.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filterUsers(value))
+      )
+      .subscribe(filtered => {
+        this._filteredDeleteUsers$.next(filtered);
       });
 
     this.assignRoleForm.get('user')!.valueChanges.subscribe(user => {
@@ -96,7 +114,8 @@ export class AdminPageComponent implements OnInit {
     }
   }
 
-  confirmDelete(user: UserModel): void {
+  confirmDelete(): void {
+    const user = this.deleteUserForm.get('user')!.value;
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '300px',
       data: { message: `Are you sure you want to delete the user with email: ${user.email}?` }
@@ -114,6 +133,7 @@ export class AdminPageComponent implements OnInit {
       () => {
         this._allUsers = this._allUsers.filter(user => user.id !== userId);
         this._filteredUsers$.next(this._allUsers);
+        this._filteredDeleteUsers$.next(this._allUsers);
         this.snackBar.open('User deleted successfully', 'Close', {
           duration: 3000,
           panelClass: ['success-snackbar']
