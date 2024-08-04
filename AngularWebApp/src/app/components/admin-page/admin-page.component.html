@@ -21,3 +21,13 @@
 
     <button mat-raised-button color="primary" type="submit" class="submit-button">Update Roles</button>
 </form>
+
+<h3>Delete Users</h3>
+<div class="user-list">
+    <div class="user-item" *ngFor="let user of filteredUsers | async">
+        <span>{{ user.email }}</span>
+        <button mat-icon-button color="warn" (click)="deleteUser(user.id)">
+            <mat-icon>delete</mat-icon>
+        </button>
+    </div>
+</div>

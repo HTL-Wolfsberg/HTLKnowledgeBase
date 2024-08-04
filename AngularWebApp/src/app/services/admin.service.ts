@@ -19,6 +19,10 @@ export class AdminService {
   getUserRoles(userId: string): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}/get-roles/${userId}`);
   }
+
+  deleteUser(userId: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/delete-user/${userId}`, { responseType: 'text' });
+  }
 }
 
 export interface AssignRolesRequest {

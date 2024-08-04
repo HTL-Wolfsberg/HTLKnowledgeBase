@@ -91,6 +91,27 @@ export class AdminPageComponent implements OnInit {
     }
   }
 
+  deleteUser(userId: string): void {
+    this.adminService.deleteUser(userId).subscribe(
+      () => {
+        this._allUsers = this._allUsers.filter(user => user.id !== userId);
+        this._filteredUsers$.next(this._allUsers);
+        this.snackBar.open('User deleted successfully', 'Close', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+      },
+      error => {
+        console.error('Error deleting user', error);
+        this.snackBar.open('Error deleting user', 'Close', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    );
+  }
+
+
   private loadUserRoles(userId: string): void {
     this.adminService.getUserRoles(userId).subscribe(
       roles => {

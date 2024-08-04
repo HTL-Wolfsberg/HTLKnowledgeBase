@@ -100,16 +100,22 @@ public class AuthenticationController : ControllerBase
 
         var externalClaims = result.Principal.Claims.ToList();
         var emailClaim = externalClaims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
-        if (emailClaim == null)
+        var nameClaim = externalClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
+        if (emailClaim == null || nameClaim == null)
         {
-            return BadRequest("Email claim not found");
+            return BadRequest("Email or name claim not found");
         }
 
         var email = emailClaim.Value;
+        var name = nameClaim.Value;
+
+        // Generate a valid username
+        var username = GenerateValidUsername(name);
+
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null)
         {
-            user = new ApplicationUser { UserName = email, Email = email };
+            user = new ApplicationUser { UserName = username, Email = email };
             var identityResult = await _userManager.CreateAsync(user);
             if (!identityResult.Succeeded)
             {
@@ -133,6 +139,15 @@ public class AuthenticationController : ControllerBase
         var redirectUrl = $"http://localhost:4200/auth/callback?token={tokenString}&refreshToken={refreshToken.Token}";
         return Redirect(redirectUrl);
     }
+
+    private string GenerateValidUsername(string name)
+    {
+        // Replace spaces with underscores and remove invalid characters
+        var username = new string(name.Where(char.IsLetterOrDigit).ToArray());
+        return username;
+    }
+
+
 
 
     private string DecryptPassword(string encryptedPassword)

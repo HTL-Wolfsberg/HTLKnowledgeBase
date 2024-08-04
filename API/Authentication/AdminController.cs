@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace API.Authentication
 {
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class AdminController : ControllerBase
@@ -18,7 +19,6 @@ namespace API.Authentication
             _userManager = userManager;
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpPost("assign-roles")]
         public async Task<IActionResult> AssignRoles([FromBody] AssignRolesRequest request)
         {
@@ -47,7 +47,6 @@ namespace API.Authentication
             return Ok();
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpGet("get-roles/{userId}")]
         public async Task<IActionResult> GetUserRoles(string userId)
         {
@@ -59,6 +58,24 @@ namespace API.Authentication
 
             var roles = await _userManager.GetRolesAsync(user);
             return Ok(roles.ToList());
+        }
+
+        [HttpDelete("delete-user/{userId}")]
+        public async Task<IActionResult> DeleteUser(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            return Ok("User deleted successfully");
         }
     }
 
