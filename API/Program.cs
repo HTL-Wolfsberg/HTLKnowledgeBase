@@ -68,9 +68,7 @@ builder.Services.AddAuthentication(options =>
     options.Scope.Add("email");
     options.Scope.Add("profile");
     options.Scope.Add("openid");
-    options.CallbackPath = new PathString("/signin-google");
-
-}); ;
+});
 
 // Configure DI for application services
 builder.Services.AddScoped<ITagService, TagService>();

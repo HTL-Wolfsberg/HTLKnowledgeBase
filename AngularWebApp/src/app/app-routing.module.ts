@@ -9,11 +9,13 @@ import { EditFileComponent } from './components/editor-page/edit-file/edit-file.
 import { ManageTagsComponent } from './components/editor-page/manage-tags/manage-tags.component';
 import { UploadFileComponent } from './components/editor-page/upload-file/upload-file.component';
 import { AdminPageComponent } from './components/admin-page/admin-page.component';
+import { AuthCallbackComponent } from './auth/auth-callback/auth-callback.component';
 
 const routes: Routes = [
   { path: 'list', component: FileListComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'auth/callback', component: AuthCallbackComponent },
   {
     path: 'editor', component: EditorPageComponent, canActivate: [AuthGuard], children: [
       { path: '', redirectTo: 'edit', pathMatch: 'full' },
@@ -23,7 +25,7 @@ const routes: Routes = [
     ]
   },
   { path: 'admin', component: AdminPageComponent, canActivate: [AuthGuard], data: { roles: ['Admin'] } },
-  { path: '', redirectTo: '/list', pathMatch: 'full' }
+  { path: '**', redirectTo: '/list', pathMatch: 'full' }
 ];
 
 @NgModule({

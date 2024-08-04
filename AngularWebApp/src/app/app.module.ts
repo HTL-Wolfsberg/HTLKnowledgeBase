@@ -33,6 +33,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { AdminPageComponent } from './components/admin-page/admin-page.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { AuthCallbackComponent } from './auth/auth-callback/auth-callback.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     UploadFileComponent,
     ManageTagsComponent,
     AddTagDialogComponent,
-    AdminPageComponent
+    AdminPageComponent,
+    AuthCallbackComponent
   ],
   imports: [
     BrowserModule,

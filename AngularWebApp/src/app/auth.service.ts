@@ -36,6 +36,11 @@ export class AuthService {
     window.location.href = `${this.apiUrl}/login-google`;
   }
 
+  setSession(token: string, refreshToken: string) {
+    localStorage.setItem('token', token);
+    localStorage.setItem('refreshToken', refreshToken);
+  }
+
   private encryptPassword(password: string): string {
     const encrypted = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(password), this.encryptionKey, {
       keySize: 128 / 8,
@@ -83,11 +88,6 @@ export class AuthService {
     const decodedToken: any = jwtDecode(token);
     const jwtRole = decodedToken['role'];
     return jwtRole && jwtRole.includes(role);
-  }
-
-  private setSession(token: string, refreshToken: string) {
-    localStorage.setItem('token', token);
-    localStorage.setItem('refreshToken', refreshToken);
   }
 
   private isTokenExpired(token: string): boolean {

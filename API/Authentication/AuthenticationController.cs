@@ -129,8 +129,11 @@ public class AuthenticationController : ControllerBase
 
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
-        return Ok(new { Token = tokenString, RefreshToken = refreshToken.Token });
+        // Redirect to the Angular application with tokens
+        var redirectUrl = $"http://localhost:4200/auth/callback?token={tokenString}&refreshToken={refreshToken.Token}";
+        return Redirect(redirectUrl);
     }
+
 
     private string DecryptPassword(string encryptedPassword)
     {
