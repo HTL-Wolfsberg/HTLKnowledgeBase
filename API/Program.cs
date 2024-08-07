@@ -4,6 +4,7 @@ using API.FileTags;
 using API.Roles;
 using API.Tags;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -78,7 +79,15 @@ builder.Services.AddAuthentication(options =>
     options.Scope.Add("email");
     options.Scope.Add("profile");
     options.Scope.Add("openid");
-    //options.CallbackPath = new PathString("/signin-microsoft");
+    //Force the authentication to show the select account window instead of showing nothing
+    options.Events = new OAuthEvents
+    {
+        OnRedirectToAuthorizationEndpoint = context =>
+        {
+            context.Response.Redirect(context.RedirectUri + "&prompt=select_account");
+            return Task.CompletedTask;
+        }
+    };
 });
 ;
 
