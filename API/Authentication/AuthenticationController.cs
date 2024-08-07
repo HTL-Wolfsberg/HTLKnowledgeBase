@@ -100,22 +100,71 @@ public class AuthenticationController : ControllerBase
 
         var externalClaims = result.Principal.Claims.ToList();
         var emailClaim = externalClaims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
-        var nameClaim = externalClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name);
-        if (emailClaim == null || nameClaim == null)
+        if (emailClaim == null )
         {
             return BadRequest("Email or name claim not found");
         }
 
         var email = emailClaim.Value;
-        var name = nameClaim.Value;
-
-        // Generate a valid username
-        var username = GenerateValidUsername(name);
 
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null)
         {
-            user = new ApplicationUser { UserName = username, Email = email };
+            user = new ApplicationUser { UserName = email, Email = email };
+            var identityResult = await _userManager.CreateAsync(user);
+            if (!identityResult.Succeeded)
+            {
+                return BadRequest(identityResult.Errors);
+            }
+        }
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var tokenString = GenerateJwtToken(user, roles);
+
+        var refreshToken = GenerateRefreshJwtToken(user);
+        user.RefreshTokens.Add(new RefreshTokenModel { Token = refreshToken.Token, Created = DateTime.UtcNow, Expires = refreshToken.Expires });
+
+        user.RefreshTokens.RemoveAll(r => r.IsExpired);
+
+        await _userManager.UpdateAsync(user);
+
+        await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
+        // Redirect to the Angular application with tokens
+        var redirectUrl = $"http://localhost:4200/auth/callback?token={tokenString}&refreshToken={refreshToken.Token}";
+        return Redirect(redirectUrl);
+    }
+
+    [HttpGet("login-microsoft")]
+    public IActionResult MicrosoftLogin()
+    {
+        var properties = _signInManager.ConfigureExternalAuthenticationProperties("Microsoft", "/api/authentication/microsoft-response");
+        return Challenge(properties, "Microsoft");
+    }
+
+    [HttpGet("microsoft-response")]
+    public async Task<IActionResult> MicrosoftResponse()
+    {
+        var result = await HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
+        if (!result.Succeeded)
+        {
+            return BadRequest("External authentication error");
+        }
+
+        var externalClaims = result.Principal.Claims.ToList();
+        var emailClaim = externalClaims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+
+        if (emailClaim == null)
+        {
+            return BadRequest("Email or name claim not found");
+        }
+
+        var email = emailClaim.Value;
+
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            user = new ApplicationUser { UserName = email, Email = email };
             var identityResult = await _userManager.CreateAsync(user);
             if (!identityResult.Succeeded)
             {

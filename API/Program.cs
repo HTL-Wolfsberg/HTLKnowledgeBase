@@ -60,7 +60,8 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = audience,
         ValidateLifetime = true,
     };
-}).AddGoogle(options =>
+})
+.AddGoogle(options =>
 {
     options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
@@ -68,7 +69,18 @@ builder.Services.AddAuthentication(options =>
     options.Scope.Add("email");
     options.Scope.Add("profile");
     options.Scope.Add("openid");
+})
+.AddMicrosoftAccount(options =>
+{
+    options.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"];
+    options.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"];
+    options.SignInScheme = IdentityConstants.ExternalScheme;
+    options.Scope.Add("email");
+    options.Scope.Add("profile");
+    options.Scope.Add("openid");
+    //options.CallbackPath = new PathString("/signin-microsoft");
 });
+;
 
 // Configure DI for application services
 builder.Services.AddScoped<ITagService, TagService>();
