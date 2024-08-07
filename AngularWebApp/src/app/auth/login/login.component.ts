@@ -23,5 +23,8 @@ export class LoginComponent {
     this.authService.loginWithGoogle();
   }
 
+  loginWithMicrosoft() {
+    this.authService.loginWithMicrosoft();
+  }
 }
 

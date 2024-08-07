@@ -36,6 +36,10 @@ export class AuthService {
     window.location.href = `${this.apiUrl}/login-google`;
   }
 
+  loginWithMicrosoft() {
+    window.location.href = `${this.apiUrl}/login-microsoft`;
+  }
+
   setSession(token: string, refreshToken: string) {
     localStorage.setItem('token', token);
     localStorage.setItem('refreshToken', refreshToken);

@@ -24,4 +24,7 @@ export class RegisterComponent {
     this.authService.loginWithGoogle();
   }
 
+  loginWithMicrosoft() {
+    this.authService.loginWithMicrosoft();
+  }
 }
